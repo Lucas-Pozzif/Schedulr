@@ -21,16 +21,16 @@ function updateService(
     service: serviceType,
     setService: (service: serviceType) => void,
     attribute:
-        'name' |
-        'stateNames' |
-        'stateValues' |
-        'haveStates' |
-        'photo' |
-        'inicial' |
-        'value' |
-        'duration' |
-        'currentPromotion' |
-        'promotedUntil',
+        | 'name'
+        | 'stateNames'
+        | 'stateValues'
+        | 'haveStates'
+        | 'photo'
+        | 'inicial'
+        | 'value'
+        | 'duration'
+        | 'currentPromotion'
+        | 'promotedUntil',
     newValue: any
 ) {
     const serviceAttributes = {
@@ -64,11 +64,7 @@ function StateTab({ service, setState }: stateTabType) {
         </div>
     ) : null;
 }
-function StateInputsRender({
-    service,
-    setService,
-    state,
-}: stateInputsType) {
+function StateInputsRender({ service, setService, state }: stateInputsType) {
     const newNames = [...service.stateNames];
     const newValues = [...service.stateValues];
 

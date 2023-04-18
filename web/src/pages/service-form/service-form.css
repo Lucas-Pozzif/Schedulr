@@ -4,22 +4,3 @@
     align-items: center;
     border-bottom: 1px solid #ccc;
   }
-  
-  .tab-button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 50px;
-    width: 200px;
-    border: none;
-    background-color: #fff;
-    color: #333;
-    font-weight: bold;
-    font-size: 16px;
-    cursor: pointer;
-  }
-  
-  .tab-button.active {
-    background-color: #333;
-    color: #fff;
-  }
