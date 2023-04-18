@@ -1,13 +1,17 @@
-type serviceType = {
+export type serviceType = {
     name: string,
-    photo: string,
+    stateNames: string[],
+    stateValues: number[],
+    haveStates: boolean,
+    photo: string | null,
     inicial: boolean,
-    value: number | number[],
+    value: number,
     duration: boolean[],
     promotion: {
-        currentPromotion: string, //promotionId
-        promotedUntil: string,
+        currentPromotion: null | string, //promotionId
+        promotedUntil: null | string,
     }
 }
+
 
 export { }
