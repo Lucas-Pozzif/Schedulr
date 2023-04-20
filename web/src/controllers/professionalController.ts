@@ -1,20 +1,20 @@
 
-type professionalType = {
+export type professionalType = {
     name: string,
     email: string,
     photo: string,
     schedule: string,
-    occupation: string[],
+    occupations: string[],
     services: string[],
-    disponibility: [
-        boolean[],
-        boolean[],
-        boolean[],
-        boolean[],
-        boolean[],
-        boolean[],
-        boolean[],
-    ],
+    disponibility: {
+        0: boolean[],
+        1: boolean[],
+        2: boolean[],
+        3: boolean[],
+        4: boolean[],
+        5: boolean[],
+        6: boolean[],
+    },
     lastOnline: string
 }
 
