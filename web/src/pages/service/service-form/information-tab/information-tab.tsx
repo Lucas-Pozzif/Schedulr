@@ -1,68 +1,15 @@
-import { useState, Dispatch, SetStateAction, useEffect } from "react"
-import { serviceType } from "../../../controllers/serviceController"
-import { TabButton } from "../../../components/buttons/tab-button/tab-button"
-import { Input } from "../../../components/input/input"
+import { useState } from "react"
+import { ServiceTabType } from "../service-form"
+import { serviceType } from "../../../../controllers/serviceController";
+import { Input } from "../../../../components/input/input";
+import StateTab from "../../../../components/tabs/state-tab/state-tab";
+import updateService from "../../../../functions/updaters/update-service";
+import { TabButton } from "../../../../components/buttons/tab-button/tab-button";
 
-type informationTabType = {
-    service: serviceType,
-    setService: (service: serviceType) => void
-}
-
-type stateTabType = {
-    service: serviceType,
-    setState: Dispatch<SetStateAction<number>>
-}
 type stateInputsType = {
     service: serviceType,
     setService: (service: serviceType) => void,
     state: number
-}
-function updateService(
-    service: serviceType,
-    setService: (service: serviceType) => void,
-    attribute:
-        | 'name'
-        | 'stateNames'
-        | 'stateValues'
-        | 'haveStates'
-        | 'photo'
-        | 'inicial'
-        | 'value'
-        | 'duration'
-        | 'currentPromotion'
-        | 'promotedUntil',
-    newValue: any
-) {
-    const serviceAttributes = {
-        name: 'name',
-        stateNames: 'stateNames',
-        stateValues: 'stateValues',
-        haveStates: 'haveStates',
-        photo: 'photo',
-        inicial: 'inicial',
-        value: 'value',
-        duration: 'duration',
-        currentPromotion: 'promotion.currentPromotion',
-        promotedUntil: 'promotion.promotedUntil'
-    }
-    setService({
-        ...service,
-        [serviceAttributes[attribute]]: newValue
-    })
-}
-
-function StateTab({ service, setState }: stateTabType) {
-    return service.haveStates ? (
-        <div className="stateTab">
-            {service.stateNames.map((stateName, index) => (
-                <TabButton
-                    key={index}
-                    title={stateName}
-                    onClickButton={() => setState(index)}
-                />
-            ))}
-        </div>
-    ) : null;
 }
 function StateInputsRender({ service, setService, state }: stateInputsType) {
     const newNames = [...service.stateNames];
@@ -113,7 +60,7 @@ function StateInputsRender({ service, setService, state }: stateInputsType) {
         </>
     );
 }
-export function InformationTab({ service, setService }: informationTabType) {
+export function InformationTab({ service, setService }: ServiceTabType) {
     const [state, setState] = useState(0)
 
     return (
@@ -126,7 +73,6 @@ export function InformationTab({ service, setService }: informationTabType) {
                 placeholder="Digite o nome do serviço"
             />
             <StateInputsRender service={service} setService={setService} state={state} />
-
             <div>
                 <TabButton darkMode={service.haveStates} title="Diferentes Tamanhos" onClickButton={() => updateService(service, setService, 'haveStates', !service.haveStates)} />
                 <TabButton darkMode={service.inicial} title="A partir de" onClickButton={() => updateService(service, setService, 'inicial', !service.inicial)} />
