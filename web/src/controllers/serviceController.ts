@@ -32,9 +32,9 @@ async function addService(service: serviceType) {
     let ids = await getIds()
     if (ids !== undefined) {
         const docRef = doc(db, 'services', ids!.service.toString())
-        await setDoc(docRef, service)
         ids!.service++
         await setIds(ids)
+        await setDoc(docRef, service)
     }
 }
 
