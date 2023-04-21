@@ -3,12 +3,12 @@ import { db } from "../firebase/firebase";
 
 let clientCache = require('../cache/clientCache.json')
 
-type clientType = {
-    name: string,
-    email: string,
-    number: string,
-    photo: string,
-    lastOnline: string
+export type clientType = {
+    name: string | null,
+    email: string | null,
+    number: string | null,
+    photo: string | null,
+    lastOnline: number
 }
 
 async function getClient(clientId: string) {
@@ -22,9 +22,9 @@ async function getClient(clientId: string) {
     }
 }
 
-async function setClient(clientId: string) {
+async function setClient(client: clientType, clientId: string) {
     const docRef = doc(db, 'clients', clientId);
-    await setDoc(docRef, clientCache[clientId]);
+    await setDoc(docRef, client);
 }
 
-export { getClient }
+export { getClient, setClient }
