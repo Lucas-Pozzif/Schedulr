@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getAllProfessionals } from "../../../controllers/professionalController";
+import { ProfessionalButton } from "../../../components/buttons/professional-button/professional-button";
 
 const professionalCache = require('../../../cache/professionalCache.json')
 
@@ -24,10 +25,14 @@ function ProfessionalList() {
                 loading ?
                     <p>loading...</p> :
                     professionalIds!.map((professionalId: string) => {
+                        const professional = professionalCache[professionalId]
                         return (
-                            <div key={professionalId}>
-                                <p>{professionalCache[professionalId].name}</p>
-                            </div>
+                            <ProfessionalButton
+                                darkmode={false}
+                                professional={professional}
+                                rightButtonTitle="Ver serviços"
+                                onClickButton={() => { }}
+                            />
                         )
                     })
             }

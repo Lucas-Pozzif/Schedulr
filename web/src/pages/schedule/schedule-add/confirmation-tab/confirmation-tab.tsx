@@ -24,6 +24,7 @@ export function ConfirmationTab({ schedule, setSchedule, setTab }: scheduleTabTy
                     schedule.selectedServices.forEach(async (selectedService) => {
                         const serviceId = selectedService.service;
                         const professionalId = selectedService.professional
+                        const selectedState = selectedService.state
                         const startTime = selectedService.startTime
                         const clientId = schedule.clientId
                         const date: string = schedule.selectedDate
@@ -37,7 +38,9 @@ export function ConfirmationTab({ schedule, setSchedule, setTab }: scheduleTabTy
                             if (selectedSchedule?.[date] == undefined) selectedDaySchedule = scheduleDay
                             else selectedDaySchedule = selectedSchedule[date]
 
-                            const duration = serviceCache[serviceId].duration
+                            const duration = serviceCache[serviceId].haveStates ?
+                                serviceCache[serviceId].stateDurations[selectedState] :
+                                serviceCache[serviceId].duration
                             const lastTrueIndex = duration.lastIndexOf(true);
 
                             const trueDuration = duration.slice(0, lastTrueIndex + 1);
@@ -46,6 +49,7 @@ export function ConfirmationTab({ schedule, setSchedule, setTab }: scheduleTabTy
                                 if (trueDuration[i]) {
                                     selectedDaySchedule[startTime + i].takenAt = new Date().getTime()
                                     selectedDaySchedule[startTime + i].service = serviceId
+                                    selectedDaySchedule[startTime + i].state = selectedState
                                     selectedDaySchedule[startTime + i].client = clientId
                                 }
                             }

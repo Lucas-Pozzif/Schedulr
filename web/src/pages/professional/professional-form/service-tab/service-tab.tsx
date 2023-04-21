@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { professionalTabType } from "../professional-form";
 import { getAllServices } from "../../../../controllers/serviceController";
 import updateProfessional from "../../../../functions/updaters/update-professional";
+import { ServiceButton } from "../../../../components/buttons/service-button/service-button";
 
 const serviceCache = require('../../../../cache/serviceCache.json')
 
@@ -22,19 +23,22 @@ export function ServiceTab({ professional, setProfessional }: professionalTabTyp
                 loading ?
                     <p>loading...</p> :
                     serviceIds!.map((serviceId: string) => {
+                        const service = serviceCache[serviceId]
                         return (
-                            <div onClick={() => {
-                                let services = [...professional.services]
+                            <ServiceButton
+                                darkmode={professional.services.includes(serviceId)}
+                                allowExpand={false}
+                                service={service}
+                                onClickButton={() => {
+                                    let services = [...professional.services]
 
-                                services.includes(serviceId) ?
-                                    services = services.filter(i => i !== serviceId) :
-                                    services.push(serviceId)
+                                    services.includes(serviceId) ?
+                                        services = services.filter(i => i !== serviceId) :
+                                        services.push(serviceId)
 
-                                updateProfessional(professional, setProfessional, 'services', services)
-                            }} key={serviceId}>
-                                <p>{serviceCache[serviceId].name} {professional.services.includes(serviceId) ? '-Selected' : null}</p>
-                            </div>
-                        )
+                                    updateProfessional(professional, setProfessional, 'services', services)
+                                }}
+                            />)
                     })
             }
         </div>

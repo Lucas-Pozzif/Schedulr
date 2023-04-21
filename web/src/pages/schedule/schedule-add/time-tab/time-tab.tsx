@@ -1,4 +1,4 @@
-import { useState,useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { LargeButton } from "../../../../components/buttons/large-button/large-button";
 import { TabButton } from "../../../../components/buttons/tab-button/tab-button";
 import { scheduleTabType, selectedServiceType } from "../schedule-add";
@@ -21,6 +21,7 @@ export function TimeTab({ schedule, setSchedule }: scheduleTabType) {
 
     const emptyScheduleDay: scheduleDayType = {
         takenAt: null,
+        state: null,
         client: null,
         service: null
     }
@@ -89,6 +90,7 @@ export function TimeTab({ schedule, setSchedule }: scheduleTabType) {
                             const professionalId = selectedService.professional
                             const serviceId = selectedService.service
                             const startTime = selectedService.startTime
+                            const selectedState = selectedService.state
 
                             if (professionalId == null || serviceId == null) return
                             const profSchedule = scheduleCache[professionalId]
@@ -97,7 +99,9 @@ export function TimeTab({ schedule, setSchedule }: scheduleTabType) {
                             profSchedule?.[date] ?
                                 selectedSchedule = profSchedule[date] :
                                 selectedSchedule = Array(144).fill(emptyScheduleDay)
-                            const duration = serviceCache[serviceId].duration
+                            const duration = serviceCache[serviceId].haveStates ?
+                                serviceCache[serviceId].stateDurations[selectedState] :
+                                serviceCache[serviceId].duration
                             const lastTrueIndex = duration.lastIndexOf(true);
 
                             const trueDuration = duration.slice(0, lastTrueIndex + 1);
