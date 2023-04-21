@@ -4,6 +4,8 @@ import ServiceForm from "./pages/service/service-form/service-form";
 import { ServiceAdd } from "./pages/service/service-add/service-add";
 import { ServiceEdit } from "./pages/service/service-edit/service-edit";
 import ProfessionalForm from "./pages/professional/professional-form/professional-form";
+import ScheduleAdd from "./pages/schedule/schedule-add/schedule-add";
+import ProfessionalList from "./pages/professional/professional-list/professional-list";
 
 function App() {
 
@@ -12,9 +14,11 @@ function App() {
 		{ path: '/service/add', element: <ServiceAdd /> },
 		{ path: '/service/edit/:serviceId', element: <ServiceEdit /> },
 
-		{ path: '/professional', element: <ProfessionalForm /> },
-		{ path: '/professional/add', element: <ServiceEdit /> },
+		{ path: '/professional', element: <ProfessionalList /> },
+		{ path: '/professional/add', element: <ProfessionalForm /> },
 		{ path: '/professional/edit/:professionalId', element: <ServiceEdit /> },
+
+		{ path: '/schedule', element: <ScheduleAdd /> },
 
 	]
 
