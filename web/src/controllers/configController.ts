@@ -8,7 +8,8 @@ type colorsType = {
 }
 export type idsType = {
     service: number,
-    occupation:number
+    occupation:number,
+    professional:number
 }
 
 async function getIds(): Promise<idsType> {
