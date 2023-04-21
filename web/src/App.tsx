@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom";
 import { ServiceList } from "./pages/service/service-list/service-list";
 import ServiceForm from "./pages/service/service-form/service-form";
 import { ServiceAdd } from "./pages/service/service-add/service-add";
@@ -6,6 +6,12 @@ import { ServiceEdit } from "./pages/service/service-edit/service-edit";
 import ProfessionalForm from "./pages/professional/professional-form/professional-form";
 import ScheduleAdd from "./pages/schedule/schedule-add/schedule-add";
 import ProfessionalList from "./pages/professional/professional-list/professional-list";
+import Home from "./pages/home/home";
+import Login from "./pages/authentication/login";
+import AuthForm from "./pages/authentication/authentication-form/authentication-form";
+import { useEffect } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./firebase/firebase";
 
 function App() {
 
@@ -19,6 +25,10 @@ function App() {
 		{ path: '/professional/edit/:professionalId', element: <ServiceEdit /> },
 
 		{ path: '/schedule', element: <ScheduleAdd /> },
+
+		{ path: '/', element: <Home /> },
+
+		{ path: '/login', element: <AuthForm /> },
 
 	]
 
