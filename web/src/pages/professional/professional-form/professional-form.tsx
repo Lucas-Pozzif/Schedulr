@@ -1,9 +1,9 @@
 import React, { useState } from "react"
-import { professionalType } from '../../../controllers/professionalController'
 import { IconButton } from "../../../components/buttons/icon-button/icon-button"
 import { InformationTab } from "./information-tab/information-tab"
 import { ServiceTab } from "./service-tab/service-tab"
 import { DisponibilityTab } from "./disponibility-tab/disponibility-tab"
+import { professionalType, setProfessional } from "../../../controllers/professionalController"
 
 let professionalCache = require('../../../cache/professionalCache.json')
 
@@ -27,7 +27,6 @@ function ProfessionalForm({ professionalId }: professionalFormType) {
             name: 'Novo Profissional',
             email: null,
             photo: null,
-            schedule: professionalId,
             occupations: [],
             services: [],
             disponibility: {
@@ -75,7 +74,7 @@ function ProfessionalForm({ professionalId }: professionalFormType) {
                         </div>
                         {tabRender()}
                         <div onClick={async () => {
-                            //Set(serviceForm, serviceId?.toString())
+                            setProfessional(professionalForm, professionalId?.toString())
                         }}> Salvar</div>
                     </> :
                     <p>error</p>
