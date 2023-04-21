@@ -8,7 +8,7 @@ type tabButtonType = {
 export function TabButton({ darkMode, title, onClickButton }: tabButtonType) {
     return (
         <div onClick={onClickButton}>
-            <p>{title}</p>
+            <p>{title} {darkMode ? '-selected' : null}</p>
         </div>
     )
 
