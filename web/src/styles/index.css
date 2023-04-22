@@ -5,7 +5,7 @@
     -accent-light: lightgrey;
 }
 
-.background {
+html {
     background-color: var(--primary);
     min-height: 100vh;
 }
