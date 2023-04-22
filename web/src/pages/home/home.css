@@ -1,0 +1,55 @@
+.home {
+    padding: 15px;
+}
+
+.home-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 5px;
+    margin-bottom: 20px;
+}
+
+.home-logo {
+    height: 70px;
+    width: 120px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.account-icon {
+    height: 50px;
+    width: 50px;
+}
+
+.salutation-block {
+    display: flex;
+    margin-inline: 5px;
+    margin-block: 20px;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 5px;
+}
+
+.salutation {
+    font-size: 22px;
+    color: var(--accent-light);
+    max-width: 250px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.message {
+    font-size: 14px;
+    color: var(--secondary);
+    max-width: 300px;
+    margin-bottom: 20px;
+}
+
+.home-button-tab {
+    margin-top: 35px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
