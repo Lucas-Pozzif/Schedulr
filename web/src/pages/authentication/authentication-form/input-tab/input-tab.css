@@ -1,0 +1,7 @@
+.input-tab {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    margin-inline: 40px;
+    gap: 10px;
+}

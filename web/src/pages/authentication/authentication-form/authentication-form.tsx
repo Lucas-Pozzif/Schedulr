@@ -3,63 +3,21 @@ import { useState, useEffect } from "react";
 import { auth } from "../../../firebase/firebase";
 import { useNavigate } from "react-router-dom";
 import { clientType, getClient, setClient } from "../../../controllers/clientController";
-import { Input } from "../../../components/input/input";
+import { InputTab } from "./input-tab/input-tab";
+import { LoginTab } from "./login-tab/login-tab";
+import { SubmitButton } from "../../../components/buttons/submit-button/submit-button";
 
 const clientCache = require('../../../cache/clientCache.json')
 
-type tabHandlerType = {
-    tab: number,
-    userForm: clientType,
-    setUserForm: (client: clientType) => void,
-    userId: string
+export type authenticationTabType = {
+    user: clientType,
+    setUser: (user: clientType) => void
 }
 
-async function handleSignIn() {
-    const provider = new GoogleAuthProvider();
-    const { user } = await signInWithPopup(auth, provider);
-}
-function TabHandler({ tab, userForm, setUserForm, userId }: tabHandlerType) {
+export function AuthenticationForm() {
     const navigate = useNavigate()
-    switch (tab) {
-        case 1:
-            return (
-                <>
-                    <Input
-                        label="Por favor digite seu nome"
-                        placeholder="Nome"
-                        value={userForm.name || ''}
-                        onValueChange={(e) => {
-                            setUserForm({
-                                ...userForm,
-                                name: e.target.value
-                            })
-                        }}
-                    />
-                    <Input
-                        label="Por favor digite seu número"
-                        placeholder="(00)00000-0000"
-                        value={userForm.number || ''}
-                        onValueChange={(e) => {
-                            setUserForm({
-                                ...userForm,
-                                number: e.target.value
-                            })
-                        }}
-                    />
-                    <button onClick={() => {
-                        console.log(userForm, userId);
-                        setClient(userForm, userId)
-                        navigate('/')
-                    }}>Concluir</button>
-                </>
-            )
-        default:
-            return <div onClick={handleSignIn}>Entrar com google</div>
-    }
-}
-
-export default function AuthForm() {
-    const [tab, setTab] = useState(0)
+    const [tab, setTab] = useState('loading')
+    const [userId, setUserId] = useState('')
     const [userForm, setUserForm] = useState<clientType>({
         name: '',
         email: '',
@@ -67,40 +25,63 @@ export default function AuthForm() {
         photo: '',
         lastOnline: new Date().getTime()
     })
-    const [userId, setUserId] = useState('')
-
-    const navigate = useNavigate();
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                setUserId(user.uid)
-                await getClient(user.uid)
-                if (clientCache[user.uid]) return navigate('/')
+            if (!user) return setTab('log-in')
+            await getClient(user.uid)
 
-                const newUser: clientType = {
-                    name: user.displayName,
-                    email: user.email,
-                    number: user.phoneNumber,
-                    photo: user.photoURL,
-                    lastOnline: new Date().getTime()
-                }
-                setUserForm(newUser)
-                setTab(1)
-            } else {
-                setTab(0)
+            if (clientCache[user.uid]) return navigate('/')
+
+            setTab('enter-data')
+            setUserId(user.uid)
+            const newUser: clientType = {
+                name: user.displayName,
+                email: user.email,
+                number: user.phoneNumber,
+                photo: user.photoURL,
+                lastOnline: new Date().getTime()
             }
+            setUserForm(newUser)
         });
         return unsubscribe
     }, []);
 
-    return (
-        <TabHandler
-            tab={tab}
-            userForm={userForm}
-            setUserForm={setUserForm}
-            userId={userId}
-        />
-    )
-
+    const handleSignIn = async () => {
+        const provider = new GoogleAuthProvider();
+        await signInWithPopup(auth, provider);
+    }
+    switch (tab) {
+        case 'loading':
+            return (
+                <>
+                    <p>loading</p>
+                </>
+            )
+        case 'log-in':
+            return (
+                <>
+                    <LoginTab
+                        loginWithApple={handleSignIn}
+                        loginWithGoogle={handleSignIn}
+                    />
+                </>
+            )
+        case 'enter-data':
+            return (
+                <>
+                    <InputTab user={userForm} setUser={setUserForm} />
+                    <SubmitButton
+                        hide={(userForm.name && userForm.number)?false:true}
+                        title="Concluir"
+                        onClickButton={() => {
+                            setClient(userForm, userId)
+                            navigate('/')
+                        }}
+                    />
+                </>
+            )
+        default:
+            return <p>error</p>
+    }
 }
