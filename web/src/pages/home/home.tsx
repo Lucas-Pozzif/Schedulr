@@ -4,6 +4,10 @@ import { Line } from "../../components/line/line"
 import { onAuthStateChanged } from "firebase/auth"
 import { auth } from "../../firebase/firebase"
 import { clientType, getClient } from "../../controllers/clientController"
+import { arrayIndexToTime } from '../../functions/array-index-to-time/array-index-to-time'
+import { timeToArrayIndex } from '../../functions/time-to-array-index/time-to-array-index'
+import { dayIntervalCounter } from '../../functions/day-interval-counter/day-interval-counter'
+import { intervalToDay } from '../../functions/interval-to-day/interval-to-day'
 
 const clientCache = require('../../cache/clientCache.json')
 const designCache = require('../../cache/designCache.json')
@@ -25,24 +29,22 @@ function Home() {
     let username = '!'
     if (userId) username = `, ${clientCache[userId].name}`
 
-    let nextService: string
+    let nextService: string = 'Você não possui nenhum serviço agendado para esta'
     if (userId) {
-        const today = new Date().getTime()
+        const today = new Date()
+        const nowIndex = timeToArrayIndex(new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }))
 
         const clientSchedule = clientCache[userId].schedule
-        const scheduledDays = Object.keys(clientSchedule)
+        const scheduledDays = Object.keys(clientSchedule).sort()
+        const hasToday = scheduledDays.includes(today.toLocaleDateString('en-US'))
+        const distanceArray = scheduledDays.map((date) => dayIntervalCounter(date, today)).filter((int) => int > 0 && int <= 7)
+        const nearestDay = intervalToDay(today, Math.min(...distanceArray))
+        const nearestDayTimeIndexes = Object.keys(clientSchedule[nearestDay]).sort()
+        const validTodayTimes = nearestDayTimeIndexes.filter(index => parseInt(index) >= nowIndex)
 
-        const nearestDate = scheduledDays.find(date => {
-            const diff = Math.abs(new Date(date).getTime() - new Date(today).getTime());
-            return diff === Math.min(...scheduledDays.map(d => Math.abs(new Date(d).getTime() - new Date(today).getTime())));
-        });
-
-        if (nearestDate === undefined) nextService = 'Você não tem nenhum serviço agendado ainda.'
-        else {
-            const nearestServices = Object.keys(clientSchedule[nearestDate])
-            console.log(nearestServices)
-        }
-
+        if (hasToday && validTodayTimes.length > 0) nextService = `Você tem um serviço agendado para hoje às ${arrayIndexToTime(parseInt(validTodayTimes[0]))}.`
+        else if (!nearestDay) nextService = `Você não possui nenhum serviço agendado para esta semana`
+        else nextService = `Você possui um serviço agendado com para as ${arrayIndexToTime(parseInt(nearestDayTimeIndexes[0]))} do dia ${nearestDay}`
     }
 
     useEffect(() => {
@@ -63,6 +65,7 @@ function Home() {
             <Line />
             <div className="home-text-block">
                 <p>{salutation}{username}</p>
+                <p>{userId ? nextService : 'Você ainda não entrou com sua conta.'}</p>
             </div>
 
             <Line />
