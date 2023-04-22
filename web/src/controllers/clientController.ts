@@ -8,6 +8,14 @@ export type clientType = {
     email: string | null,
     number: string | null,
     photo: string | null,
+    schedule: {
+        [date: string]: {
+            [timeIndex: number]: {
+                service: number[],
+                professional: number[]
+            }
+        }
+    },
     lastOnline: number
 }
 
@@ -23,6 +31,8 @@ async function getClient(clientId: string) {
 }
 
 async function setClient(client: clientType, clientId: string) {
+    let newClient = client
+    newClient.lastOnline = new Date().getTime()
     const docRef = doc(db, 'clients', clientId);
     await setDoc(docRef, client);
 }

@@ -8,7 +8,7 @@ export type scheduleDayType = {
     takenAt: null | number, //null or timestamp
     service: null | number,
     state: null| number
-    client: null | number,
+    client: null | string,
 }
 
 type scheduleType = {
