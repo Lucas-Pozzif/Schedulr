@@ -1,17 +1,17 @@
-import { useNavigate } from "react-router"
+import './icon-button.css'
 
 type iconButtonType = {
     darkMode?: boolean,
-    icon: string,
+    image: string,
     title: string,
     onClickButton: () => void
 }
 
-export function IconButton({ darkMode, icon, title, onClickButton }: iconButtonType) {
+export function IconButton({ darkMode, image, title, onClickButton }: iconButtonType) {
     return (
         <div className="icon-button" onClick={onClickButton}>
-            <img src={icon} />
-            <p>{title}</p>
+            <img className='iconb-image' src={image} />
+            <p className='iconb-title'>{title}</p>
         </div>
     )
 }
