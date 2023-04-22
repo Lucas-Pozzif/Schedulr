@@ -1,0 +1,11 @@
+:root {
+    --primary: black;
+    --secondary: white;
+    --accent-dark: darkgrey;
+    -accent-light: lightgrey;
+}
+
+.background {
+    background-color: var(--primary);
+    min-height: 100vh;
+}
