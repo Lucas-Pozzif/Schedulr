@@ -1,10 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { getSchedule, setSchedule as updateSchedule, scheduleDayType } from "../../../../controllers/scheduleController";
 import { scheduleTabType } from "../schedule-add";
+import { setClient } from "../../../../controllers/clientController";
 
 const serviceCache = require('../../../../cache/serviceCache.json')
 const professionalCache = require('../../../../cache/professionalCache.json')
 const scheduleCache = require('../../../../cache/scheduleCache.json')
+const clientCache = require('../../../../cache/clientCache.json')
 
 
 export function ConfirmationTab({ schedule, setSchedule, setTab }: scheduleTabType) {
@@ -54,11 +56,33 @@ export function ConfirmationTab({ schedule, setSchedule, setTab }: scheduleTabTy
                                 }
                             }
                             selectedSchedule[date] = selectedDaySchedule
+                            const client = clientCache[clientId]
+                            let clientSchedule = client.schedule
 
+                            if (!clientSchedule[date]) clientSchedule[date] = {
+                                [startTime]: [{
+                                    service: serviceId,
+                                    professional: professionalId
+                                }]
+                            }
+                            else if (clientSchedule[date][startTime] == undefined) clientSchedule[date][startTime] = [{
+                                service: serviceId,
+                                professional: professionalId
+                            }]
+                            else clientSchedule[date][startTime].push({
+                                service: serviceId,
+                                professional: professionalId
+                            })
+
+                            setClient({
+                                ...client,
+                                schedule: clientSchedule
+                            }, clientId)
                             updateSchedule(selectedSchedule, professionalId.toString())
                         }
                     })
                     setTab(5)
+
                 }}
             >Confirmar</button>
             {

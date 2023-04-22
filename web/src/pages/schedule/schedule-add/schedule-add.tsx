@@ -14,7 +14,7 @@ import { getClient } from "../../../controllers/clientController"
 const clientCache = require('../../../cache/clientCache.json')
 
 export type scheduleType = {
-    clientId: number
+    clientId: string
     selectedDate: string,
     startedAt: number,
     selectedServices: selectedServiceType[]
@@ -34,14 +34,15 @@ export type scheduleTabType = {
 }
 
 function ScheduleAdd() {
+    const [userId, setUserId] = useState<string>('error')
 
     const navigate = useNavigate();
-
     useEffect(() => {
         onAuthStateChanged(auth, async (user) => {
             if (!user) return navigate('/login');
 
             await getClient(user.uid)
+            setUserId(user.uid)
             if (!clientCache[user.uid]) return navigate('/login');
 
         });
@@ -49,12 +50,17 @@ function ScheduleAdd() {
 
     const [tab, setTab] = useState(0)
     const [scheduleForm, setScheduleForm] = useState<scheduleType>({
-        clientId: 0,
+        clientId: userId,
         selectedDate: new Date().toLocaleDateString('en-US'),
         startedAt: new Date().getTime(),
         selectedServices: []
     })
-
+    if (scheduleForm.clientId !== userId) {
+        setScheduleForm({
+            ...scheduleForm,
+            clientId: userId
+        })
+    }
 
     function tabRender() {
         switch (tab) {
