@@ -1,5 +1,7 @@
 import React from "react"
 
+import './input.css'
+
 type inputType = {
     label?: string,
     placeholder?: string,
@@ -10,9 +12,9 @@ type inputType = {
 
 export function Input({ label, placeholder, value, onValueChange }: inputType) {
     return (
-        <label>
-            {label}
-            <input value={value} placeholder={placeholder} onChange={onValueChange}></input>
-        </label>
+        <div className="input-component">
+            <label htmlFor={label} className="label">{label}</label>
+            <input id={label} className="input" value={value} placeholder={placeholder} onChange={onValueChange}></input>
+        </div>
     )
 }
