@@ -67,10 +67,10 @@ function ProfessionalForm({ professionalId }: professionalFormType) {
 
                         </div>
                         <div className="tabs">
-                            <IconButton darkMode={tab == 0} title="Informações Pessoais" icon="a" onClickButton={() => { setTab(0) }} />
-                            <IconButton darkMode={tab == 1} title="Alterar Serviços" icon="a" onClickButton={() => { setTab(1) }} />
-                            <IconButton darkMode={tab == 2} title="Alterar Horários" icon="a" onClickButton={() => { setTab(2) }} />
-                            <IconButton darkMode={tab == 3} title="Excluir Conta" icon="a" onClickButton={() => { setTab(3) }} />
+                            <IconButton darkMode={tab == 0} title="Informações Pessoais" image="a" onClickButton={() => { setTab(0) }} />
+                            <IconButton darkMode={tab == 1} title="Alterar Serviços" image="a" onClickButton={() => { setTab(1) }} />
+                            <IconButton darkMode={tab == 2} title="Alterar Horários" image="a" onClickButton={() => { setTab(2) }} />
+                            <IconButton darkMode={tab == 3} title="Excluir Conta" image="a" onClickButton={() => { setTab(3) }} />
                         </div>
                         {tabRender()}
                         <div onClick={async () => {

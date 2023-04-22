@@ -73,10 +73,10 @@ function ServiceForm({ serviceId }: serviceFormType) {
 
                         </div>
                         <div className="tabs">
-                            <IconButton darkMode={tab == 0} title="Informações Individuais" icon="a" onClickButton={() => { setTab(0) }} />
-                            <IconButton darkMode={tab == 1} title="Alterar Profissionais" icon="a" onClickButton={() => { setTab(1) }} />
-                            <IconButton darkMode={tab == 2} title="Tempo de Duração" icon="a" onClickButton={() => { setTab(2) }} />
-                            <IconButton darkMode={tab == 3} title="Excluir Serviço" icon="a" onClickButton={() => { setTab(3) }} />
+                            <IconButton darkMode={tab == 0} title="Informações Individuais" image="a" onClickButton={() => { setTab(0) }} />
+                            <IconButton darkMode={tab == 1} title="Alterar Profissionais" image="a" onClickButton={() => { setTab(1) }} />
+                            <IconButton darkMode={tab == 2} title="Tempo de Duração" image="a" onClickButton={() => { setTab(2) }} />
+                            <IconButton darkMode={tab == 3} title="Excluir Serviço" image="a" onClickButton={() => { setTab(3) }} />
                         </div>
                         {tabRender()}
                         <div onClick={async () => {
