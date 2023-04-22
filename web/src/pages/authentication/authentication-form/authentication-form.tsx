@@ -23,6 +23,7 @@ export function AuthenticationForm() {
         email: '',
         number: '',
         photo: '',
+        schedule: {},
         lastOnline: new Date().getTime()
     })
 
@@ -40,6 +41,7 @@ export function AuthenticationForm() {
                 email: user.email,
                 number: user.phoneNumber,
                 photo: user.photoURL,
+                schedule: {},
                 lastOnline: new Date().getTime()
             }
             setUserForm(newUser)
@@ -72,7 +74,7 @@ export function AuthenticationForm() {
                 <>
                     <InputTab user={userForm} setUser={setUserForm} />
                     <SubmitButton
-                        hide={(userForm.name && userForm.number)?false:true}
+                        hide={(userForm.name && userForm.number) ? false : true}
                         title="Concluir"
                         onClickButton={() => {
                             setClient(userForm, userId)
