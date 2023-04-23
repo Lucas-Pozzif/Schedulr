@@ -1,13 +1,13 @@
 
 type tabButtonType = {
-    darkMode?: boolean,
+    selected?: boolean,
     title: string,
     onClickButton: () => void
 }
 
-export function TabButton({ darkMode, title, onClickButton }: tabButtonType) {
+export function TabButton({ selected, title, onClickButton }: tabButtonType) {
     return (
-        <div className={`tab-button ${darkMode ? 'selected' : null}`} onClick={onClickButton}>
+        <div className={`tab-button ${selected ? 'selected' : null}`} onClick={onClickButton}>
             <p className={`title`}>{title} </p>
         </div>
     )

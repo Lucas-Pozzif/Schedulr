@@ -4,8 +4,8 @@ import { serviceType } from "../../../controllers/serviceController"
 import './service-button.css'
 
 type serviceButtonType = {
-    darkmode?: boolean,
-    expandedDarkMode?: [boolean, boolean, boolean, boolean],
+    selected?: boolean,
+    expandedselected?: [boolean, boolean, boolean, boolean],
     allowExpand?: boolean,
     service: serviceType,
     onClickButton: () => void,
@@ -14,8 +14,8 @@ type serviceButtonType = {
 
 export function ServiceButton(
     {
-        darkmode,
-        expandedDarkMode,
+        selected,
+        expandedselected,
         allowExpand = true,
         service,
         onClickButton,
@@ -65,18 +65,18 @@ export function ServiceButton(
 
     return (
         <>
-            <div className={`service-button${darkmode ? '-selected' : ''}`} onClick={onClickButton}>
-                <p className={`title${darkmode ? '-selected' : ''}`}>{title}</p>
-                <p className={`subtitle${darkmode ? '-selected' : ''}`}>{subtitle}</p>
-                <p className={`right-button-side-text${darkmode ? '-selected' : ''}`}>{rightButtonSideText}</p>
-                <div className={`right-button${darkmode ? '-selected' : ''}`} onClick={() => {
+            <div className={`service-button${selected ? '-selected' : ''}`} onClick={onClickButton}>
+                <p className={`title${selected ? '-selected' : ''}`}>{title}</p>
+                <p className={`subtitle${selected ? '-selected' : ''}`}>{subtitle}</p>
+                <p className={`right-button-side-text${selected ? '-selected' : ''}`}>{rightButtonSideText}</p>
+                <div className={`right-button${selected ? '-selected' : ''}`} onClick={() => {
                     if (service.haveStates && allowExpand) {
                         setExpanded(!expanded);
                     }
                 }}>
-                    <p className={`right-button-title${darkmode ? '-selected' : ''}`}>{rightButtonTitle}</p>
+                    <p className={`right-button-title${selected ? '-selected' : ''}`}>{rightButtonTitle}</p>
                 </div>
-                <p className={`right-button-subtitle${darkmode ? '-selected' : ''}`}>{rightButtonSubtitle}</p>
+                <p className={`right-button-subtitle${selected ? '-selected' : ''}`}>{rightButtonSubtitle}</p>
             </div>
             {
                 expanded ?
@@ -86,16 +86,16 @@ export function ServiceButton(
                                 const index = expandedTitle.indexOf(expandedTitleItem)
                                 console.log(index)
                                 return (
-                                    <div className={`expanded-button${expandedDarkMode?.[index] ? '-selected' : ''}`} onClick={() => {
+                                    <div className={`expanded-button${expandedselected?.[index] ? '-selected' : ''}`} onClick={() => {
                                         if (onClickExpanded)
                                             onClickExpanded[index]()
                                     }}>
-                                        <p className={`expanded-title${expandedDarkMode?.[index] ? '-selected' : ''}`}>{expandedTitle[index]}</p>
-                                        <p className={`expanded-right-button-side-text${expandedDarkMode?.[index] ? '-selected' : ''}`}>{expandedRightButtonSideText}</p>
-                                        <div className={`expanded-right-button${expandedDarkMode?.[index] ? '-selected' : ''}`}>
-                                            <p className={`expanded-right-button-title${expandedDarkMode?.[index] ? '-selected' : ''}`}>{expandedRightButtonTitle[index]}</p>
+                                        <p className={`expanded-title${expandedselected?.[index] ? '-selected' : ''}`}>{expandedTitle[index]}</p>
+                                        <p className={`expanded-right-button-side-text${expandedselected?.[index] ? '-selected' : ''}`}>{expandedRightButtonSideText}</p>
+                                        <div className={`expanded-right-button${expandedselected?.[index] ? '-selected' : ''}`}>
+                                            <p className={`expanded-right-button-title${expandedselected?.[index] ? '-selected' : ''}`}>{expandedRightButtonTitle[index]}</p>
                                         </div>
-                                        <p className={`expanded-right-button-subtitle${expandedDarkMode?.[index] ? '-selected' : ''}`}>{expandedRightButtonSubtitle[index]}</p>
+                                        <p className={`expanded-right-button-subtitle${expandedselected?.[index] ? '-selected' : ''}`}>{expandedRightButtonSubtitle[index]}</p>
                                     </div>
                                 )
                             })

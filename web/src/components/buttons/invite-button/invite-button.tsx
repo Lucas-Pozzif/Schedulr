@@ -2,14 +2,14 @@
 import './invite-button.css'
 
 type inviteButtonType = {
-    darkMode?: boolean,
+    selected?: boolean,
     title: string,
     onClickButton: () => void
 }
 
-export function InviteButton({ darkMode, title, onClickButton }: inviteButtonType) {
+export function InviteButton({ selected, title, onClickButton }: inviteButtonType) {
     return (
-        <div className={`invite-button ${darkMode ? 'selected' : null}`} onClick={onClickButton}>
+        <div className={`invite-button ${selected ? 'selected' : null}`} onClick={onClickButton}>
             <p className={`ib-title`}>{title} </p>
         </div>
     )

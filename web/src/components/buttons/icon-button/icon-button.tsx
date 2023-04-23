@@ -1,13 +1,13 @@
 import './icon-button.css'
 
 type iconButtonType = {
-    darkMode?: boolean,
+    selected?: boolean,
     image: string,
     title: string,
     onClickButton: () => void
 }
 
-export function IconButton({ darkMode, image, title, onClickButton }: iconButtonType) {
+export function IconButton({ selected, image, title, onClickButton }: iconButtonType) {
     return (
         <div className="icon-button" onClick={onClickButton}>
             <img className='iconb-image' src={image} />
