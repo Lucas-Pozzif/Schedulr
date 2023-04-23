@@ -1,18 +1,23 @@
 import React, { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { onAuthStateChanged } from "firebase/auth"
+import { auth } from "../../../firebase/firebase"
+
+import { getClient } from "../../../controllers/clientController"
+
 import { DayTab } from "./day-tab/day-tab"
 import { ServiceTab } from "./service-tab/service-tab"
 import { ProfessionalTab } from "./professional-tab/professional-tab"
 import { TimeTab } from "./time-tab/time-tab"
 import { ConfirmationTab } from "./confirmation-tab/confirmation-tab"
-import { Link, useNavigate } from "react-router-dom"
-import StateTab from "../../../components/tabs/state-tab/state-tab"
 import { ConfirmedTab } from "./confirmed-tab/confirmed-tab"
-import { onAuthStateChanged } from "firebase/auth"
-import { auth } from "../../../firebase/firebase"
-import { getClient } from "../../../controllers/clientController"
+import { SubmitButton } from "../../../components/buttons/submit-button/submit-button"
+import { TabHeader } from "../../../components/tab-header/tab-header"
 
+// Importing clientCache from a JSON file
 const clientCache = require('../../../cache/clientCache.json')
 
+// Defining type for a schedule object
 export type scheduleType = {
     clientId: string
     selectedDate: string,
@@ -20,6 +25,7 @@ export type scheduleType = {
     selectedServices: selectedServiceType[]
 }
 
+// Defining type for a selected service object
 export type selectedServiceType = {
     service: number | null,
     state: number,
@@ -27,27 +33,18 @@ export type selectedServiceType = {
     startTime: number | null
 }
 
+// Defining type for a schedule tab object
 export type scheduleTabType = {
     schedule: scheduleType,
     setSchedule: (schedule: scheduleType) => void,
     setTab: (tab: number) => void
 }
 
+
 function ScheduleAdd() {
-    const [userId, setUserId] = useState<string>('error')
-
+    // Using React state hooks to manage state variables
     const navigate = useNavigate();
-    useEffect(() => {
-        onAuthStateChanged(auth, async (user) => {
-            if (!user) return navigate('/login');
-
-            await getClient(user.uid)
-            setUserId(user.uid)
-            if (!clientCache[user.uid]) return navigate('/login');
-
-        });
-    }, [navigate]);
-
+    const [userId, setUserId] = useState<string>('error')
     const [tab, setTab] = useState(0)
     const [scheduleForm, setScheduleForm] = useState<scheduleType>({
         clientId: userId,
@@ -55,68 +52,39 @@ function ScheduleAdd() {
         startedAt: new Date().getTime(),
         selectedServices: []
     })
+
+    // Using an effect hook to handle authentication state change
+    useEffect(() => {
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) return navigate('/login'); // If user is not authenticated, navigate to login page
+            await getClient(user.uid) // Fetch client data using user ID
+            setUserId(user.uid) // Set user ID in state
+            if (!clientCache[user.uid]) return navigate('/login'); // If client data is not available, navigate to login page
+        });
+    }, [navigate]);
+
+    // Checking if scheduleForm's clientId is different from userId and updating scheduleForm if necessary
     if (scheduleForm.clientId !== userId) {
-        setScheduleForm({
-            ...scheduleForm,
-            clientId: userId
-        })
+        setScheduleForm({ ...scheduleForm, clientId: userId })
     }
 
-    function tabRender() {
-        switch (tab) {
-            case 0:
-                return (
-                    <>
-                        <button onClick={() => { setTab(1) }}>Avancar</button>
-                        <DayTab schedule={scheduleForm} setSchedule={setScheduleForm} setTab={setTab} />
-                    </>
-                )
-            case 1:
-                return (
-                    <>
-                        <button onClick={() => { setTab(0) }}>Retornar</button>
-                        <button onClick={() => { setTab(2) }}>Avancar</button>
-                        <ServiceTab schedule={scheduleForm} setSchedule={setScheduleForm} setTab={setTab} />
-                    </>
-                )
-            case 2:
-                return (
-                    <>
-                        <button onClick={() => { setTab(1) }}>Retornar</button>
-                        <button onClick={() => { setTab(3) }}>Avancar</button>
-                        <ProfessionalTab schedule={scheduleForm} setSchedule={setScheduleForm} setTab={setTab} />
-                    </>
-                )
-            case 3:
-                return (
-                    <>
-                        <button onClick={() => { setTab(2) }}>Retornar</button>
-                        <button onClick={() => { setTab(4) }}>Avancar</button>
-                        <TimeTab schedule={scheduleForm} setSchedule={setScheduleForm} setTab={setTab} />
-                    </>
-                )
-            case 4:
-                return (
-                    <>
-                        <ConfirmationTab schedule={scheduleForm} setSchedule={setScheduleForm} setTab={setTab} />
-                    </>
-                )
-            case 5:
-                return (
-                    <>
-                        <ConfirmedTab schedule={scheduleForm} setSchedule={setScheduleForm} setTab={setTab} />
-                    </>
-                )
-            default:
-                break;
-        }
-    }
+    // Array of tabs to be rendered
+    const tabs = [
+        <DayTab schedule={scheduleForm} setSchedule={setScheduleForm} setTab={setTab} />,
+        <ServiceTab schedule={scheduleForm} setSchedule={setScheduleForm} setTab={setTab} />,
+        <ProfessionalTab schedule={scheduleForm} setSchedule={setScheduleForm} setTab={setTab} />,
+        <TimeTab schedule={scheduleForm} setSchedule={setScheduleForm} setTab={setTab} />,
+        <ConfirmationTab schedule={scheduleForm} setSchedule={setScheduleForm} setTab={setTab} />,
+        <ConfirmedTab schedule={scheduleForm} setSchedule={setScheduleForm} setTab={setTab} />
+    ]
 
+    // Returning the currently active tab
     return (
         <>
-            {tabRender()}
+            <TabHeader tab={tab} setTab={setTab} scheduleForm={scheduleForm} />
+            {tabs[tab]}
         </>
-
     )
 }
+
 export default ScheduleAdd
