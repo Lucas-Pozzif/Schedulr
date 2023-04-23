@@ -28,7 +28,7 @@ function ProfessionalList() {
                         const professional = professionalCache[professionalId]
                         return (
                             <ProfessionalButton
-                                darkmode={false}
+                                selected={false}
                                 professional={professional}
                                 rightButtonTitle="Ver serviços"
                                 onClickButton={() => { }}

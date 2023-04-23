@@ -52,7 +52,7 @@ export function TimeTab({ schedule, setSchedule }: scheduleTabType) {
                             <>
                                 <TabButton
                                     key={serviceId}
-                                    darkMode={selectedService.service == serviceId}
+                                    selected={selectedService.service == serviceId}
                                     title={serviceCache[serviceId].name}
                                     onClickButton={async () => {
                                         await getSchedule(professionalId!.toString())
@@ -118,7 +118,7 @@ export function TimeTab({ schedule, setSchedule }: scheduleTabType) {
                             return (
                                 <LargeButton
                                     key={hour}
-                                    darkMode={selectedService.startTime == hourIndex}
+                                    selected={selectedService.startTime == hourIndex}
                                     title={hour}
                                     onClickButton={
                                         () => {

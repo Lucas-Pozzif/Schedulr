@@ -31,7 +31,7 @@ function TimeListRender({ service, setService, state }: timeListRenderType) {
                     const index = hours.indexOf(hour)
                     return (
                         <LargeButton
-                            darkMode={durationList[index]}
+                            selected={durationList[index]}
                             title={hour}
                             onClickButton={
                                 () => {

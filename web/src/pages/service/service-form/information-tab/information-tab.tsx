@@ -74,8 +74,8 @@ export function InformationTab({ service, setService }: ServiceTabType) {
             />
             <StateInputsRender service={service} setService={setService} state={state} />
             <div>
-                <TabButton darkMode={service.haveStates} title="Diferentes Tamanhos" onClickButton={() => updateService(service, setService, 'haveStates', !service.haveStates)} />
-                <TabButton darkMode={service.inicial} title="A partir de" onClickButton={() => updateService(service, setService, 'inicial', !service.inicial)} />
+                <TabButton selected={service.haveStates} title="Diferentes Tamanhos" onClickButton={() => updateService(service, setService, 'haveStates', !service.haveStates)} />
+                <TabButton selected={service.inicial} title="A partir de" onClickButton={() => updateService(service, setService, 'inicial', !service.inicial)} />
             </div>
         </div>
     )

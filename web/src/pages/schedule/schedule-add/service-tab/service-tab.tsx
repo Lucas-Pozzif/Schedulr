@@ -34,8 +34,8 @@ export function ServiceTab({ schedule, setSchedule }: scheduleTabType) {
                         }
                         return (
                             <ServiceButton
-                                darkmode={filteredService.length > 0}
-                                expandedDarkMode={[
+                                selected={filteredService.length > 0}
+                                expandedselected={[
                                     filteredService[0]?.state === 0,
                                     filteredService[0]?.state === 1,
                                     filteredService[0]?.state === 2,

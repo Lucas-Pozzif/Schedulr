@@ -36,7 +36,7 @@ export function ProfessionalTab({ schedule, setSchedule }: scheduleTabType) {
                             <>
                                 <TabButton
                                     key={service}
-                                    darkMode={service == serviceId}
+                                    selected={service == serviceId}
                                     title={serviceCache[service].name}
                                     onClickButton={() => {
                                         setServiceId(service)
@@ -58,7 +58,7 @@ export function ProfessionalTab({ schedule, setSchedule }: scheduleTabType) {
 
                         return (
                             <LargeButton
-                                darkMode={parseInt(professionalId) === selectedService?.professional}
+                                selected={parseInt(professionalId) === selectedService?.professional}
                                 title={professionalCache[professionalId].name}
                                 onClickButton={() => {
                                     if (!selectedService) return

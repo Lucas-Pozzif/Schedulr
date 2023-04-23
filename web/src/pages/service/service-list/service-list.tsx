@@ -28,7 +28,7 @@ function ServiceList() {
                         const service = serviceCache[serviceId]
                         return (
                             <ServiceButton
-                                darkmode={false}
+                                selected={false}
                                 service={service}
                                 onClickButton={() => { console.log('clickedButton') }}
                                 onClickExpanded={[

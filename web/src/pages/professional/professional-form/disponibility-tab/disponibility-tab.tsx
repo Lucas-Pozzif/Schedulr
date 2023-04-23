@@ -55,7 +55,7 @@ function TimeListRender({ professional, setProfessional, weekDay }: timeListRend
                     const index = hours.indexOf(hour)
                     return (
                         <LargeButton
-                            darkMode={disponibilityList[index]}
+                            selected={disponibilityList[index]}
                             title={hour}
                             onClickButton={
                                 () => {

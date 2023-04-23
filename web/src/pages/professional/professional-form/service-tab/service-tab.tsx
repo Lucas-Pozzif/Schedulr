@@ -26,7 +26,7 @@ export function ServiceTab({ professional, setProfessional }: professionalTabTyp
                         const service = serviceCache[serviceId]
                         return (
                             <ServiceButton
-                                darkmode={professional.services.includes(serviceId)}
+                                selected={professional.services.includes(serviceId)}
                                 allowExpand={false}
                                 service={service}
                                 onClickButton={() => {
