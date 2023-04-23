@@ -1,0 +1,24 @@
+.tab-header {
+    display: flex;
+    gap: 15px;
+}
+
+.th-title-box {
+    width: 100%;
+}
+
+.th-title {
+    font-size: 22px;
+    color: var(--accent-light);
+}
+
+.th-bottom {
+    display: flex;
+    justify-content: space-between;
+}
+
+.th-subtitle {
+    font-size: 14px;
+    color: var(--secondary);
+
+}
