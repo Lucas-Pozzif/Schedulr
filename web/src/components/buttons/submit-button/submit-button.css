@@ -1,5 +1,4 @@
 .submit-button {
-    position: absolute;
     width: calc(100% - 40px);
     height: 40px;
     display: flex;
@@ -12,8 +11,11 @@
     left: 20px;
     right: 20px;
     transition: 300ms;
+    position: sticky;
+    box-shadow: 0px 3px 4px var(--accent-dark);
 }
-.button-hide{
+
+.button-hide {
     bottom: -40px;
     opacity: 0;
 
