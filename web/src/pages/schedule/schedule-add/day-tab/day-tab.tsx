@@ -1,3 +1,4 @@
+import { DateButton } from "../../../../components/buttons/date-button/date-button";
 import { LargeButton } from "../../../../components/buttons/large-button/large-button";
 import { scheduleTabType } from "../schedule-add";
 
@@ -11,25 +12,22 @@ export function DayTab({ schedule, setSchedule }: scheduleTabType) {
     }
 
     return (
-        <>
-            {dates.map((date) => {
-                const dateValue = date.toLocaleDateString('en-US')
-                const displayDate = date.toLocaleDateString("pt-BR", { month: "long", day: "numeric" })
-                return (
-                    <LargeButton
-                        darkMode={schedule.selectedDate == dateValue}
-                        title={displayDate}
-                        onClickButton={
-                            () => {
-                                setSchedule({
-                                    ...schedule,
-                                    selectedDate: dateValue
-                                });
-                            }
-                        }
-                    />
-                )
-            })}
-        </>
+        <div className="day-tab">
+            
+            <div className="dt-day-list">
+                {
+                    dates.map((date) => {
+                        const dateValue = date.toLocaleDateString('en-US')
+                        return (
+                            <DateButton
+                                date={date}
+                                onClickButton={() => setSchedule({ ...schedule, selectedDate: dateValue })}
+                            />
+                        )
+                    })
+                }
+
+            </div>
+        </div>
     );
 }
