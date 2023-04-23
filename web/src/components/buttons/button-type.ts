@@ -1,6 +1,7 @@
 type buttonType = {
-    darkMode?: boolean,
-    hide?: boolean
+    selected?: boolean,
+    disabled?: boolean,
+    hide?: boolean,
     image: string,
     title: string,
     onClickButton: () => void
