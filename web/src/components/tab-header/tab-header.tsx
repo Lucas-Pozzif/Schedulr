@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom"
 import { scheduleType } from "../../pages/schedule/schedule-add/schedule-add"
 import { InviteButton } from "../buttons/invite-button/invite-button"
 import { ReturnButton } from "../buttons/return-button/return-button"
@@ -21,6 +22,7 @@ function scheduleFormValidator(tab: number, scheduleForm: scheduleType): boolean
 }
 
 export function TabHeader({ tab, setTab, scheduleForm }: tabHeaderType) {
+    const navigate = useNavigate()
     const titles = [
         "Escolha o melhor dia para você!",
         "Escolha os serviços que interessam.",
@@ -39,7 +41,7 @@ export function TabHeader({ tab, setTab, scheduleForm }: tabHeaderType) {
 
     return (
         <div className="tab-header">
-            <ReturnButton onClickButton={() => { return tab <= 0 ? setTab(tab - 1) : setTab(0) }} />
+            <ReturnButton onClickButton={() => { return tab < 0 ? setTab(tab - 1) : navigate(-1) }} />
             <div className="th-title-box">
                 <p className="th-title">{titles[tab]}</p>
                 <div className="th-bottom">
