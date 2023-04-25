@@ -9,7 +9,7 @@ type largeButtonType = {
 export function LargeButton({ selected, title, onClickButton }: largeButtonType) {
 
     return (
-        <div className={`large-button ${selected ? 'dark-mode' : ''}`} onClick={onClickButton}>
+        <div className={`large-button button ${selected ? 'selected' : ''}`} onClick={onClickButton}>
             <p className="text">{title}</p>
         </div>
     )
