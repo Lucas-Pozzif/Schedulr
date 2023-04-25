@@ -1,21 +1,65 @@
 import { useState, useEffect } from 'react'
 import { getAllProfessionals } from '../../../../controllers/professionalController';
-import { scheduleTabType } from '../schedule-add';
+import { scheduleTabType, scheduleType, selectedServiceType } from '../schedule-add';
 import { LargeButton } from '../../../../components/buttons/large-button/large-button';
 import { TabButton } from '../../../../components/buttons/tab-button/tab-button';
+
+import './professional-tab.css'
+import { ProfessionalButton } from '../../../../components/buttons/professional-button/professional-button';
+import { getAllOccupations } from '../../../../controllers/occupationController';
 
 const professionalCache = require('../../../../cache/professionalCache.json')
 const serviceCache = require('../../../../cache/serviceCache.json')
 
-export function ProfessionalTab({ schedule, setSchedule }: scheduleTabType) {
-    const selectedServices = schedule.selectedServices
+type serviceListType = {
+    services: selectedServiceType[],
+    selectedService: selectedServiceType,
+    setSelectedService: (service: selectedServiceType) => void
+    setSelectedProfessional: (professionalId: string | null) => void
+}
+type professionalListType = {
+    selectedProfessional: string | null
+    setSelectedProfessional: (professionalId: string | null) => void,
+    selectedServices: selectedServiceType[],
+    selectedService: selectedServiceType,
+    schedule: scheduleType,
+    setSchedule: (schedule: scheduleType) => void
+}
 
-    const [loading, setLoading] = useState(true);
+function ServiceList({ services, selectedService, setSelectedService, setSelectedProfessional }: serviceListType) {
+    return (
+        <div className='pt-service-list'>
+            {
+                services.map(service => {
+                    const serviceId = service.service
+                    const professionalId = service.professional
+
+                    const isSelected = () => professionalId !== null ? 'selected' : ''
+
+                    if (serviceId === null || selectedService.service == serviceId) return
+                    return (
+                        <p
+                            className={`pt-service-item button button-text ${isSelected()}`}
+                            onClick={() => {
+                                setSelectedService(service)
+                                setSelectedProfessional(professionalId == null ? null : professionalId.toString())
+
+                            }}
+                        >
+                            {serviceCache[serviceId].name}
+                        </p>
+                    )
+                })
+            }
+        </div>
+    )
+}
+function ProfessionalList({ selectedProfessional, setSelectedProfessional, selectedServices, selectedService, schedule, setSchedule }: professionalListType) {
     const [professionalIds, setProfessionalIds] = useState<string[] | null>(null)
-    const [serviceId, setServiceId] = useState<number>(0)
-    const [needsProfessional, setNeedsProfessional] = useState(true)
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        getAllOccupations()
         getAllProfessionals().then(() => {
             setProfessionalIds(Object.keys(professionalCache));
             setLoading(false);
@@ -23,50 +67,24 @@ export function ProfessionalTab({ schedule, setSchedule }: scheduleTabType) {
     }, []);
 
     return (
-        <>
-            <p>{needsProfessional ? 'needs' : 'freetogo'}</p>
+        <div className='pt-professional-list'>
             {
-                selectedServices.map((selectedService) => {
-                    const service = selectedService.service
-                    const professional = selectedService.professional
-                    if (!professional && !needsProfessional) setNeedsProfessional(true)
-
-                    if (service !== null) {
-                        return (
-                            <>
-                                <TabButton
-                                    key={service}
-                                    selected={service == serviceId}
-                                    title={serviceCache[service].name}
-                                    onClickButton={() => {
-                                        setServiceId(service)
-                                    }}
-                                />
-                            </>
-                        )
-                    }
-                })
-            }
-            <div>{
                 loading ?
                     <p>loading...</p> :
                     professionalIds!.map((professionalId: string) => {
-                        let newselectedServices = [...schedule.selectedServices]
-                        let selectedService = selectedServices.filter((selectedService) => selectedService.service == serviceId)[0]
-
-                        const index = selectedServices.indexOf(selectedService)
-
+                        const isSelected = () => professionalId === selectedProfessional
                         return (
-                            <LargeButton
-                                selected={parseInt(professionalId) === selectedService?.professional}
-                                title={professionalCache[professionalId].name}
+                            <ProfessionalButton
+                                selected={isSelected()}
+                                professional={professionalCache[professionalId]}
+                                rightButtonTitle='Continuar'
                                 onClickButton={() => {
-                                    if (!selectedService) return
+                                    setSelectedProfessional(professionalId)
+                                    let newselectedServices = [...schedule.selectedServices]
+                                    const index = selectedServices.indexOf(selectedService)
 
                                     selectedService.professional = parseInt(professionalId)
                                     newselectedServices[index] = selectedService
-
-                                    setNeedsProfessional(false)
                                     setSchedule({
                                         ...schedule,
                                         selectedServices: newselectedServices
@@ -76,7 +94,33 @@ export function ProfessionalTab({ schedule, setSchedule }: scheduleTabType) {
                         )
                     })
             }
-            </div>
-        </>
+        </div>)
+}
+
+export function ProfessionalTab({ schedule, setSchedule, setTab }: scheduleTabType) {
+    const selectedServices = schedule.selectedServices
+
+    const [selectedService, setSelectedService] = useState(selectedServices[0])
+    const [selectedProfessional, setSelectedProfessional] = useState<string | null>(null)
+
+    //const [completed, setCompleted] = useState(true)
+
+    return (
+        <div className='professional-tab'>
+            <ServiceList
+                services={selectedServices}
+                selectedService={selectedService}
+                setSelectedService={setSelectedService}
+                setSelectedProfessional={setSelectedProfessional}
+            />
+            <ProfessionalList
+                selectedProfessional={selectedProfessional}
+                setSelectedProfessional={setSelectedProfessional}
+                selectedServices={selectedServices}
+                selectedService={selectedService}
+                schedule={schedule}
+                setSchedule={setSchedule}
+            />
+        </div>
     )
 }
