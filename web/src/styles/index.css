@@ -9,3 +9,79 @@ html {
     background-color: var(--primary);
     min-height: 100vh;
 }
+
+/* Button */
+
+.button {
+    box-sizing: border-box;
+    background-color: var(--secondary);
+    border-radius: 5px;
+    padding: 5px;
+    display: flex;
+}
+
+.button.selected {
+    background-color: var(--accent-dark);
+}
+
+.button.deactivated {
+    background-color: var(--accent-dark);
+}
+
+/* Button-text */
+.button-text {
+    color: var(--accent-dark);
+}
+
+
+.button-text.selected {
+    color: var(--secondary);
+}
+
+
+.button-text.deactivated {
+    color: var(--secondary);
+}
+
+/* Text-related */
+
+.title {
+    font-size: 22px;
+    color: var(--accent-light);
+}
+
+.subtitle {
+    font-size: 14px;
+    color: var(--secondary);
+}
+
+/* Input-related */
+
+.input {
+    width: 100%;
+    height: 40px;
+    border-radius: 5px;
+    border: none;
+    padding-left: 10px;
+    background-color: var(--secondary);
+    color: var(--primary);
+    font-size: 18px;
+
+}
+
+::placeholder {
+    /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: var(--accent-dark);
+    opacity: 0.5;
+    /* Firefox */
+}
+
+:-ms-input-placeholder {
+    /* Internet Explorer 10-11 */
+    color: var(--accent-dark);
+}
+
+::-ms-input-placeholder {
+    /* Microsoft Edge */
+    color: var(--accent-dark);
+}
