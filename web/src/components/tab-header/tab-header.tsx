@@ -41,7 +41,7 @@ export function TabHeader({ tab, setTab, scheduleForm }: tabHeaderType) {
 
     return (
         <div className="tab-header">
-            <ReturnButton onClickButton={() => { return tab < 0 ? setTab(tab - 1) : navigate(-1) }} />
+            <ReturnButton onClickButton={() => { return tab <= 0 ? navigate(-1) : setTab(tab - 1) }} />
             <div className="th-title-box">
                 <p className="th-title">{titles[tab]}</p>
                 <div className="th-bottom">
