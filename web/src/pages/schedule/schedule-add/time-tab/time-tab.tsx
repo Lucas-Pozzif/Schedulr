@@ -1,148 +1,156 @@
-import { useState, useEffect } from 'react'
-import { LargeButton } from "../../../../components/buttons/large-button/large-button";
-import { TabButton } from "../../../../components/buttons/tab-button/tab-button";
-import { scheduleTabType, selectedServiceType } from "../schedule-add";
-import { getSchedule, scheduleDayType } from '../../../../controllers/scheduleController';
+import { useState } from 'react'
+import { scheduleTabType, scheduleType, selectedServiceType } from "../schedule-add";
+import { getSchedule } from '../../../../controllers/scheduleController';
+import { TimeButton } from '../../../../components/buttons/time-button/time-button';
 
 const serviceCache = require('../../../../cache/serviceCache.json')
 const scheduleCache = require('../../../../cache/scheduleCache.json')
 
+type serviceListType = {
+    services: selectedServiceType[],
+    selectedService: selectedServiceType,
+    setSelectedService: (service: selectedServiceType) => void
+}
 
-export function TimeTab({ schedule, setSchedule }: scheduleTabType) {
-    let selectedServices = [...schedule.selectedServices]
-    let selectedService: selectedServiceType = selectedServices[0];
+type timeListType = {
+    services: selectedServiceType[],
+    selectedService: selectedServiceType,
+    setSelectedService: (selectedService: selectedServiceType) => void
+    schedule: scheduleType,
+    setSchedule: (schedule: scheduleType) => void
+}
 
-    const [loading, setLoading] = useState(true);
-    const [needsHour, setNeedsHour] = useState(true);
-    const [professionalIds, setProfessionalIds] = useState<string[] | null>(null)
+function ServiceList({ services, selectedService, setSelectedService }: serviceListType) {
+    return (
+        <div className='pt-service-list'>
+            {
+                services.map(service => {
+                    const serviceId = service.service
+                    const professionalId = service.professional
 
-    const clientId = schedule.clientId;
-    const date: string = schedule.selectedDate;
+                    const isSelected = () => professionalId !== null ? 'selected' : ''
 
-    const emptyScheduleDay: scheduleDayType = {
-        takenAt: null,
-        state: null,
-        client: null,
-        service: null
-    }
+                    if (serviceId === null || selectedService.service == serviceId) return
+                    return (
+                        <p
+                            className={`pt-service-item button button-text ${isSelected()}`}
+                            onClick={() => {
+                                setSelectedService(service)
 
-    selectedServices.map(async (selectedService: selectedServiceType) => {
+                            }}
+                        >
+                            {serviceCache[serviceId].name}
+                        </p>
+                    )
+                })
+            }
+        </div>
+    )
+}
+
+function TimeList({ services, selectedService, setSelectedService, schedule, setSchedule }: timeListType) {
+    const [loading, setLoading] = useState(false);
+
+    services.map(async (selectedService: selectedServiceType) => {
         const professionalId = selectedService.professional
 
         if (professionalId == null) return
         await getSchedule(professionalId.toString())
         setLoading(false);
     });
-
-
-    function ServiceListRender() {
-        return (
-            <>
-                {
-                    selectedServices.map((selectedService: selectedServiceType) => {
-                        const serviceId = selectedService.service
-                        const startTime = selectedService.startTime
-                        const professionalId = selectedService.professional
-                        const selectedServiceIndex = selectedServices.indexOf(selectedService)
-
-                        if (serviceId == null || professionalId == null) return
-                        if (!startTime && !needsHour) setNeedsHour(true)
-
-                        return (
-                            <>
-                                <TabButton
-                                    key={serviceId}
-                                    selected={selectedService.service == serviceId}
-                                    title={serviceCache[serviceId].name}
-                                    onClickButton={async () => {
-                                        await getSchedule(professionalId!.toString())
-                                        selectedService = selectedServices[selectedServiceIndex]
-                                    }}
-                                />
-                            </>
-                        )
-
-                    })
-                }
-            </>
-        )
-    }
-    function HourListRender() {
-        const hours: string[] = [];
-        const selectedServiceIndex = selectedServices.indexOf(selectedService)
-
-        for (let hour = 0; hour < 24; hour++) {
-            hours.push(`${hour}:00`);
-            hours.push(`${hour}:10`);
-            hours.push(`${hour}:20`);
-            hours.push(`${hour}:30`);
-            hours.push(`${hour}:40`);
-            hours.push(`${hour}:50`);
-        }
-        return (
-            <>
-                {
-                    loading ?
-                        <p>loading</p> :
-                        hours.map((hour) => {
-                            const hourIndex = hours.indexOf(hour);
-
-                            const professionalId = selectedService.professional
-                            const serviceId = selectedService.service
-                            const startTime = selectedService.startTime
-                            const selectedState = selectedService.state
-
-                            if (professionalId == null || serviceId == null) return
-                            const profSchedule = scheduleCache[professionalId]
-
-                            let selectedSchedule: scheduleDayType[]
-                            profSchedule?.[date] ?
-                                selectedSchedule = profSchedule[date] :
-                                selectedSchedule = Array(144).fill(emptyScheduleDay)
-                            const duration = serviceCache[serviceId].haveStates ?
-                                serviceCache[serviceId].stateDurations[selectedState] :
-                                serviceCache[serviceId].duration
-                            const lastTrueIndex = duration.lastIndexOf(true);
-
-                            const trueDuration = duration.slice(0, lastTrueIndex + 1);
-
-                            let valid = true
-
-                            for (let i = 0; i < trueDuration.length; i++) {
-
-                                if (selectedSchedule[hourIndex + i]?.takenAt !== null) valid = false
-                            }
-                            if (!valid) return
-
-
-                            return (
-                                <LargeButton
-                                    key={hour}
-                                    selected={selectedService.startTime == hourIndex}
-                                    title={hour}
-                                    onClickButton={
-                                        () => {
-                                            if (!selectedService) return
-                                            selectedService.startTime = hourIndex
-                                            selectedServices[selectedServiceIndex] = selectedService
-                                            setSchedule({
-                                                ...schedule,
-                                                selectedServices: selectedServices
-                                            })
-                                        }
-                                    }
-                                />
-                            )
-                        })
-                }
-            </>
-        )
+    const hours: string[] = [];
+    const selectedServiceIndex = services.indexOf(selectedService)
+    for (let hour = 0; hour < 24; hour++) {
+        hours.push(`${hour}:00`);
+        hours.push(`${hour}:10`);
+        hours.push(`${hour}:20`);
+        hours.push(`${hour}:30`);
+        hours.push(`${hour}:40`);
+        hours.push(`${hour}:50`);
     }
 
     return (
+        <div>
+            {
+                loading ?
+                    <p>loading</p> :
+                    hours.map((hour) => {
+                        const hourIndex = hours.indexOf(hour);
+
+                        const isValid = () => {
+                            const professionalId = selectedService.professional
+                            const serviceId = selectedService.service
+                            const selectedState = selectedService.state
+                            const date = schedule.selectedDate;
+
+                            const emptyScheduleDay = {
+                                takenAt: null,
+                                state: null,
+                                client: null,
+                                service: null
+                            }
+
+                            if (professionalId === null || serviceId === null) return false
+                            const profSchedule = scheduleCache[professionalId]
+                            const selectedDate = profSchedule?.[date] ?
+                                profSchedule[date] :
+                                Array(144).fill(emptyScheduleDay)
+
+                            //if the service have states, then it will use the state time, it will use the normal duration otherwise
+                            const duration = serviceCache[serviceId].haveStates ?
+                                serviceCache[serviceId].stateDurations[selectedState] :
+                                serviceCache[serviceId].duration
+                            const reducedDuration = duration.slice(0, duration.lastIndexOf(true) + 1);
+
+
+                            for (let i = 0; i < reducedDuration.length; i++) {
+                                if (selectedDate[hourIndex + i]?.takenAt !== null) return false
+                            }
+                            return true
+                        }
+
+                        return isValid() ?
+                            <TimeButton
+                                selected={selectedService.startTime == hourIndex}
+                                time={hour}
+                                onClickButton={() => {
+                                    setSelectedService({
+                                        ...selectedService,
+                                        startTime: hourIndex
+                                    })
+                                    services[selectedServiceIndex] = selectedService
+                                    setSchedule({
+                                        ...schedule,
+                                        selectedServices: services
+                                    })
+
+                                }}
+                            /> :
+                            null
+                    })
+            }
+        </div>
+    )
+}
+
+export function TimeTab({ schedule, setSchedule }: scheduleTabType) {
+    const selectedServices = schedule.selectedServices;
+    const [selectedService, setSelectedService] = useState(selectedServices[0]);
+
+    return (
         <>
-            <ServiceListRender />
-            <HourListRender />
+            <ServiceList
+                services={selectedServices}
+                selectedService={selectedService}
+                setSelectedService={setSelectedService}
+            />
+            <TimeList
+                services={selectedServices}
+                selectedService={selectedService}
+                setSelectedService={setSelectedService}
+                schedule={schedule}
+                setSchedule={setSchedule}
+            />
         </>
     )
 }
