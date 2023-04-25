@@ -1,111 +1,76 @@
 .service-button {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  .service-button-selected {
-    background-color: #ccc;
-  }
-  
-  .service-button p {
-    margin: 0;
-    font-size: 16px;
-  }
-  
-  .service-button .title {
-    font-weight: bold;
-  }
-  
-  .service-button .right-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #007bff;
-    color: #fff;
-    padding: 6px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
-  }
-  
-  .service-button .right-button:hover {
-    background-color: #0069d9;
-  }
-  
-  .service-button .right-button-title {
-    font-weight: bold;
-  }
-  
-  .service-button .right-button-side-text {
-    font-size: 14px;
-    margin-right: 6px;
-  }
-  
-  .service-button .right-button-subtitle {
-    font-size: 14px;
-    margin-top: 6px;
-  }
-  
-  .expansion {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    margin-top: 12px;
-  }
-  
-  .expanded-button {
-    flex-basis: calc(50% - 12px);
-    margin-bottom: 12px;
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
-  }
-  
-  .expanded-button-selected {
-    background-color: #ccc;
-  }
-  
-  .expanded-button p {
-    margin: 0;
-    font-size: 16px;
-  }
-  
-  .expanded-button .expanded-title {
-    font-weight: bold;
-  }
-  
-  .expanded-button .expanded-right-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #007bff;
-    color: #fff;
-    padding: 6px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
-  }
-  
-  .expanded-button .expanded-right-button:hover {
-    background-color: #0069d9;
-  }
-  
-  .expanded-button .expanded-right-button-title {
-    font-weight: bold;
-  }
-  
-  .expanded-button .expanded-right-button-side-text {
-    font-size: 14px;
-    margin-right: 6px;
-  }
-  
-  .expanded-button .expanded-right-button-subtitle {
-    font-size: 14px;
-    margin-top: 6px;
-  }
+  justify-content: space-between;
+  height: 60px;
+  align-items: center;
+  padding-left: 10px !important;
+}
+
+.sb-title-block {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: start;
+}
+
+.sb-title {
+  font-size: 24px;
+}
+
+.sb-subtitle {
+  font-size: 12px;
+  padding: 0px !important;
+  padding-inline: 10px !important;
+  border-radius: 10px !important;
+  align-items: center;
+
+}
+
+.sb-right-button-block {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+}
+
+.sb-right-button {
+  display: flex;
+  gap: 5px;
+  align-items: end;
+}
+
+.sb-right-button-side-text {
+  font-size: 10px;
+}
+
+.sb-right-button-title {
+  font-size: 12px;
+  padding: 1px !important;
+  padding-inline: 12px !important;
+  align-items: center;
+  font-size: 15px;
+}
+
+.sb-right-button-subtitle {
+  font-size: 10px;
+}
+
+.sb-expansion {
+  flex-direction: column;
+  margin-top: 5px;
+  padding: 0 !important;
+}
+
+.sb-expanded-button {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 60px;
+  align-items: center;
+  padding-left: 10px !important;
+  padding: 5px;
+}
+
+.sb-expanded-button.selected {
+  background-color: var(--accent-dark);
+  border-radius: 5px;
+}

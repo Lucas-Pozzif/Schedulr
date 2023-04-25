@@ -2,6 +2,7 @@ import { useState } from "react";
 import { serviceType } from "../../../controllers/serviceController"
 
 import './service-button.css'
+import { isSelected } from "../../../functions/is-selected/is-selected";
 
 type serviceButtonType = {
     selected?: boolean,
@@ -14,7 +15,7 @@ type serviceButtonType = {
 
 export function ServiceButton(
     {
-        selected,
+        selected = false,
         expandedselected,
         allowExpand = true,
         service,
@@ -25,77 +26,92 @@ export function ServiceButton(
     const [expanded, setExpanded] = useState(false)
 
     const duration = service.duration
-    const lastTrueIndex = duration.lastIndexOf(true);
-    const trueDuration = duration.slice(0, lastTrueIndex + 1);
-
     const stateDurationList = service.stateDurations
-    const stateTrueDurationArray = []
-
-    for (let i = 0; i < 4; i++) {
-        const stateDuration = stateDurationList[i as keyof typeof service.stateDurations]
-        const lastTrueIndex = stateDuration.lastIndexOf(true);
-        stateTrueDurationArray.push(stateDuration.slice(0, lastTrueIndex + 1));
-    }
-
     const title = service.name
     const subtitle = service.name
-
-    const rightButtonTitle = service.haveStates ?
-        allowExpand ?
-            expanded ?
-                'Ocultar' :
-                'Expandir' :
-            'Inexpansível' :
-        service.value
-    const rightButtonSubtitle = service.haveStates ?
-        null :
-        `${10 * (trueDuration.length)} min`
-    const rightButtonSideText = service.inicial ?
-        service.haveStates ?
-            null :
-            'A partir de' :
-        null
-
+    const rightButtonTitle = isExpansible()
+    const rightButtonSubtitle = durationCalc()
+    const rightButtonSideText = inicialText()
     const expandedTitle = [...service.stateNames]
     const expandedRightButtonTitle = [...service.stateValues]
-    const expandedRightButtonSubtitle = stateTrueDurationArray.map((stateTrueDuration) => {
-        return (`${10 * (stateTrueDuration.length)} min`)
-    })
-    const expandedRightButtonSideText = service.inicial ? 'A partir de' : null
+    const expandedRightButtonSideText = inicialText(true)
+    const expandedRightButtonSubtitle = durationCalc(true)
+
+    function isExpansible() {
+        return service.haveStates ?
+            allowExpand ?
+                expanded ?
+                    'Ocultar' :
+                    'Expandir' :
+                'Inexpansível' :
+            `R$ ${service.value}`
+
+    }
+    function durationCalc(expanded: boolean = false) {
+        const lastTrueIndex = duration.lastIndexOf(true);
+        const trueDuration = duration.slice(0, lastTrueIndex + 1);
+        const stateTrueDurationArray = []
+
+        for (let i = 0; i < 4; i++) {
+            const stateDuration = stateDurationList[i as keyof typeof service.stateDurations]
+            const lastTrueIndex = stateDuration.lastIndexOf(true);
+            stateTrueDurationArray.push(stateDuration.slice(0, lastTrueIndex + 1));
+        }
+
+        return expanded ?
+            stateTrueDurationArray.map((stateTrueDuration) => {
+                return (`${10 * (stateTrueDuration.length)} min`)
+            }) :
+            service.haveStates ?
+                null :
+                `${10 * (trueDuration.length)} min`
+
+    }
+    function inicialText(expanded: boolean = false) {
+        return service.inicial ?
+            service.haveStates && !expanded ?
+                null :
+                'A partir de' :
+            null
+    }
+    function clickHandler() {
+        if (service.haveStates && allowExpand) {
+            setExpanded(!expanded);
+        }
+    }
 
     return (
-        <>
-            <div className={`service-button${selected ? '-selected' : ''}`} onClick={onClickButton}>
-                <p className={`title${selected ? '-selected' : ''}`}>{title}</p>
-                <p className={`subtitle${selected ? '-selected' : ''}`}>{subtitle}</p>
-                <p className={`right-button-side-text${selected ? '-selected' : ''}`}>{rightButtonSideText}</p>
-                <div className={`right-button${selected ? '-selected' : ''}`} onClick={() => {
-                    if (service.haveStates && allowExpand) {
-                        setExpanded(!expanded);
-                    }
-                }}>
-                    <p className={`right-button-title${selected ? '-selected' : ''}`}>{rightButtonTitle}</p>
+        <div>
+            <div className={`service-button button ${isSelected(selected)}`} onClick={onClickButton}>
+                <div className={`sb-title-block`}>
+                    <p className={`sb-title button-text ${isSelected(selected)}`}>{title}</p>
+                    <p className={`sb-subtitle button button-text ${isSelected(!selected)}`}>{subtitle}</p>
                 </div>
-                <p className={`right-button-subtitle${selected ? '-selected' : ''}`}>{rightButtonSubtitle}</p>
-            </div>
+                <div className="sb-right-button-block">
+                    <div className="sb-right-button" >
+                        <p className={`sb-right-button-side-text button-text ${isSelected(selected)}`}>{rightButtonSideText}</p>
+                        <p className={`sb-right-button-title button button-text ${isSelected(!selected)}`} onClick={clickHandler}>{rightButtonTitle}</p>
+                    </div>
+                    <p className={`sb-right-button-subtitle ${isSelected(selected)}`}>{rightButtonSubtitle}</p>
+                </div>
+            </div >
             {
                 expanded ?
-                    <div className={`expansion`}>
+                    <div className={`sb-expansion button`}>
                         {
                             expandedTitle.map((expandedTitleItem) => {
                                 const index = expandedTitle.indexOf(expandedTitleItem)
-                                console.log(index)
+
                                 return (
-                                    <div className={`expanded-button${expandedselected?.[index] ? '-selected' : ''}`} onClick={() => {
-                                        if (onClickExpanded)
-                                            onClickExpanded[index]()
-                                    }}>
-                                        <p className={`expanded-title${expandedselected?.[index] ? '-selected' : ''}`}>{expandedTitle[index]}</p>
-                                        <p className={`expanded-right-button-side-text${expandedselected?.[index] ? '-selected' : ''}`}>{expandedRightButtonSideText}</p>
-                                        <div className={`expanded-right-button${expandedselected?.[index] ? '-selected' : ''}`}>
-                                            <p className={`expanded-right-button-title${expandedselected?.[index] ? '-selected' : ''}`}>{expandedRightButtonTitle[index]}</p>
+                                    <div className={`sb-expanded-button ${isSelected(expandedselected![index])}`} onClick={() => { if (onClickExpanded) onClickExpanded[index]() }}>
+                                        <p className={`sb-title button-text ${isSelected(expandedselected![index])}`}>{expandedTitle[index]}</p>
+                                        <div className="sb-right-button-block">
+                                            <div className="sb-right-button" >
+                                                <p className={`sb-right-button-side-text button-text ${isSelected(expandedselected![index])}`}>{expandedRightButtonSideText}</p>
+                                                <p className={`sb-right-button-title button button-text ${isSelected(!expandedselected![index])}`}>R$ {expandedRightButtonTitle[index]}</p>
+                                            </div>
+                                            <p className={`sb-right-button-subtitle button-text ${isSelected(expandedselected![index])}`}>{expandedRightButtonSubtitle![index]}</p>
                                         </div>
-                                        <p className={`expanded-right-button-subtitle${expandedselected?.[index] ? '-selected' : ''}`}>{expandedRightButtonSubtitle[index]}</p>
                                     </div>
                                 )
                             })
@@ -103,7 +119,7 @@ export function ServiceButton(
                     </div> :
                     null
             }
-        </>
+        </div>
     )
 
 }
