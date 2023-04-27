@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { scheduleTabType, scheduleType, selectedServiceType } from "../schedule-add";
 import { getSchedule } from '../../../../controllers/scheduleController';
 import { TimeButton } from '../../../../components/buttons/time-button/time-button';
@@ -49,15 +49,19 @@ function ServiceList({ services, selectedService, setSelectedService }: serviceL
 }
 
 function TimeList({ services, selectedService, setSelectedService, schedule, setSchedule }: timeListType) {
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
-    services.map(async (selectedService: selectedServiceType) => {
-        const professionalId = selectedService.professional
+    useEffect(() => {
+        services.map(async (selectedService: selectedServiceType) => {
+            setLoading(true);
+            const professionalId = selectedService.professional
 
-        if (professionalId == null) return
-        await getSchedule(professionalId.toString())
-        setLoading(false);
-    });
+            if (professionalId == null) return
+            await getSchedule(professionalId.toString())
+            setLoading(false);
+        });
+    }, []);
+
     const hours: string[] = [];
     const selectedServiceIndex = services.indexOf(services.find(service => service.service === selectedService.service) || selectedService)
     for (let hour = 0; hour < 24; hour++) {
@@ -106,6 +110,9 @@ function TimeList({ services, selectedService, setSelectedService, schedule, set
                             for (let i = 0; i < reducedDuration.length; i++) {
                                 if (selectedDate[hourIndex + i]?.takenAt !== null) return false
                             }
+
+                            //const sameProfessionalServices = schedule.selectedServices.filter(service => (service.professional == professionalId && service.service !== serviceId))
+
                             return true
                         }
 
