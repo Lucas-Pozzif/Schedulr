@@ -18,7 +18,7 @@ export function ScheduleButton({ selectedService, onClickButton, rightButtonText
         serviceCache[selectedService.service].name :
         "Não Selecionado"
     const startTime = selectedService.startTime !== null ?
-        arrayIndexToTime(selectedService.startTime) :
+    ` - ${arrayIndexToTime(selectedService.startTime)}`:
         ""
     const professional = selectedService.professional !== null ?
         professionalCache[selectedService.professional].name :
@@ -38,7 +38,7 @@ export function ScheduleButton({ selectedService, onClickButton, rightButtonText
         <div className={`professional-button button`} onClick={onClickButton}>
             <div className="pb-left-block">
                 <div className={`pb-title-block`}>
-                    <p className={`pb-title button-text`}>{service} - {startTime}</p>
+                    <p className={`pb-title button-text`}>{service}{startTime}</p>
                     <p className={`pb-subtitle button button-text ${isSelected(true)}`}>{professional}</p>
                 </div>
 
