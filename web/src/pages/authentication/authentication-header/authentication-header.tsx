@@ -6,8 +6,6 @@ const designCache = require('../../../cache/designCache.json')
 export function AuthenticationHeader() {
     const logo = designCache[0].lightLogo
 
-    console.log(designCache)
-
     return (
         <div className="auth-header">
             <img className="logo" src={logo} />
