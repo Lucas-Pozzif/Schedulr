@@ -3,16 +3,12 @@ import { useNavigate } from "react-router-dom"
 import { Line } from "../../components/line/line"
 import { onAuthStateChanged } from "firebase/auth"
 import { auth } from "../../firebase/firebase"
-import { clientType, getClient } from "../../controllers/clientController"
-import { arrayIndexToTime } from '../../functions/array-index-to-time/array-index-to-time'
+import { getClient } from "../../controllers/clientController"
 import { timeToArrayIndex } from '../../functions/time-to-array-index/time-to-array-index'
-import { dayIntervalCounter } from '../../functions/day-interval-counter/day-interval-counter'
-import { intervalToDay } from '../../functions/interval-to-day/interval-to-day'
-
-import './home.css'
-import { TabButton } from '../../components/buttons/tab-button/tab-button'
 import { InviteButton } from '../../components/buttons/invite-button/invite-button'
 import { IconButton } from '../../components/buttons/icon-button/icon-button'
+
+import './home.css'
 
 const clientCache = require('../../cache/clientCache.json')
 const designCache = require('../../cache/designCache.json')
