@@ -65,7 +65,6 @@ function headerButtonRender(tab: number, setTab: (tab: number) => void, schedule
 
 export function TabHeader({ tab, setTab, scheduleForm, selectedService }: tabHeaderType) {
     const navigate = useNavigate()
-    console.log(scheduleForm)
     const titles = [
         "Escolha o melhor dia para você!",
         "Escolha os serviços que interessam.",
