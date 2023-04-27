@@ -1,37 +1,46 @@
+import { useNavigate } from "react-router-dom";
+import { ScheduleButton } from "../../../../components/buttons/schedule-button/schedule-button";
+import { SubmitButton } from "../../../../components/buttons/submit-button/submit-button";
+import { Line } from "../../../../components/line/line";
 import { scheduleTabType } from "../schedule-add";
 
-const serviceCache = require('../../../../cache/serviceCache.json')
-const professionalCache = require('../../../../cache/professionalCache.json')
-const scheduleCache = require('../../../../cache/scheduleCache.json')
+import './confirmed-tab.css'
+
+const designCache = require('../../../../cache/designCache.json')
 
 export function ConfirmedTab({ schedule, setSchedule }: scheduleTabType) {
+    const navigate = useNavigate()
     const date = schedule.selectedDate
     const selectedServices = schedule.selectedServices
 
+    const logo = designCache[0].lightLogo
+
     return (
         <>
-            <p>Parabéns seu serviço foi confirmado!</p>
-            <p>{date}</p>
+            <div className="confirmed-tab">
+                <img className="confirm-logo" src={logo} />
+                <div className="ct-text-box">
+                    <Line />
+                    <p className="confirmed-tab-title title">Parabéns seu serviço foi confirmado!</p>
+                    <p className="confirmed-tab-subtitle subtitle">Fique atento às notificações</p>
 
-            {
-                selectedServices.map((selectedService) => {
-                    const professionalId = selectedService.professional
-                    const serviceId = selectedService.service
-                    const startTime = selectedService.startTime
-
-                    if (professionalId == null || serviceId == null) return
-
-                    return (
-                        <div>
-                            <p>{professionalCache[professionalId].name}</p>
-                            <p>{serviceCache[serviceId].name}</p>
-                        </div>
-                    )
-                })
-            }
-
-
+                    <Line />
+                </div>
+                <div className="ct-list">
+                    {
+                        selectedServices.map((selectedService) => {
+                            return <ScheduleButton
+                                selectedService={selectedService}
+                                onClickButton={() => { }}
+                                rightButtonText={date}
+                            />
+                        })
+                    }
+                </div>
+            </div>
+            <SubmitButton title="Concluir" onClickButton={() => {
+                navigate('/')
+            }} hide={false} />
         </>
-
     )
 }
