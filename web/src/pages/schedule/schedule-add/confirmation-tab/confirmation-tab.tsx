@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { getSchedule, setSchedule as updateSchedule, scheduleDayType } from "../../../../controllers/scheduleController";
 import { scheduleTabType } from "../schedule-add";
 import { setClient } from "../../../../controllers/clientController";
+import { ScheduleButton } from "../../../../components/buttons/schedule-button/schedule-button";
 
 const serviceCache = require('../../../../cache/serviceCache.json')
 const professionalCache = require('../../../../cache/professionalCache.json')
@@ -20,7 +21,6 @@ export function ConfirmationTab({ schedule, setSchedule, setTab }: scheduleTabTy
 
     return (
         <>
-            <p>Você confirma seu agendamento?</p>
             <button
                 onClick={async () => {
                     schedule.selectedServices.forEach(async (selectedService) => {
@@ -88,7 +88,9 @@ export function ConfirmationTab({ schedule, setSchedule, setTab }: scheduleTabTy
             {
                 schedule.selectedServices.map((selectedService) => {
                     if (selectedService.service != null && selectedService.professional != null) {
-                        return (<p>{serviceCache[selectedService.service].name} com {professionalCache[selectedService.professional].name}</p>)
+                        return (
+                            <ScheduleButton selectedService={selectedService} onClickButton={()=>{}} />
+                        )
                     }
                 })
             }
