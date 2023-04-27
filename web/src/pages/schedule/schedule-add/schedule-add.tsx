@@ -40,6 +40,8 @@ export type scheduleTabType = {
     schedule: scheduleType,
     setSchedule: (schedule: scheduleType) => void,
     setTab: (tab: number) => void
+    selectedService?: selectedServiceType
+    setSelectedService: (service: selectedServiceType) => void
 }
 
 
@@ -48,6 +50,7 @@ function ScheduleAdd() {
     const navigate = useNavigate();
     const [userId, setUserId] = useState<string>('error')
     const [tab, setTab] = useState(0)
+    const [selectedService, setSelectedService] = useState<selectedServiceType | undefined>(undefined)
     const [scheduleForm, setScheduleForm] = useState<scheduleType>({
         clientId: userId,
         selectedDate: new Date().toLocaleDateString('en-US'),
@@ -72,18 +75,18 @@ function ScheduleAdd() {
 
     // Array of tabs to be rendered
     const tabs = [
-        <DayTab schedule={scheduleForm} setSchedule={setScheduleForm} setTab={setTab} />,
-        <ServiceTab schedule={scheduleForm} setSchedule={setScheduleForm} setTab={setTab} />,
-        <ProfessionalTab schedule={scheduleForm} setSchedule={setScheduleForm} setTab={setTab} />,
-        <TimeTab schedule={scheduleForm} setSchedule={setScheduleForm} setTab={setTab} />,
-        <ConfirmationTab schedule={scheduleForm} setSchedule={setScheduleForm} setTab={setTab} />,
-        <ConfirmedTab schedule={scheduleForm} setSchedule={setScheduleForm} setTab={setTab} />
+        <DayTab schedule={scheduleForm} setSchedule={setScheduleForm} setTab={setTab} setSelectedService={setSelectedService} />,
+        <ServiceTab schedule={scheduleForm} setSchedule={setScheduleForm} setTab={setTab} setSelectedService={setSelectedService} />,
+        <ProfessionalTab schedule={scheduleForm} setSchedule={setScheduleForm} setTab={setTab} selectedService={selectedService} setSelectedService={setSelectedService} />,
+        <TimeTab schedule={scheduleForm} setSchedule={setScheduleForm} setTab={setTab} selectedService={selectedService} setSelectedService={setSelectedService} />,
+        <ConfirmationTab schedule={scheduleForm} setSchedule={setScheduleForm} setTab={setTab} setSelectedService={setSelectedService} />,
+        <ConfirmedTab schedule={scheduleForm} setSchedule={setScheduleForm} setTab={setTab} setSelectedService={setSelectedService} />
     ]
 
     // Returning the currently active tab
     return (
         <div className="schedule">
-            <TabHeader tab={tab} setTab={setTab} scheduleForm={scheduleForm} />
+            <TabHeader tab={tab} setTab={setTab} scheduleForm={scheduleForm} selectedService={selectedService} />
             {tabs[tab]}
         </div>
     )
