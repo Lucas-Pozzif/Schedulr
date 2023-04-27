@@ -22,6 +22,7 @@ type professionalListType = {
     setSelectedProfessional: (professionalId: string | null) => void,
     selectedServices: selectedServiceType[],
     selectedService: selectedServiceType,
+    setSelectedService: (service: selectedServiceType) => void
     schedule: scheduleType,
     setSchedule: (schedule: scheduleType) => void
 }
@@ -54,7 +55,7 @@ function ServiceList({ services, selectedService, setSelectedService, setSelecte
         </div>
     )
 }
-function ProfessionalList({ selectedProfessional, setSelectedProfessional, selectedServices, selectedService, schedule, setSchedule }: professionalListType) {
+function ProfessionalList({ selectedProfessional, setSelectedProfessional, selectedServices, selectedService, setSelectedService, schedule, setSchedule }: professionalListType) {
     const [professionalIds, setProfessionalIds] = useState<string[] | null>(null)
     const [loading, setLoading] = useState(true);
 
@@ -72,26 +73,28 @@ function ProfessionalList({ selectedProfessional, setSelectedProfessional, selec
                 loading ?
                     <p>loading...</p> :
                     professionalIds!.map((professionalId: string) => {
-                        const isSelected = () => professionalId === selectedProfessional
-                        return (
+                        const selectedServiceIndex = selectedServices.indexOf(selectedServices.find(service => service.service === selectedService.service) || selectedService)
+                        const serviceId = selectedService.service
+                        
+                        const isValid = () => professionalCache[professionalId].services.includes(serviceId)
+                        return isValid() ?
                             <ProfessionalButton
-                                selected={isSelected()}
+                                selected={selectedService.professional == parseInt(professionalId)}
                                 professional={professionalCache[professionalId]}
                                 rightButtonTitle='Continuar'
                                 onClickButton={() => {
-                                    setSelectedProfessional(professionalId)
-                                    let newselectedServices = [...schedule.selectedServices]
-                                    const index = selectedServices.indexOf(selectedService)
-
-                                    selectedService.professional = parseInt(professionalId)
-                                    newselectedServices[index] = selectedService
+                                    setSelectedService({
+                                        ...selectedService,
+                                        professional: parseInt(professionalId)
+                                    })
+                                    selectedServices[selectedServiceIndex].professional = parseInt(professionalId)
                                     setSchedule({
                                         ...schedule,
-                                        selectedServices: newselectedServices
+                                        selectedServices: selectedServices
                                     })
                                 }}
-                            />
-                        )
+                            /> :
+                            null
                     })
             }
         </div>)
@@ -105,6 +108,7 @@ export function ProfessionalTab({ schedule, setSchedule, selectedService, setSel
     }
     const [selectedProfessional, setSelectedProfessional] = useState<string | null>(null)
 
+    console.log(schedule.selectedServices)
 
     //const [completed, setCompleted] = useState(true)
     if (selectedService === undefined) return <p>error</p>
@@ -121,6 +125,7 @@ export function ProfessionalTab({ schedule, setSchedule, selectedService, setSel
                 setSelectedProfessional={setSelectedProfessional}
                 selectedServices={selectedServices}
                 selectedService={selectedService}
+                setSelectedService={setSelectedService}
                 schedule={schedule}
                 setSchedule={setSchedule}
             />
