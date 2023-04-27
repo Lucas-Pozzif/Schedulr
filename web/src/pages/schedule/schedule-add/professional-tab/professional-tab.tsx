@@ -97,14 +97,17 @@ function ProfessionalList({ selectedProfessional, setSelectedProfessional, selec
         </div>)
 }
 
-export function ProfessionalTab({ schedule, setSchedule, setTab }: scheduleTabType) {
+export function ProfessionalTab({ schedule, setSchedule, selectedService, setSelectedService }: scheduleTabType) {
     const selectedServices = schedule.selectedServices
 
-    const [selectedService, setSelectedService] = useState(selectedServices[0])
+    if (selectedService === undefined) {
+        setSelectedService(selectedServices[0])
+    }
     const [selectedProfessional, setSelectedProfessional] = useState<string | null>(null)
 
-    //const [completed, setCompleted] = useState(true)
 
+    //const [completed, setCompleted] = useState(true)
+    if (selectedService === undefined) return <p>error</p>
     return (
         <div className='professional-tab'>
             <ServiceList
