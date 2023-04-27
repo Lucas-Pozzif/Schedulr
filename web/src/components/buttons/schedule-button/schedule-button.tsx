@@ -7,19 +7,33 @@ const serviceCache = require('../../../cache/serviceCache.json')
 const professionalCache = require('../../../cache/professionalCache.json')
 
 type scheduleButtonType = {
+    rightButtonText?: string,
     selectedService: selectedServiceType,
     onClickButton: () => void,
 }
 
-export function ScheduleButton({ selectedService, onClickButton }: scheduleButtonType) {
+export function ScheduleButton({ selectedService, onClickButton, rightButtonText = 'Editar' }: scheduleButtonType) {
     console.log(selectedService)
-    if (selectedService.service === null || selectedService.startTime === null || selectedService.professional === null) return null
-    const service = serviceCache[selectedService.service].name
-    const startTime = arrayIndexToTime(selectedService.startTime)
-    const professional = professionalCache[selectedService.professional].name
-    const haveStates = serviceCache[selectedService.service].haveStates
-    const duration = durationArrayToString(haveStates ? serviceCache[selectedService.service].stateDurations[selectedService.state] : serviceCache[selectedService.service].duration)
-    
+    const service = selectedService.service !== null ?
+        serviceCache[selectedService.service].name :
+        "Não Selecionado"
+    const startTime = selectedService.startTime !== null ?
+        arrayIndexToTime(selectedService.startTime) :
+        ""
+    const professional = selectedService.professional !== null ?
+        professionalCache[selectedService.professional].name :
+        "Não Selecionado"
+    const haveStates = selectedService.service !== null ?
+        serviceCache[selectedService.service].haveStates :
+        false
+    const duration = selectedService.service !== null ?
+        durationArrayToString(
+            haveStates ?
+                serviceCache[selectedService.service].stateDurations[selectedService.state] :
+                serviceCache[selectedService.service].duration
+        ) :
+        ''
+
     return (
         <div className={`professional-button button`} onClick={onClickButton}>
             <div className="pb-left-block">
@@ -32,7 +46,7 @@ export function ScheduleButton({ selectedService, onClickButton }: scheduleButto
             <div className="sb-right-button-block">
                 <div className="sb-right-button" >
                     <p className={`sb-right-button-side-text button-text `}></p>
-                    <p className={`sb-right-button-title button button-text ${isSelected(true)}`}>Editar</p>
+                    <p className={`sb-right-button-title button button-text ${isSelected(true)}`}>{rightButtonText}</p>
                 </div>
                 <p className={`sb-right-button-subtitle button-text `}>{duration}</p>
             </div>
