@@ -11,7 +11,7 @@ export function SubmitButton({ hide, title, onClickButton }: submitButtonType) {
 
     return (
         <div className={`submit-button ${hide ? 'button-hide' : ''}`} onClick={onClickButton}>
-            <p className='title'>{title}</p>
+            <p className='sb-title'>{title}</p>
         </div>
     )
 
