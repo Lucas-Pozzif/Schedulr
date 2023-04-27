@@ -133,10 +133,13 @@ function TimeList({ services, selectedService, setSelectedService, schedule, set
     )
 }
 
-export function TimeTab({ schedule, setSchedule }: scheduleTabType) {
+export function TimeTab({ schedule, setSchedule, selectedService, setSelectedService }: scheduleTabType) {
     const selectedServices = schedule.selectedServices;
-    const [selectedService, setSelectedService] = useState(selectedServices[0]);
+    if (selectedService === undefined) {
+        setSelectedService(selectedServices[0])
+    }
 
+    if (selectedService === undefined) return <p>error</p>
     return (
         <>
             <ServiceList
