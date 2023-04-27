@@ -59,7 +59,7 @@ function TimeList({ services, selectedService, setSelectedService, schedule, set
         setLoading(false);
     });
     const hours: string[] = [];
-    const selectedServiceIndex = services.indexOf(selectedService)
+    const selectedServiceIndex = services.indexOf(services.find(service => service.service === selectedService.service) || selectedService)
     for (let hour = 0; hour < 24; hour++) {
         hours.push(`${hour}:00`);
         hours.push(`${hour}:10`);
@@ -118,7 +118,7 @@ function TimeList({ services, selectedService, setSelectedService, schedule, set
                                         ...selectedService,
                                         startTime: hourIndex
                                     })
-                                    services[selectedServiceIndex] = selectedService
+                                    services[selectedServiceIndex].startTime = hourIndex
                                     setSchedule({
                                         ...schedule,
                                         selectedServices: services
