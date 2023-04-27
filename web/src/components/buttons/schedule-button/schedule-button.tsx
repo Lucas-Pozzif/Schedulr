@@ -13,7 +13,6 @@ type scheduleButtonType = {
 }
 
 export function ScheduleButton({ selectedService, onClickButton, rightButtonText = 'Editar' }: scheduleButtonType) {
-    console.log(selectedService)
     const service = selectedService.service !== null ?
         serviceCache[selectedService.service].name :
         "Não Selecionado"
