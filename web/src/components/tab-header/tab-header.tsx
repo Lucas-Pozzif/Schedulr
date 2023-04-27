@@ -5,6 +5,7 @@ import { ReturnButton } from "../buttons/return-button/return-button"
 
 import './tab-header.css'
 import { ScheduleButton } from "../buttons/schedule-button/schedule-button"
+import { addSchedule } from "../../functions/add-schedule/add-schedule"
 
 type tabHeaderType = {
     scheduleForm: scheduleType
@@ -47,13 +48,25 @@ function headerButtonRender(tab: number, setTab: (tab: number) => void, schedule
     switch (tab) {
         case 0:
         case 1:
-        case 4:
             return (
                 <div className="th-title-box">
                     <p className="th-title">{titles[tab]}</p>
                     <div className="th-bottom">
                         <p className="th-subtitle">{subtitles[tab]}</p>
                         <InviteButton title="Continuar" onClickButton={() => { return tab < 5 ? setTab(tab + 1) : setTab(5) }} />
+                    </div>
+                </div>
+            )
+        case 4:
+            return (
+                <div className="th-title-box">
+                    <p className="th-title">{titles[tab]}</p>
+                    <div className="th-bottom">
+                        <p className="th-subtitle">{subtitles[tab]}</p>
+                        <InviteButton title="Continuar" onClickButton={() => {
+                            addSchedule(scheduleForm)
+                            setTab(5)
+                        }} />
                     </div>
                 </div>
             )
@@ -65,22 +78,8 @@ function headerButtonRender(tab: number, setTab: (tab: number) => void, schedule
 
 export function TabHeader({ tab, setTab, scheduleForm, selectedService }: tabHeaderType) {
     const navigate = useNavigate()
-    const titles = [
-        "Escolha o melhor dia para você!",
-        "Escolha os serviços que interessam.",
-        "",
-        "",
-        "Verifique os serviços que você agendou"
-    ]
-    const subtitles = [
-        "Estaremos à disposição!",
-        "Selecione e continue.",
-        "",
-        "",
-        "Tudo certo por aqui?"
-    ]
 
-
+    if (tab >= 5) return null
     return (
         <div className="tab-header">
             <ReturnButton onClickButton={() => { return tab <= 0 ? navigate(-1) : setTab(tab - 1) }} />
