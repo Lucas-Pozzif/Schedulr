@@ -9,6 +9,7 @@ import Home from "./pages/home/home";
 import { useEffect, useState } from "react";
 import AuthenticationPage from "./pages/authentication/authentication-page";
 import { getDesigns } from "./controllers/configController";
+import { ScheduleCheck } from "./pages/schedule/schedule-check/schedule-check";
 
 const designCache = require('./cache/designCache.json')
 
@@ -25,6 +26,7 @@ function App() {
 		{ path: '/professional/edit/:professionalId', element: <ServiceEdit /> },
 
 		{ path: '/schedule', element: <ScheduleAdd /> },
+		{ path: '/schedule/my', element: <ScheduleCheck /> },
 
 		{ path: '/', element: <Home /> },
 
