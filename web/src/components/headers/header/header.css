@@ -1,0 +1,27 @@
+.header {
+    display: flex;
+    gap: 20px;
+    margin-block: 10px;
+    align-items: center;
+}
+
+.header-text-block {
+    width: 100%;
+}
+
+.header-title {
+    font-size: 22px;
+    color: var(--accent-light);
+}
+
+.header-subtitle-block {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.header-subtitle {
+    font-size: 14px;
+    color: var(--secondary);
+
+}
