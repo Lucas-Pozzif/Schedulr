@@ -74,7 +74,7 @@ function TimeList({ services, selectedService, setSelectedService, schedule, set
     }
 
     return (
-        <div>
+        <div className='service-tab'>
             {
                 loading ?
                     <p>loading</p> :
@@ -148,7 +148,7 @@ export function TimeTab({ schedule, setSchedule, selectedService, setSelectedSer
 
     if (selectedService === undefined) return <p>error</p>
     return (
-        <>
+        <div>
             <ServiceList
                 services={selectedServices}
                 selectedService={selectedService}
@@ -161,6 +161,6 @@ export function TimeTab({ schedule, setSchedule, selectedService, setSelectedSer
                 schedule={schedule}
                 setSchedule={setSchedule}
             />
-        </>
+        </div>
     )
 }
