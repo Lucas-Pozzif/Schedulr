@@ -21,6 +21,15 @@ function Home() {
     const accountIcon = designCache[0].icons.account
     const date = new Date().getHours()
 
+    useEffect(() => {
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) return // If user is not authenticated, ignore
+            await getClient(user.uid) // Fetch client data using user ID
+            setUserId(user.uid) // Set user ID in state
+            if (!clientCache[user.uid]) return  // If client data is not available, ignore
+        });
+    }, [navigate]);
+
     let salutation: string
     if (date < 5) salutation = 'Boa madrugada'
     else if (date >= 5 && date < 13) salutation = 'Bom dia'
