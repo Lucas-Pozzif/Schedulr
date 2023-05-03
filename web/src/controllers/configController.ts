@@ -34,5 +34,11 @@ async function getDesigns() {
 
     designCache['0'] = docSnap.data();
 }
+async function getAdmins() {
+    const docRef = doc(db, 'config', 'admin');
+    const docSnap = await getDoc(docRef);
 
-export { getIds, setIds, getDesigns }
+    return docSnap.data()
+}
+
+export { getIds, setIds, getDesigns, getAdmins }
