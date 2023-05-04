@@ -1,0 +1,9 @@
+.small-button {
+    padding-inline: 15px;
+    padding-block: 5px;
+}
+
+.small-button-text {
+    font-size: 18px;
+    white-space: nowrap;
+}

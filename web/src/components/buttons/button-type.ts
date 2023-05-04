@@ -1,12 +1,42 @@
-type buttonType = {
-    selected?: boolean,
-    disabled?: boolean,
-    hide?: boolean,
-    image: string,
-    title: string,
+export type returnButtonType = {
     onClickButton: () => void
-    onClickImage: () => void
-    onClickTitle: () => void
+}
+export type titleButtonType = {
+    state: 'active' | 'inactive' | 'selected',
+    title: string,
+
+    onClickButton?: () => void
+}
+export type iconButtonType = {
+    state: 'active' | 'inactive' | 'selected',
+    title: string,
+    icon: string
+
+    onClickButton?: () => void
+}
+export type itemButtonType = {
+    state: 'active' | 'inactive' | 'selected',
+    title: string,
+    subtitle?: string,
+    highlightText?: string,
+    detailText: string
+    detailSubtitleText?: string,
+
+    onClickButton?: () => void,
+    onClickSubtitle?: () => void,
+    onClickDetailButton?: () => void,
 }
 
-export { }
+export type imageButtonType = {
+    state: 'active' | 'inactive' | 'selected',
+    image: string,
+    title: string,
+    subtitle?: string,
+    highlightText?: string,
+    detailText: string
+    detailSubtitleText?: string,
+
+    onClickButton?: () => void,
+    onClickSubtitle?: () => void,
+    onClickDetailButton?: () => void,
+}

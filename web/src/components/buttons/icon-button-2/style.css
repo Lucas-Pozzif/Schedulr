@@ -1,0 +1,16 @@
+.icon-button-2 {
+    width: 120px;
+    height: 34px;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.icon-button-2-icon {
+    height: 24px;
+    width: 24px;
+}
+
+.icon-button-2-text {
+    font-size: 16px;
+}

@@ -1,17 +1,16 @@
-import './icon-button.css'
+import { iconButtonType } from "../button-type";
+import './style.css';
 
-type iconButtonType = {
-    selected?: boolean,
-    image: string,
-    title: string,
-    onClickButton: () => void
-}
-
-export function IconButton({ selected, image, title, onClickButton }: iconButtonType) {
+export function IconButton({
+    title,
+    state,
+    icon,
+    onClickButton = () => { }
+}: iconButtonType) {
     return (
-        <div className="icon-button" onClick={onClickButton}>
-            <img className='iconb-image' src={image} />
-            <p className='iconb-title'>{title}</p>
+        <div className={`button icon-button ${state}`} onClick={onClickButton}>
+            <p className={`button-text icon-button-text ${state}`}>{title}</p>
+            <img className="icon-button-icon" src={icon} />
         </div>
     )
 }
