@@ -9,7 +9,7 @@ export function IconButton2({
 }: iconButtonType) {
     return (
         <div className={`button icon-button-2 ${state}`} onClick={onClickButton}>
-            <img src={icon} />
+            <img className="icon-button-2-icon" src={icon} />
             <p className={`button-text icon-button-2-text ${state}`}>{title}</p>
         </div>
     )
