@@ -1,6 +1,7 @@
 import { imageButtonType, itemButtonType } from "../button-type";
 import { DetailButton2 } from "../detail-button-2/detail-button-2";
 import { DetailButton } from "../detail-button/detail-button";
+import { ItemButton } from "../item-button/item-button";
 import './style.css';
 
 export function ImageButton({
@@ -22,20 +23,14 @@ export function ImageButton({
 
     return (
         <div className={`button image-button ${state}`} onClick={onClickButton}>
-            <div className="flex-div">
-                <img src={image} className="image-button-image" />
-                <div className="image-button-title-block">
-                    <p className={`title-button image-button-title ${state}`}>{title}</p>
-                    <Subtitle />
-                </div>
-            </div>
-            <div>
-                <div className="flex-div">
-                    <p className="image-button-highlight">{highlightText}</p>
-                    <Detail />
-                </div>
-                <p className="image-button-detail-subtitle-text">{detailSubtitleText}</p>
-            </div>
+            <img className="image-button-image" src={image} />
+            <ItemButton state={state}
+                title={title}
+                subtitle={subtitle}
+                highlightText={highlightText}
+                detailText={detailText}
+                detailSubtitleText={detailSubtitleText}
+            />
         </div>
     )
 }
