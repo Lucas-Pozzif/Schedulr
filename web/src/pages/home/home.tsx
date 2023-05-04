@@ -5,10 +5,10 @@ import { onAuthStateChanged } from "firebase/auth"
 import { auth } from "../../firebase/firebase"
 import { getClient } from "../../controllers/clientController"
 import { timeToArrayIndex } from '../../functions/time-to-array-index/time-to-array-index'
-import { InviteButton } from '../../components/buttons/invite-button/invite-button'
-import { IconButton } from '../../components/buttons/icon-button/icon-button'
+import { VerticalIconButton } from '../../components/buttons/vertical-icon-button/vertical-icon-button'
+import { Header } from '../../components/header/header'
 
-import './home.css'
+import './style.css'
 
 const clientCache = require('../../cache/clientCache.json')
 const designCache = require('../../cache/designCache.json')
@@ -76,42 +76,44 @@ function Home() {
 
     return (
         <div className="home">
-            <div className="home-header">
+            <div className="home-top">
                 <img className="home-logo" src={logo} />
-                <img className="account-icon" src={accountIcon} />
+                <img className="home-account-icon" src={accountIcon} />
             </div>
-            <Line />
-            <div className='salutation-block'>
-                <div className="home-text-block">
-                    <p className='salutation'>{salutation}{username}</p>
-                    <p className='message'>{userId ? nextService : 'Você ainda não entrou com sua conta.'}</p>
-                </div>
-                <InviteButton
-                    title='Agendar serviço'
+            <div className='home-header-block'>
+                <Line />
+                <Header
+                    title={`${salutation} ${username}`}
+                    subtitle={userId ? nextService : 'Você ainda não entrou com sua conta.'}
+                    buttonTitle='Agendar serviço'
                     onClickButton={() => navigate('/schedule')}
                 />
+                <Line />
             </div>
-            <Line />
             <div className='home-button-tab'>
-                <IconButton
+                <VerticalIconButton
+                    state='active'
                     title='Tabela de Profissionais'
-                    image=''
+                    icon=''
                     onClickButton={() => navigate('/professional')}
                 />
-                <IconButton
+                <VerticalIconButton
+                    state='active'
                     title='Tabela de Serviços'
-                    image=''
+                    icon=''
                     onClickButton={() => navigate('/service')}
                 />
-                <IconButton
+                <VerticalIconButton
+                    state='active'
                     title='Entrar em Contato'
-                    image=''
-                    onClickButton={() => navigate('/professional')}
+                    icon=''
+                    onClickButton={() => navigate('/contact')}
                 />
-                <IconButton
+                <VerticalIconButton
+                    state='active'
                     title='Ver Minha Agenda'
-                    image=''
-                    onClickButton={() => navigate('/professional')}
+                    icon=''
+                    onClickButton={() => navigate('/schedule/my')}
                 />
             </div>
         </div>
