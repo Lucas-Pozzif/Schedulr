@@ -22,15 +22,15 @@ export function ItemButton({
     return (
         <div className={`button item-button ${state}`} onClick={onClickButton}>
             <div className="item-button-title-block">
-                <p className={`title-button item-button-title ${state}`}>{title}</p>
+                <p className={`button-text item-button-title ${state}`}>{title}</p>
                 <Subtitle />
             </div>
-            <div>
-                <div className="flex-div">
-                    <p className="item-button-highlight">{highlightText}</p>
+            <div className="item-button-right-block">
+                <div className="flex-div item-button-detail-block">
+                    <p className="button-text item-button-highlight">{highlightText}</p>
                     <Detail />
                 </div>
-                <p className="item-button-detail-subtitle-text">{detailSubtitleText}</p>
+                <p className="button-text item-button-detail-subtitle">{detailSubtitleText}</p>
             </div>
         </div>
     )
