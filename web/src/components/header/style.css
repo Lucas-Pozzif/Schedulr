@@ -14,9 +14,11 @@
 
 .header-button-block {
     justify-content: space-between;
+    align-items: flex-end;
 }
 
 .header-subtitle {
+    max-width: 300px;
     font-size: 14px;
     color: var(--secondary);
 }
