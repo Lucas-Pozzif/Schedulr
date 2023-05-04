@@ -1,7 +1,7 @@
 import { Input } from "../../../../components/input/input";
 import { clientType } from "../../../../controllers/clientController";
 
-import './input-tab.css'
+import './style.css'
 
 type inputTabType = {
     user: clientType,

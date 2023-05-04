@@ -3,9 +3,9 @@ import { useState, useEffect } from "react";
 import { auth } from "../../../firebase/firebase";
 import { useNavigate } from "react-router-dom";
 import { clientType, getClient, setClient } from "../../../controllers/clientController";
-import { InputTab } from "./input-tab/input-tab";
-import { LoginTab } from "./login-tab/login-tab";
 import { SubmitButton } from "../../../components/buttons/submit-button/submit-button";
+import { AuthTab } from "./auth-tab/auth-tab";
+import { InputTab } from "./input-tab/input-tab";
 
 const clientCache = require('../../../cache/clientCache.json')
 
@@ -14,7 +14,7 @@ export type authenticationTabType = {
     setUser: (user: clientType) => void
 }
 
-export function AuthenticationForm() {
+export function LoginForm() {
     const navigate = useNavigate()
     const [tab, setTab] = useState('loading')
     const [userId, setUserId] = useState('')
@@ -37,9 +37,9 @@ export function AuthenticationForm() {
             setTab('enter-data')
             setUserId(user.uid)
             const newUser: clientType = {
-                name: user.displayName,
+                name: user.displayName || '',
                 email: user.email,
-                number: user.phoneNumber,
+                number: user.phoneNumber || '',
                 photo: user.photoURL,
                 schedule: {},
                 lastOnline: new Date().getTime()
@@ -63,7 +63,7 @@ export function AuthenticationForm() {
         case 'log-in':
             return (
                 <>
-                    <LoginTab
+                    <AuthTab
                         loginWithApple={handleSignIn}
                         loginWithGoogle={handleSignIn}
                     />
@@ -74,7 +74,7 @@ export function AuthenticationForm() {
                 <>
                     <InputTab user={userForm} setUser={setUserForm} />
                     <SubmitButton
-                        hide={(userForm.name && userForm.number) ? false : true}
+                        state={(userForm.name && userForm.number.length >= 7) ? 'active' : 'selected'}
                         title="Concluir"
                         onClickButton={() => {
                             setClient(userForm, userId)
