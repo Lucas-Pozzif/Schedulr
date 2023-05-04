@@ -1,0 +1,15 @@
+.login-header {
+    display: grid;
+    gap: 5px;
+}
+
+.login-header-title {
+    max-width: 300px;
+    font-size: 28px;
+    color: var(--accent-light);
+}
+
+.login-header-subtitle {
+    font-size: 20px;
+    color: var(--secondary);
+}
