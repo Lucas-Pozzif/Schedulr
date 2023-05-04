@@ -1,4 +1,7 @@
-import './line.css'
+import './style.css'
+
 export function Line() {
-    return <div className="line"></div>
+    return (
+        <div className="line"></div>
+    )
 }
