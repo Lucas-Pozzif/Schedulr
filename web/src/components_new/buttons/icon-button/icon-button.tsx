@@ -8,9 +8,9 @@ export function IconButton({
     onClickButton = () => { }
 }: iconButtonType) {
     return (
-        <button className={`button icon-button ${state}`} onClick={onClickButton}>
+        <div className={`button icon-button ${state}`} onClick={onClickButton}>
             <img src={icon} />
             <p className={`button-text icon-button-text ${state}`}>{title}</p>
-        </button>
+        </div>
     )
 }

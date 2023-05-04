@@ -21,7 +21,7 @@ export function ImageButton({
     const Detail = () => subtitle ? <DetailButton2 title={detailText} state={subtitleState} onClickButton={onClickDetailButton} /> : null
 
     return (
-        <button className={`button image-button ${state}`} onClick={onClickButton}>
+        <div className={`button image-button ${state}`} onClick={onClickButton}>
             <div className="flex-div">
                 <img src={image} className="image-button-image" />
                 <div className="image-button-title-block">
@@ -36,6 +36,6 @@ export function ImageButton({
                 </div>
                 <p className="image-button-detail-subtitle-text">{detailSubtitleText}</p>
             </div>
-        </button>
+        </div>
     )
 }

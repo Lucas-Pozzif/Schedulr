@@ -7,8 +7,8 @@ export function SmallButton({
     onClickButton = () => { }
 }: titleButtonType) {
     return (
-        <button className={`button small-button ${state}`} onClick={onClickButton}>
+        <div className={`button small-button ${state}`} onClick={onClickButton}>
             <p className={`button-text small-button-text ${state}`}>{title}</p>
-        </button>
+        </div>
     )
 }

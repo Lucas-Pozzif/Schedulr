@@ -7,8 +7,8 @@ export function SubmitButton({
     onClickButton = () => { }
 }: titleButtonType) {
     return (
-        <button className={`button submit-button ${state}`} onClick={onClickButton}>
+        <div className={`button submit-button ${state}`} onClick={onClickButton}>
             <p className={`button-text submit-button-text ${state}`}>{title}</p>
-        </button>
+        </div>
     )
 }

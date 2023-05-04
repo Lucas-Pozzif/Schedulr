@@ -20,7 +20,7 @@ export function ItemButton({
     const Detail = () => subtitle ? <DetailButton2 title={detailText} state={subtitleState} onClickButton={onClickDetailButton} /> : null
 
     return (
-        <button className={`button item-button ${state}`} onClick={onClickButton}>
+        <div className={`button item-button ${state}`} onClick={onClickButton}>
             <div className="item-button-title-block">
                 <p className={`title-button item-button-title ${state}`}>{title}</p>
                 <Subtitle />
@@ -32,6 +32,6 @@ export function ItemButton({
                 </div>
                 <p className="item-button-detail-subtitle-text">{detailSubtitleText}</p>
             </div>
-        </button>
+        </div>
     )
 }
