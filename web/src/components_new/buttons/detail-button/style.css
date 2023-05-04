@@ -1,5 +1,5 @@
 .detail-button {
-    border-radius: 10px;
+    border-radius: 10px !important;
     padding-inline: 10px;
 }
 
