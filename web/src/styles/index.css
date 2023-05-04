@@ -22,16 +22,17 @@ html {
     box-sizing: border-box;
     background-color: var(--secondary);
     border-radius: 5px;
-    padding: 5px;
     display: flex;
+    transition: 200ms;
 }
 
 .button.selected {
     background-color: var(--accent-dark);
+    opacity: .8;
 }
 
-.button.deactivated {
-    background-color: var(--accent-dark);
+.button.inactive {
+    opacity: .2;
 }
 
 /* Button-text */
@@ -90,4 +91,10 @@ html {
 ::-ms-input-placeholder {
     /* Microsoft Edge */
     color: var(--accent-dark);
+}
+
+/* generic classes designs */
+
+.flex-div {
+    display: flex;
 }
