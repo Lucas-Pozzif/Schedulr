@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { getAllProfessionals } from "../../../controllers/professionalController";
-import { ProfessionalButton } from "../../../components/buttons/professional-button/professional-button";
+import { Header } from "../../../components/header/header";
+import { ProfessionalButton } from "../../../components/buttons/image-button/professional-button/professional-button";
 
 const professionalCache = require('../../../cache/professionalCache.json')
 
@@ -16,21 +17,28 @@ function ProfessionalList() {
         });
     }, []);
 
+    const navigate = useNavigate()
+
     return (
         <div>
-            <div className="service-list-header">
-                <Link to='/service/add'>Add</Link>
-            </div>
+            <Header
+                title="Não sabe exatamente quem escolher?"
+                subtitle="Deixa isso com a gente!"
+                buttonTitle="Sem preferência"
+                onClickButton={() => { navigate('/schedule') }}
+                onClickReturn={() => { navigate(-1) }}
+            />
             {
                 loading ?
                     <p>loading...</p> :
                     professionalIds!.map((professionalId: string) => {
                         const professional = professionalCache[professionalId]
+                        console.log(professional.name)
                         return (
                             <ProfessionalButton
-                                selected={false}
+                                state='active'
                                 professional={professional}
-                                rightButtonTitle="Ver serviços"
+                                detailText="Ver serviços"
                                 onClickButton={() => { }}
                             />
                         )

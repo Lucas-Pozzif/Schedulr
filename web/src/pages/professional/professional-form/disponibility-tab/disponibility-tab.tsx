@@ -1,44 +1,17 @@
 import { useState } from 'react'
 import { professionalTabType } from "../professional-form";
 import { professionalType } from '../../../../controllers/professionalController';
-import { LargeButton } from '../../../../components/buttons/large-button/large-button';
-import StateTab from '../../../../components/tabs/state-tab/state-tab';
-import { TabButton } from '../../../../components/buttons/tab-button/tab-button';
+import { SmallButton } from '../../../../components/buttons/small-button/small-button';
+import { ItemButton } from '../../../../components/buttons/item-button/item-button';
 
-type timeListRenderType = {
-    professional: professionalType,
-    setProfessional: (professional: professionalType) => void,
-    weekDay: number
-}
+import './style.css'
 
-type weekTabType = {
-    weekDay: number,
-    setWeekDay: (week: number) => void
-}
-
-function WeekTab({ weekDay, setWeekDay }: weekTabType) {
-
+export function DisponibilityTab({ professional, setProfessional }: professionalTabType) {
+    const [weekDay, setWeekDay] = useState(0)
     const weekDays = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab']
-
-    return (
-        <div className="stateTab">
-            {weekDays.map((dayName) => (
-                <TabButton
-                    key={dayName}
-                    title={dayName}
-                    onClickButton={() => setWeekDay(weekDays.indexOf(dayName))}
-                />
-            ))}
-        </div>
-
-    )
-
-}
-
-function TimeListRender({ professional, setProfessional, weekDay }: timeListRenderType) {
     const disponibilityList = professional.disponibility[weekDay as keyof typeof professional.disponibility]
-
     const hours: string[] = []
+
     for (let hour = 0; hour < 24; hour++) {
         hours.push(`${hour}:00`)
         hours.push(`${hour}:10`)
@@ -49,44 +22,45 @@ function TimeListRender({ professional, setProfessional, weekDay }: timeListRend
     }
 
     return (
-        <>
-            {
-                hours.map((hour) => {
-                    const index = hours.indexOf(hour)
-                    return (
-                        <LargeButton
-                            selected={disponibilityList[index]}
-                            title={hour}
-                            onClickButton={
-                                () => {
-                                    const updateDisponibility = professional.disponibility;
-                                    const updateDayDisponibility = [...professional.disponibility[weekDay as keyof typeof professional.disponibility]]
+        <div className='p-form-dispotab'>
+            <div className="flex-div p-form-dispotab-week-list">
+                {weekDays.map((dayName) => (
+                    <SmallButton
+                        state={weekDays.indexOf(dayName) === weekDay ? 'selected' : 'active'}
+                        key={dayName}
+                        title={dayName}
+                        onClickButton={() => setWeekDay(weekDays.indexOf(dayName))}
+                    />
+                ))}
+            </div>
+            <div className='p-form-dispotab-time-list'>
+                {
+                    hours.map((hour) => {
+                        const index = hours.indexOf(hour)
+                        return (
+                            <ItemButton
+                                state={disponibilityList[index] ? 'selected' : 'active'}
+                                title={hour}
+                                detailText={disponibilityList[index] ? 'Selecionado' : 'Selecionar'}
+                                onClickButton={
+                                    () => {
+                                        const updateDisponibility = professional.disponibility;
+                                        const updateDayDisponibility = [...professional.disponibility[weekDay as keyof typeof professional.disponibility]]
 
-                                    updateDayDisponibility[index] = !updateDayDisponibility[index]
-                                    updateDisponibility[weekDay as keyof typeof professional.disponibility] = updateDayDisponibility
+                                        updateDayDisponibility[index] = !updateDayDisponibility[index]
+                                        updateDisponibility[weekDay as keyof typeof professional.disponibility] = updateDayDisponibility
 
-                                    setProfessional({
-                                        ...professional,
-                                        disponibility: updateDisponibility
-                                    });
+                                        setProfessional({
+                                            ...professional,
+                                            disponibility: updateDisponibility
+                                        });
+                                    }
                                 }
-                            }
-                        />
-                    )
-                })
-            }
-        </>
-    )
-
-}
-
-export function DisponibilityTab({ professional, setProfessional }: professionalTabType) {
-    const [weekDay, setWeekDay] = useState(0)
-
-    return (
-        <>
-            <WeekTab weekDay={weekDay} setWeekDay={setWeekDay} />
-            <TimeListRender professional={professional} setProfessional={setProfessional} weekDay={weekDay} />
-        </>
+                            />
+                        )
+                    })
+                }
+            </div>
+        </div>
     )
 }
