@@ -1,6 +1,9 @@
-import { loginHeaderType } from '../header-type'
-
 import './style.css'
+
+type loginHeaderType = {
+    title: string,
+    subtitle: string,
+}
 
 export function LoginHeader({ title, subtitle }: loginHeaderType) {
 
