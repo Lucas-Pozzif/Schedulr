@@ -17,7 +17,7 @@ export function ItemButton({
     const subtitleState = (state == 'active' || state == 'inactive') ? 'selected' : 'active';
 
     const Subtitle = () => subtitle ? <DetailButton title={subtitle} state={subtitleState} onClickButton={onClickSubtitle} /> : null
-    const Detail = () => subtitle ? <DetailButton2 title={detailText} state={subtitleState} onClickButton={onClickDetailButton} /> : null
+    const Detail = () => detailText ? <DetailButton2 title={detailText} state={subtitleState} onClickButton={onClickDetailButton} /> : null
 
     return (
         <div className={`button item-button ${state}`} onClick={onClickButton}>
