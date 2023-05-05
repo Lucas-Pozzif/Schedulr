@@ -1,0 +1,20 @@
+.vertical-icon-button {
+    height: 120px;
+    width: 90px;
+    flex-direction: column;
+    padding-bottom: 5px;
+    padding-top: 10px;
+    padding-inline: 5px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.vertical-icon-button-icon {
+    width: 63px;
+    height: 63px;
+}
+
+.vertical-icon-button-text {
+    font-size: 13px;
+    text-align: center;
+}
