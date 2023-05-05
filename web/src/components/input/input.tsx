@@ -1,6 +1,4 @@
-import React from "react"
-
-import './input.css'
+import './style.css'
 
 type inputType = {
     label?: string,
