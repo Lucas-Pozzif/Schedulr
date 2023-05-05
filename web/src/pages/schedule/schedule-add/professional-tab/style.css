@@ -1,0 +1,32 @@
+.professional-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pt-service-list {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.pt-service-item {
+  font-size: 12px;
+  padding: 0px !important;
+  padding-inline: 10px !important;
+  border-radius: 10px !important;
+  align-items: center;
+
+}
+
+.pt-professional-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sched-add-prof-tab-sched-block {
+  width: 100%;
+  display: grid;
+  gap: 10px;
+}

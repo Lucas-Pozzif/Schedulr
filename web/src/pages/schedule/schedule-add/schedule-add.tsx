@@ -11,10 +11,6 @@ import { ProfessionalTab } from "./professional-tab/professional-tab"
 import { TimeTab } from "./time-tab/time-tab"
 import { ConfirmationTab } from "./confirmation-tab/confirmation-tab"
 import { ConfirmedTab } from "./confirmed-tab/confirmed-tab"
-import { SubmitButton } from "../../../components/buttons/submit-button/submit-button"
-import { TabHeader } from "../../../components/tab-header/tab-header"
-
-import './schedule-add.css'
 
 // Importing clientCache from a JSON file
 const clientCache = require('../../../cache/clientCache.json')
@@ -86,7 +82,6 @@ function ScheduleAdd() {
     // Returning the currently active tab
     return (
         <div className="schedule">
-            <TabHeader tab={tab} setTab={setTab} scheduleForm={scheduleForm} selectedService={selectedService} />
             {tabs[tab]}
         </div>
     )

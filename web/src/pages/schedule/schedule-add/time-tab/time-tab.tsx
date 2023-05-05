@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react'
 import { scheduleTabType, scheduleType, selectedServiceType } from "../schedule-add";
 import { getSchedule } from '../../../../controllers/scheduleController';
-import { TimeButton } from '../../../../components/buttons/time-button/time-button';
+import { ItemButton } from '../../../../components/buttons/item-button/item-button';
+import { arrayIndexToTime } from '../../../../functions/array-index-to-time/array-index-to-time';
+import { ReturnButton } from '../../../../components/buttons/return-button/return-button';
+import { ScheduleButton } from '../../../../components/buttons/item-button/schedule-button/schedule-button';
 
 const serviceCache = require('../../../../cache/serviceCache.json')
 const scheduleCache = require('../../../../cache/scheduleCache.json')
@@ -117,9 +120,10 @@ function TimeList({ services, selectedService, setSelectedService, schedule, set
                         }
 
                         return isValid() ?
-                            <TimeButton
-                                selected={selectedService.startTime == hourIndex}
-                                time={hour}
+                            <ItemButton
+                                state={selectedService.startTime == hourIndex ? 'selected' : 'active'}
+                                title={hour}
+                                detailText={schedule.selectedDate}
                                 onClickButton={() => {
                                     setSelectedService({
                                         ...selectedService,
@@ -140,7 +144,7 @@ function TimeList({ services, selectedService, setSelectedService, schedule, set
     )
 }
 
-export function TimeTab({ schedule, setSchedule, selectedService, setSelectedService }: scheduleTabType) {
+export function TimeTab({ schedule, setSchedule, selectedService, setSelectedService, setTab }: scheduleTabType) {
     const selectedServices = schedule.selectedServices;
     if (selectedService === undefined) {
         setSelectedService(selectedServices[0])
@@ -149,11 +153,17 @@ export function TimeTab({ schedule, setSchedule, selectedService, setSelectedSer
     if (selectedService === undefined) return <p>error</p>
     return (
         <div>
-            <ServiceList
-                services={selectedServices}
-                selectedService={selectedService}
-                setSelectedService={setSelectedService}
-            />
+            <div className='flex-div'>
+                <ReturnButton onClickButton={() => setTab(2)} />
+                <div className='sched-add-prof-tab-sched-block'>
+                    <ScheduleButton state='active' selectedService={selectedService} detailText='Continuar' onClickButton={() => setTab(4)} />
+                    <ServiceList
+                        services={selectedServices}
+                        selectedService={selectedService}
+                        setSelectedService={setSelectedService}
+                    />
+                </div>
+            </div>
             <TimeList
                 services={selectedServices}
                 selectedService={selectedService}

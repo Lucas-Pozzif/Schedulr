@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { scheduleTabType, selectedServiceType } from "../schedule-add";
 import { getAllServices } from "../../../../controllers/serviceController";
-import { ServiceButton } from "../../../../components/buttons/service-button/service-button";
 
-import './service-tab.css'
+import './style.css'
+import { ServiceButton } from "../../../../components/buttons/item-button/service-button/service-button";
+import { Header } from "../../../../components/header/header";
 
 const serviceCache = require('../../../../cache/serviceCache.json')
 
-export function ServiceTab({ schedule, setSchedule }: scheduleTabType) {
+export function ServiceTab({ schedule, setSchedule, setTab }: scheduleTabType) {
     const [loading, setLoading] = useState(true);
     const [serviceIds, setServiceIds] = useState<string[] | null>(null)
 
@@ -65,21 +66,34 @@ export function ServiceTab({ schedule, setSchedule }: scheduleTabType) {
         });
 
     }
-    function expandedSelectedList(serviceId: string): [boolean, boolean, boolean, boolean] {
+    function expandedSelectedList(serviceId: string): [
+        'active' | 'selected' | 'inactive',
+        'active' | 'selected' | 'inactive',
+        'active' | 'selected' | 'inactive',
+        'active' | 'selected' | 'inactive'
+    ] {
         let selectedServices = [...schedule.selectedServices]
         const filteredService = selectedServices.filter((selectedService) => selectedService.service === parseInt(serviceId))
 
         return [
-            filteredService[0]?.state === 0,
-            filteredService[0]?.state === 1,
-            filteredService[0]?.state === 2,
-            filteredService[0]?.state === 3,
+            filteredService[0]?.state === 0 ? 'selected' : 'active',
+            filteredService[0]?.state === 1 ? 'selected' : 'active',
+            filteredService[0]?.state === 2 ? 'selected' : 'active',
+            filteredService[0]?.state === 3 ? 'selected' : 'active',
         ]
 
     }
 
     return (
         <div className="service-tab">
+            <Header
+                title="Escolha os serviços que interessam"
+                subtitle="Selecione e continue"
+                buttonTitle="Escolher Serviços"
+
+                onClickReturn={() => setTab(0)}
+                onClickButton={() => setTab(2)}
+            />
             {
                 loading ?
                     <p>loading...</p> :
@@ -90,8 +104,8 @@ export function ServiceTab({ schedule, setSchedule }: scheduleTabType) {
 
                         return (
                             <ServiceButton
-                                selected={filteredService.length > 0}
-                                expandedselected={expandedSelectedList(serviceId)}
+                                state={filteredService.length > 0 ? 'selected' : 'active'}
+                                expandedState={expandedSelectedList(serviceId)}
                                 service={service}
                                 onClickButton={() => { onClickHandler(serviceId) }}
                                 onClickExpanded={onClickExpandedHandler(serviceId)}

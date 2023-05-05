@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
 import { getAllProfessionals } from '../../../../controllers/professionalController';
 import { scheduleTabType, scheduleType, selectedServiceType } from '../schedule-add';
-import { LargeButton } from '../../../../components/buttons/large-button/large-button';
-import { TabButton } from '../../../../components/buttons/tab-button/tab-button';
 
-import './professional-tab.css'
-import { ProfessionalButton } from '../../../../components/buttons/professional-button/professional-button';
+import './style.css'
 import { getAllOccupations } from '../../../../controllers/occupationController';
+import { ProfessionalButton } from '../../../../components/buttons/image-button/professional-button/professional-button';
+import { ReturnButton } from '../../../../components/buttons/return-button/return-button';
+import { ScheduleButton } from '../../../../components/buttons/item-button/schedule-button/schedule-button';
 
 const professionalCache = require('../../../../cache/professionalCache.json')
 const serviceCache = require('../../../../cache/serviceCache.json')
@@ -75,13 +75,13 @@ function ProfessionalList({ selectedProfessional, setSelectedProfessional, selec
                     professionalIds!.map((professionalId: string) => {
                         const selectedServiceIndex = selectedServices.indexOf(selectedServices.find(service => service.service === selectedService.service) || selectedService)
                         const serviceId = selectedService.service
-                        
+
                         const isValid = () => professionalCache[professionalId].services.includes(serviceId)
                         return isValid() ?
                             <ProfessionalButton
-                                selected={selectedService.professional == parseInt(professionalId)}
+                                state={selectedService.professional == parseInt(professionalId) ? 'selected' : 'active'}
                                 professional={professionalCache[professionalId]}
-                                rightButtonTitle='Continuar'
+                                detailText='Continuar'
                                 onClickButton={() => {
                                     setSelectedService({
                                         ...selectedService,
@@ -100,7 +100,7 @@ function ProfessionalList({ selectedProfessional, setSelectedProfessional, selec
         </div>)
 }
 
-export function ProfessionalTab({ schedule, setSchedule, selectedService, setSelectedService }: scheduleTabType) {
+export function ProfessionalTab({ schedule, setSchedule, selectedService, setSelectedService, setTab }: scheduleTabType) {
     const selectedServices = schedule.selectedServices
 
     if (selectedService === undefined) {
@@ -114,12 +114,18 @@ export function ProfessionalTab({ schedule, setSchedule, selectedService, setSel
     if (selectedService === undefined) return <p>error</p>
     return (
         <div className='professional-tab'>
-            <ServiceList
-                services={selectedServices}
-                selectedService={selectedService}
-                setSelectedService={setSelectedService}
-                setSelectedProfessional={setSelectedProfessional}
-            />
+            <div className='flex-div'>
+                <ReturnButton onClickButton={() => setTab(1)} />
+                <div className='sched-add-prof-tab-sched-block'>
+                    <ScheduleButton state='active' selectedService={selectedService} detailText='Continuar' onClickButton={() => setTab(3)} />
+                    <ServiceList
+                        services={selectedServices}
+                        selectedService={selectedService}
+                        setSelectedService={setSelectedService}
+                        setSelectedProfessional={setSelectedProfessional}
+                    />
+                </div>
+            </div>
             <ProfessionalList
                 selectedProfessional={selectedProfessional}
                 setSelectedProfessional={setSelectedProfessional}

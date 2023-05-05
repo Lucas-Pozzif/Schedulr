@@ -1,0 +1,9 @@
+.schedadd-confirmation-tab{
+    display: grid;
+    gap: 50px;
+}
+.schedadd-confirmation-tab-service-list{
+    display: grid;
+    gap: 10px;
+
+}

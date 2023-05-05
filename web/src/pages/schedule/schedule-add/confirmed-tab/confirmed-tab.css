@@ -17,8 +17,9 @@
 }
 
 .ct-text-box {
-
-    width: calc(100% - 80px);
+    display: grid;
+    gap: 20px;
+    width: calc(100%);
 }
 
 .confirmed-tab-title {
