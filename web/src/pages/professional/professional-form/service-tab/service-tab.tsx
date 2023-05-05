@@ -2,7 +2,9 @@ import { useState, useEffect } from "react";
 import { professionalTabType } from "../professional-form";
 import { getAllServices } from "../../../../controllers/serviceController";
 import updateProfessional from "../../../../functions/updaters/update-professional";
-import { ServiceButton } from "../../../../components/buttons/service-button/service-button";
+import { ServiceButton } from "../../../../components/buttons/item-button/service-button/service-button";
+
+import './style.css'
 
 const serviceCache = require('../../../../cache/serviceCache.json')
 
@@ -18,7 +20,7 @@ export function ServiceTab({ professional, setProfessional }: professionalTabTyp
     }, []);
 
     return (
-        <div>
+        <div className="p-form-servtab">
             {
                 loading ?
                     <p>loading...</p> :
@@ -26,7 +28,7 @@ export function ServiceTab({ professional, setProfessional }: professionalTabTyp
                         const service = serviceCache[serviceId]
                         return (
                             <ServiceButton
-                                selected={professional.services.includes(serviceId)}
+                                state={professional.services.includes(serviceId) ? 'selected' : 'active'}
                                 allowExpand={false}
                                 service={service}
                                 onClickButton={() => {
