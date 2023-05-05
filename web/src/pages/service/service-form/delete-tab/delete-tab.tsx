@@ -1,14 +1,21 @@
-import { TabButton } from "../../../../components/buttons/tab-button/tab-button";
+import { ServiceButton } from "../../../../components/buttons/item-button/service-button/service-button";
+import { Header } from "../../../../components/header/header";
+import { deleteService } from "../../../../controllers/serviceController";
 import { ServiceTabType } from "../service-form";
+
+import './style.css'
 
 export function DeleteTab({ service, setService }: ServiceTabType) {
     return (
-        <>
-            <p>Você tem certeza que deseja remover esse serviço</p>
-            <p>Isso não irá remover os agendamentos que já foram feitos com ele</p>
-            <TabButton title="Excluir" onClickButton={() => {
-
-            }} />
-        </>
+        <div className="s-form-deltab">
+            <Header
+                title="Tem certeza que deseja excluir esse serviço?"
+                subtitle="não irá remover os agendamentos que já foram feitos com ele."
+                buttonTitle="Excluir"
+                onClickButton={async () => {
+                    //await deleteService('0')
+                }} />
+            <ServiceButton state="active" service={service} allowExpand={false} />
+        </div>
     )
 }

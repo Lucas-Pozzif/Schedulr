@@ -1,11 +1,15 @@
-import React, { useState } from "react"
+import { useState } from "react"
 import { InformationTab } from "./information-tab/information-tab"
 import { DurationTab } from "./duration-tab/duration-tab"
 import { DeleteTab } from "./delete-tab/delete-tab"
+import { serviceType, setService } from "../../../controllers/serviceController"
+import { VerticalIconButton } from "../../../components/buttons/vertical-icon-button/vertical-icon-button"
+import { ReturnButton } from "../../../components/buttons/return-button/return-button"
+import { ServiceButton } from "../../../components/buttons/item-button/service-button/service-button"
+import { useNavigate } from "react-router-dom"
+import { SmallButton } from "../../../components/buttons/small-button/small-button"
 
-import './service-form.css'
-import { getService, serviceType, setService } from "../../../controllers/serviceController"
-import { IconButton } from "../../../components/buttons/icon-button/icon-button"
+import './style.css'
 
 let serviceCache = require('../../../cache/serviceCache.json')
 
@@ -20,35 +24,32 @@ type serviceFormType = {
 
 function ServiceForm({ serviceId }: serviceFormType) {
 
-    let service
-
-    if (serviceId !== undefined) {
-        service = serviceCache[serviceId]
-    } else {
-        service = {
-            name: 'Novo serviço',
-            stateNames: ['Curto', 'Médio', 'Longo', 'Extra-Longo'],
-            stateValues: [50, 100, 150, 200],
-            stateDurations: {
-                0: Array(144).fill(false),
-                1: Array(144).fill(false),
-                2: Array(144).fill(false),
-                3: Array(144).fill(false),
-            },
-            photo: null,
-            inicial: false,
-            haveStates: true,
-            value: 100,
-            duration: Array(144).fill(false),
-            promotion: {
-                currentPromotion: null,
-                promotedUntil: null
-            }
-        }
-    }
-
-    const [serviceForm, setServiceForm] = useState<serviceType>(service)
     const [tab, setTab] = useState(0)
+    const [serviceForm, setServiceForm] = useState<serviceType>(
+        serviceId === undefined ?
+            {
+                name: 'Novo serviço',
+                stateNames: ['Curto', 'Médio', 'Longo', 'Extra-Longo'],
+                stateValues: [50, 100, 150, 200],
+                stateDurations: {
+                    0: Array(144).fill(false),
+                    1: Array(144).fill(false),
+                    2: Array(144).fill(false),
+                    3: Array(144).fill(false),
+                },
+                photo: null,
+                inicial: false,
+                haveStates: true,
+                value: 100,
+                duration: Array(144).fill(false),
+                promotion: {
+                    currentPromotion: null,
+                    promotedUntil: null
+                }
+            } :
+            serviceCache[serviceId]
+    )
+    const navigate = useNavigate()
 
     function tabRender() {
         switch (tab) {
@@ -63,33 +64,32 @@ function ServiceForm({ serviceId }: serviceFormType) {
         }
     }
 
-    return (
-        <>
-            {
-                serviceForm ?
-                    <>
-                        <div className="service-header">
-                            <p>{serviceForm.name}</p>
-
-                        </div>
-                        <div className="tabs">
-                            <IconButton selected={tab == 0} title="Informações Individuais" image="a" onClickButton={() => { setTab(0) }} />
-                            <IconButton selected={tab == 1} title="Alterar Profissionais" image="a" onClickButton={() => { setTab(1) }} />
-                            <IconButton selected={tab == 2} title="Tempo de Duração" image="a" onClickButton={() => { setTab(2) }} />
-                            <IconButton selected={tab == 3} title="Excluir Serviço" image="a" onClickButton={() => { setTab(3) }} />
-                        </div>
-                        {tabRender()}
-                        <div onClick={async () => {
+    return serviceForm ?
+        <div className="s-form">
+            <div className="flex-div s-form-header">
+                <ReturnButton onClickButton={() => navigate(-1)} />
+                <div className="s-form-save-block">
+                    <ServiceButton
+                        state="active"
+                        service={serviceForm}
+                    />
+                    <div className="s-form-save-button">
+                        <SmallButton state="active" title="Salvar" onClickButton={async () => {
                             setService(serviceForm, serviceId?.toString())
-                        }}> Salvar</div>
-                    </> :
-                    <p>error</p>
-            }
-
-
-        </>
-    )
-
+                        }}
+                        />
+                    </div>
+                </div>
+            </div>
+            <div className="s-form-tab-list flex-div">
+                <VerticalIconButton state={tab == 0 ? "selected" : 'active'} title="Informações Individuais" icon="a" onClickButton={() => { setTab(0) }} />
+                <VerticalIconButton state={tab == 1 ? "inactive" : 'inactive'} title="Alterar Profissionais" icon="a" onClickButton={() => { setTab(1) }} />
+                <VerticalIconButton state={tab == 2 ? "selected" : 'active'} title="Tempo de Duração" icon="a" onClickButton={() => { setTab(2) }} />
+                <VerticalIconButton state={tab == 3 ? "selected" : 'active'} title="Excluir Serviço" icon="a" onClickButton={() => { setTab(3) }} />
+            </div>
+            {tabRender()}
+        </div> :
+        <p>error</p>
 }
 
 export default ServiceForm

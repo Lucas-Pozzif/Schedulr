@@ -1,0 +1,10 @@
+.service-list {
+    display: grid;
+    gap: 10px;
+}
+
+.service-list-block {
+    display: grid;
+    gap: 20px;
+    margin-top: 30px;
+}

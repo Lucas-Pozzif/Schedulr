@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 import ServiceForm from "../service-form/service-form";
 import { getService } from "../../../controllers/serviceController";
 
 
-function ServiceEdit() {
+export default function ServiceEdit() {
     const { serviceId } = useParams();
 
     const [loading, setLoading] = useState(true);
@@ -27,5 +27,3 @@ function ServiceEdit() {
 
     return <ServiceForm serviceId={parseInt(serviceId)} />;
 }
-
-export { ServiceEdit };

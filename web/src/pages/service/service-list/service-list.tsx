@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
 import { getAllServices, getService, serviceType } from "../../../controllers/serviceController"
-import { Link, useNavigate } from "react-router-dom";
-import { ServiceButton } from "../../../components/buttons/service-button/service-button";
-import { ServiceHeader } from "../../../components/headers/service-header/service-header";
+import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { getAdmins } from "../../../controllers/configController";
 import { auth } from "../../../firebase/firebase";
+import { Header } from "../../../components/header/header";
+import { ServiceButton } from "../../../components/buttons/item-button/service-button/service-button";
+import { Input } from "../../../components/input/input";
+
+import './style.css'
 
 const serviceCache = require('../../../cache/serviceCache.json')
 
@@ -13,6 +16,7 @@ function ServiceList() {
     const [loading, setLoading] = useState(true);
     const [serviceIds, setServiceIds] = useState<string[] | null>(null)
     const [isAdmin, setIsAdmin] = useState(false)
+    const [searchBar, setSearchBar] = useState('')
 
     const navigate = useNavigate()
 
@@ -32,31 +36,33 @@ function ServiceList() {
 
     return (
         <div className="service-tab">
-            <ServiceHeader />
-            {
-                loading ?
-                    <p>loading...</p> :
-                    serviceIds!.map((serviceId: string) => {
-                        const service = serviceCache[serviceId]
-                        return (
-                            <ServiceButton
-                                selected={false}
-                                service={service}
-                                onClickButton={() => {
-                                    if (isAdmin) {
-                                        navigate('/service/edit/' + serviceId)
-                                    }
-                                }}
-                                onClickExpanded={[
-                                    () => { console.log('clickedButton1') },
-                                    () => { console.log('clickedButton2') },
-                                    () => { console.log('clickedButton3') },
-                                    () => { console.log('clickedButton4') }
-                                ]}
-                            />
-                        )
-                    })
-            }
+            <Header
+                title="Não sabe o tamanho do seu cabelo?"
+                subtitle="A gente te ajuda!"
+                buttonTitle="Entrar em contato"
+                onClickButton={() => { navigate('/') }}
+                onClickReturn={() => { navigate(-1) }}
+            />
+            <div className="service-list-block">
+                <Input placeholder="Pesquisar" onValueChange={(e) => { setSearchBar(e.target.value.toLowerCase()) }} />
+                <div className="service-list">
+                    {
+                        loading ?
+                            <p>loading...</p> :
+                            serviceIds!.map((serviceId: string) => {
+                                const service = serviceCache[serviceId]
+                                if (!service.name.toLowerCase().includes(searchBar)) return null
+                                return (
+                                    <ServiceButton
+                                        state='active'
+                                        service={service}
+                                        onClickButton={() => { }}
+                                    />
+                                )
+                            })
+                    }
+                </div>
+            </div>
         </div>
     )
 }
