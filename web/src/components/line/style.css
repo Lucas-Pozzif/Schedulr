@@ -3,3 +3,9 @@
     width: 100%;
     background-color: var(--accent-light);
 }
+
+.vertical-line {
+    height: 100%;
+    width: 1px;
+    background-color: var(--accent-light);
+}
