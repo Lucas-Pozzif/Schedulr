@@ -1,0 +1,42 @@
+.p-form-information-tab {
+    display: grid;
+    gap: 10px;
+}
+
+.p-form-infotab-bottom {
+    gap: 10px;
+}
+
+.p-form-occupation-block {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: flex-start;
+    justify-items: start;
+}
+
+.p-form-occupation-list {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.p-form-photo-block {
+    display: grid;
+    gap: 5px;
+    margin-block: 10px;
+}
+
+.p-form-photo-frame {
+    height: 140px;
+    width: 140px;
+    background-color: var(--accent-dark) !important;
+}
+
+.p-form-photo {
+    height: 130px;
+    width: 130px;
+    border-radius: 5px;
+    margin: 5px;
+
+}
