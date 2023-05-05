@@ -4,9 +4,9 @@ import { db } from "../firebase/firebase";
 let clientCache = require('../cache/clientCache.json')
 
 export type clientType = {
-    name: string | null,
+    name: string,
     email: string | null,
-    number: string | null,
+    number: string,
     photo: string | null,
     schedule: {
         [date: string]: {
