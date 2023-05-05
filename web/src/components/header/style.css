@@ -15,6 +15,7 @@
 .header-button-block {
     justify-content: space-between;
     align-items: flex-end;
+    gap: 10px;
 }
 
 .header-subtitle {

@@ -6,7 +6,3 @@ export type headerType = {
     onClickButton?: () => void,
     onClickReturn?: () => void
 }
-export type loginHeaderType = {
-    title: string,
-    subtitle: string,
-}
