@@ -1,15 +1,15 @@
-import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { getDesigns } from "./controllers/configController";
+
+import LoginPage from "./pages/login/login-page";
+import Home from "./pages/home/home";
+import ProfessionalList from "./pages/professional/professional-list/professional-list";
+import ProfessionalAdd from "./pages/professional/professional-add/professional-add";
 import { ServiceList } from "./pages/service/service-list/service-list";
 import { ServiceAdd } from "./pages/service/service-add/service-add";
-import { ServiceEdit } from "./pages/service/service-edit/service-edit";
-import ProfessionalForm from "./pages/professional/professional-form/professional-form";
+import ServiceEdit from "./pages/service/service-edit/service-edit";
 import ScheduleAdd from "./pages/schedule/schedule-add/schedule-add";
-import ProfessionalList from "./pages/professional/professional-list/professional-list";
-import Home from "./pages/home/home";
-import { useEffect, useState } from "react";
-import AuthenticationPage from "./pages/authentication/authentication-page";
-import { getDesigns } from "./controllers/configController";
-import { ScheduleCheck } from "./pages/schedule/schedule-check/schedule-check";
 
 const designCache = require('./cache/designCache.json')
 
@@ -22,16 +22,15 @@ function App() {
 		{ path: '/service/edit/:serviceId', element: <ServiceEdit /> },
 
 		{ path: '/professional', element: <ProfessionalList /> },
-		{ path: '/professional/add', element: <ProfessionalForm /> },
-		{ path: '/professional/edit/:professionalId', element: <ServiceEdit /> },
+		{ path: '/professional/add', element: <ProfessionalAdd /> },
+		//{ path: '/professional/edit/:professionalId', element: <ServiceEdit /> },
 
 		{ path: '/schedule', element: <ScheduleAdd /> },
-		{ path: '/schedule/my', element: <ScheduleCheck /> },
+		//{ path: '/schedule/my', element: <ScheduleCheck /> },
 
 		{ path: '/', element: <Home /> },
 
-		{ path: '/login', element: <AuthenticationPage /> },
-
+		{ path: '/login', element: <LoginPage /> },
 	]
 	var sheet = document.styleSheets[0];
 	sheet.insertRule(":root{--blue:#4444FF}");
