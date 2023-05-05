@@ -1,6 +1,7 @@
 .small-button {
     padding-inline: 15px;
     padding-block: 5px;
+    width: fit-content;
 }
 
 .small-button-text {
