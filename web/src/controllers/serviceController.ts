@@ -60,6 +60,7 @@ async function getService(serviceId: string) {
     /**
      * Adds the most recent service with the given serviceId to the service cache, even if the local value is outdated.
      */
+    if (serviceCache[serviceId] !== undefined) return
     const docRef = doc(db, 'services', serviceId);
     const docSnap = await getDoc(docRef);
 

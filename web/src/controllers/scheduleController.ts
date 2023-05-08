@@ -5,9 +5,9 @@ import { db } from "../firebase/firebase"
 let scheduleCache = require('../cache/scheduleCache.json')
 
 export type scheduleDayType = {
-    takenAt: null | number, //null or timestamp
+    takenAt: null | number | string, //null or timestamp
     service: null | number,
-    state: null| number
+    state: null | number
     client: null | string,
 }
 
