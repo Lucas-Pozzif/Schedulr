@@ -1,94 +1,50 @@
 import { onAuthStateChanged } from "firebase/auth";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { auth } from "../../../firebase/firebase";
 import { useNavigate } from "react-router-dom";
 import { getClient } from "../../../controllers/clientController";
-import { Header } from "../../../components/header/header";
-import { Line } from "../../../components/line/line";
-import { getService } from "../../../controllers/serviceController";
-import { getProfessional } from "../../../controllers/professionalController";
-import { selectedServiceType } from "../schedule-add/schedule-add";
-import { ScheduleButton } from "../../../components/buttons/item-button/schedule-button/schedule-button";
+import { getAllProfessionals } from "../../../controllers/professionalController";
+import ProfessionalSchedule from "./professional-schedule/professional-schedule";
+import ClientSchedule from "./client-schedule/client-schedule";
 
+import './style.css'
+
+const professionalCache = require('../../../cache/professionalCache.json')
 const clientCache = require('../../../cache/clientCache.json')
-const service = require('../../../cache/serviceCache.json')
 
 export default function ScheduleCheck() {
-    const [loading, setLoading] = useState(true)
-    const [userId, setUserId] = useState<string>('error')
+    const [loading, setLoading] = useState(true);
+    const [professional, setProfessional] = useState<string | null>(null)
 
-    const navigate = useNavigate()
 
-    // Using an effect hook to handle authentication state change
+    const navigate = useNavigate();
+
     useEffect(() => {
+        setLoading(true)
         onAuthStateChanged(auth, async (user) => {
-            if (!user) return navigate('/login'); // If user is not authenticated, navigate to login page
-            await getClient(user.uid); // Fetch client data using user ID
-            setUserId(user.uid); // Set user ID in state
-            const days = Object.keys(clientCache[user.uid].schedule);
-            for (const date of days) {
-                const dateTimes = Object.keys(clientCache[user.uid].schedule[date]);
-                for (const time of dateTimes) {
-                    await getService(clientCache[user.uid].schedule[date][time][0].service.toString());
-                    await getProfessional(clientCache[user.uid].schedule[date][time][0].professional.toString());
-                }
-            }
+            if (!user) return navigate('/login');
+
+            await getClient(user.uid)
+            if (!clientCache[user.uid]) return navigate('/login');
+
+            await getAllProfessionals()
+
+            const professionals = Object.keys(professionalCache)
+            professionals.map(profId => {
+                if (professionalCache[profId].email === user.email) setProfessional(profId)
+            })
             setLoading(false);
-            if (!clientCache[user.uid]) return navigate('/login'); // If client data is not available, navigate to login page
-        });
-    }, [navigate]);
-
-    if (userId === 'error') return (<p>errore</p>)
-
-    const days = Object.keys(clientCache[userId].schedule)
+        })
+    }, [navigate])
 
 
-    return loading ?
-        <p>loading...</p> :
-        <div className="schedule-check">
-            <Header
-                title="Aqui estão todos seus agendamentos."
-                subtitle="Que tal adicionar mais um?"
-                buttonTitle="Agendar Serviço"
-                onClickButton={() => navigate('/schedule')}
-                onClickReturn={() => navigate(-1)}
-            />
-            <div className="schedcheck-list">
-                {
-                    days.map((date) => {
-                        const displayDate = `${new Date(date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })} - ${new Date(date).toLocaleDateString('pt-BR', { weekday: 'long' })}`
-                        const dateTimes = Object.keys(clientCache[userId].schedule[date])
-                        return (
-                            <div className="schedcheck-day">
-                                <Line />
-                                <p className="schedcheck-date">{displayDate}</p>
-                                <p className="schedcheck-service-count">{dateTimes.length} {dateTimes.length > 1 ? 'Serviços agendados' : 'Serviço agendado'}</p>
-                                <Line />
-                                {
-                                    dateTimes.map(time => {
-                                        const data = clientCache[userId].schedule[date][time][0]
-                                        const selectedService: selectedServiceType = {
-                                            service: data.service.toString(),
-                                            state: data.state?.toString(),
-                                            professional: data.professional.toString(),
-                                            startTime: parseInt(time)
-                                        }
-                                        return (
-                                            <ScheduleButton
-                                                state="active"
-                                                selectedService={selectedService}
-                                                detailText="Editar"
-                                                onClickButton={() => { }}
-                                            />
-                                        )
-                                    })
+    if (loading) return <p>Loading...</p>
+    console.log(professional)
+    return professional !== null ?
+        <ProfessionalSchedule profId={professional} /> :
+        <ClientSchedule />
 
-                                }
-                            </div>
-                        )
-                    })
-                }
-            </div>
-        </div>
 
 }
+
+
