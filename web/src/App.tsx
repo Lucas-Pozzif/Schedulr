@@ -10,6 +10,8 @@ import { ServiceList } from "./pages/service/service-list/service-list";
 import { ServiceAdd } from "./pages/service/service-add/service-add";
 import ServiceEdit from "./pages/service/service-edit/service-edit";
 import ScheduleAdd from "./pages/schedule/schedule-add/schedule-add";
+import ProfessionalEdit from "./pages/professional/professional-edit/professional-edit";
+import ScheduleCheck from "./pages/schedule/schedule-check/schedule-check";
 
 const designCache = require('./cache/designCache.json')
 
@@ -23,18 +25,15 @@ function App() {
 
 		{ path: '/professional', element: <ProfessionalList /> },
 		{ path: '/professional/add', element: <ProfessionalAdd /> },
-		//{ path: '/professional/edit/:professionalId', element: <ServiceEdit /> },
+		{ path: '/professional/edit/:professionalId', element: <ProfessionalEdit /> },
 
 		{ path: '/schedule', element: <ScheduleAdd /> },
-		//{ path: '/schedule/my', element: <ScheduleCheck /> },
+		{ path: '/schedule/my', element: <ScheduleCheck /> },
 
 		{ path: '/', element: <Home /> },
 
 		{ path: '/login', element: <LoginPage /> },
 	]
-	var sheet = document.styleSheets[0];
-	sheet.insertRule(":root{--blue:#4444FF}");
-
 	useEffect(() => {
 		getDesigns().then(() => {
 			setLoading(false);
