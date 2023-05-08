@@ -58,12 +58,11 @@ export async function addSchedule(schedule: scheduleType) {
                     takenAt: new Date().getTime(),
                     service: serviceId,
                     state: selectedState,
-                    client: clientId
+                    client: clientCache[clientId].name
                 };
             }
         }
 
-        console.log(`tetes`)
         // Update the selected professional's schedule in the cache.
         selectedSchedule[selectedDate] = selectedDaySchedule;
         setSchedule(selectedSchedule, professionalId.toString());
