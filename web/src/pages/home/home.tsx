@@ -73,7 +73,6 @@ function Home() {
         });
         return unsubscribe
     }, []);
-
     return (
         <div className="home">
             <div className="home-top">
@@ -94,25 +93,25 @@ function Home() {
                 <VerticalIconButton
                     state='active'
                     title='Tabela de Profissionais'
-                    icon=''
+                    icon={designCache[0].icons.professional}
                     onClickButton={() => navigate('/professional')}
                 />
                 <VerticalIconButton
                     state='active'
                     title='Tabela de Serviços'
-                    icon=''
+                    icon={designCache[0].icons.service}
                     onClickButton={() => navigate('/service')}
                 />
                 <VerticalIconButton
                     state='active'
                     title='Entrar em Contato'
-                    icon=''
+                    icon={designCache[0].icons.chat}
                     onClickButton={() => navigate('/contact')}
                 />
                 <VerticalIconButton
                     state='active'
                     title='Ver Minha Agenda'
-                    icon=''
+                    icon={designCache[0].icons.schedule}
                     onClickButton={() => navigate('/schedule/my')}
                 />
             </div>
