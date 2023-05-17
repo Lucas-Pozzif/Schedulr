@@ -10,4 +10,5 @@
     margin: 5px;
     margin-right: -5px;
     z-index: 1;
+    object-fit: cover;
 }

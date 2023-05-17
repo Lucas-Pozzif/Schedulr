@@ -27,6 +27,7 @@ export function ImageButton({
                 highlightText={highlightText}
                 detailText={detailText}
                 detailSubtitleText={detailSubtitleText}
+                onClickDetailButton={onClickDetailButton}
             />
         </div>
     )
