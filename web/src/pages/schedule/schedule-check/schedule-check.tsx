@@ -39,7 +39,6 @@ export default function ScheduleCheck() {
 
 
     if (loading) return <p>Loading...</p>
-    console.log(professional)
     return professional !== null ?
         <ProfessionalSchedule profId={professional} /> :
         <ClientSchedule />

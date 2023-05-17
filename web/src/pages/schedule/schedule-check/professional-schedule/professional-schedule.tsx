@@ -61,8 +61,6 @@ export default function ProfessionalSchedule(props: any) {
     const newDates = history ? dates : filteredDates
     const sortedDates = newDates.sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
 
-    console.log(scheduleForm, scheduleCache[profId])
-
     return loading ?
         <p>Loading...</p> :
         <div className="schedule-check">

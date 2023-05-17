@@ -108,8 +108,6 @@ export function ProfessionalTab({ schedule, setSchedule, selectedService, setSel
     }
     const [selectedProfessional, setSelectedProfessional] = useState<string | null>(null)
 
-    console.log(schedule.selectedServices)
-
     //const [completed, setCompleted] = useState(true)
     if (selectedService === undefined) return <p>error</p>
     return (
