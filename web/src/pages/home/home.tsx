@@ -99,7 +99,7 @@ function Home() {
                 <VerticalIconButton
                     state='active'
                     title='Tabela de Serviços'
-                    icon={designCache[0].icons.service}
+                    icon={designCache[0].icons.service.selected}
                     onClickButton={() => navigate('/service')}
                 />
                 <VerticalIconButton
