@@ -45,7 +45,7 @@ export function ServiceButton(
     }
 
     return (
-        <div>
+        <div className="service-button">
             <ItemButton
                 state={state}
                 title={service.name}
@@ -54,6 +54,7 @@ export function ServiceButton(
                 highlightText={service.inicial && !service.haveStates ? 'A partir de' : undefined}
                 detailSubtitleText={service.haveStates ? undefined : durationCalculator(service.duration)}
                 onClickButton={onClickButton}
+                onClickDetailButton={() => { if(allowExpand) setExpanded(!expanded) }}
             />
             {
                 expanded ?

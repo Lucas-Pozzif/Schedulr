@@ -1,3 +1,7 @@
+.service-button{
+    display: grid;
+    gap: 5px;
+}
 .service-button-expansion {
     flex-direction: column;
 }
