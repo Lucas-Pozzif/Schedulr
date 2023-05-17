@@ -75,7 +75,7 @@ function ServiceForm({ serviceId }: serviceFormType) {
                     />
                     <div className="s-form-save-button">
                         <SmallButton state="active" title="Salvar" onClickButton={async () => {
-                            setService(serviceForm, serviceId?.toString())
+                            await setService(serviceForm, serviceId?.toString())
                             navigate('/')
                         }}
                         />
