@@ -56,11 +56,11 @@ async function getAllSchedules() {
     })
 }
 
-async function deleteSchedule(scheduleId: string) {
+async function deleteSchedule(scheduleId: number) {
     /**
      * Deletes the schedule with the given scheduleId from the database.
      */
-    const docRef = doc(db, 'schedules', scheduleId)
+    const docRef = doc(db, 'schedules', scheduleId.toString())
     await deleteDoc(docRef)
 }
 
