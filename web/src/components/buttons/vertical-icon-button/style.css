@@ -1,6 +1,6 @@
 .vertical-icon-button {
-    height: 120px;
-    width: 90px;
+    height: 110px;
+    width: 75px;
     flex-direction: column;
     padding-bottom: 5px;
     padding-top: 10px;
@@ -10,8 +10,8 @@
 }
 
 .vertical-icon-button-icon {
-    width: 63px;
-    height: 63px;
+    width: 48px;
+    height: 48px;
 }
 
 .vertical-icon-button-text {
