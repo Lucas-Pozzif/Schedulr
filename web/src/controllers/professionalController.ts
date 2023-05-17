@@ -48,11 +48,12 @@ async function setProfessional(professional: professionalType, professionalId?: 
         docRef = doc(db, 'professionals_dev', professionalId)
     } else {
         let ids = await getIds()
-        ids!.professional++
 
         docRef = doc(db, 'professionals_dev', ids!.professional.toString())
-        await setIds(ids)
         await addSchedule()
+        
+        ids!.professional++
+        await setIds(ids)
     }
     await setDoc(docRef, professional)
 }
@@ -78,11 +79,11 @@ async function getAllProfessionals() {
     })
 }
 
-async function deleteProfessional(professionalId: string) {
+async function deleteProfessional(professionalId: number) {
     /**
      * Deletes the professional with the given professionalId from the database.
      */
-    const docRef = doc(db, 'professionals_dev', professionalId)
+    const docRef = doc(db, 'professionals_dev', professionalId.toString())
     await deleteSchedule(professionalId)
     await deleteDoc(docRef)
 }
