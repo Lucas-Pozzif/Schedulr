@@ -7,6 +7,7 @@ import { VerticalLine } from "../../../../components/line/vertical-line";
 import { SmallButton } from "../../../../components/buttons/small-button/small-button";
 
 import './style.css'
+import { DetailButton2 } from "../../../../components/buttons/detail-button-2/detail-button-2";
 
 export function InformationTab({ service, setService }: ServiceTabType) {
     const [state, setState] = useState(0)
@@ -21,7 +22,7 @@ export function InformationTab({ service, setService }: ServiceTabType) {
                         <Line />
                         <div className="s-form-state-tab flex-div">
                             {service.stateNames.map((stateName, index) => (
-                                <SmallButton
+                                <DetailButton2
                                     state={index == state ? "selected" : 'active'}
                                     key={index}
                                     title={stateName}

@@ -12,6 +12,7 @@ import { SmallButton } from "../../../components/buttons/small-button/small-butt
 import './style.css'
 
 let serviceCache = require('../../../cache/serviceCache.json')
+let designCache = require('../../../cache/designCache.json')
 
 export type ServiceTabType = {
     service: serviceType,
@@ -32,16 +33,16 @@ function ServiceForm({ serviceId }: serviceFormType) {
                 stateNames: ['Curto', 'Médio', 'Longo', 'Extra-Longo'],
                 stateValues: [50, 100, 150, 200],
                 stateDurations: {
-                    0: Array(144).fill(false),
-                    1: Array(144).fill(false),
-                    2: Array(144).fill(false),
-                    3: Array(144).fill(false),
+                    0: [true, ...Array(143).fill(false)],
+                    1: [true, ...Array(143).fill(false)],
+                    2: [true, ...Array(143).fill(false)],
+                    3: [true, ...Array(143).fill(false)]
                 },
                 photo: null,
                 inicial: false,
                 haveStates: true,
                 value: 100,
-                duration: Array(144).fill(false),
+                duration: [true, ...Array(143).fill(false)],
                 promotion: {
                     currentPromotion: null,
                     promotedUntil: null
@@ -76,17 +77,17 @@ function ServiceForm({ serviceId }: serviceFormType) {
                     <div className="s-form-save-button">
                         <SmallButton state="active" title="Salvar" onClickButton={async () => {
                             await setService(serviceForm, serviceId?.toString())
-                            navigate('/')
+                            navigate('/service')
                         }}
                         />
                     </div>
                 </div>
             </div>
             <div className="s-form-tab-list flex-div">
-                <VerticalIconButton state={tab == 0 ? "selected" : 'active'} title="Informações Individuais" icon="a" onClickButton={() => { setTab(0) }} />
-                <VerticalIconButton state={tab == 1 ? "inactive" : 'inactive'} title="Alterar Profissionais" icon="a" onClickButton={() => { setTab(1) }} />
-                <VerticalIconButton state={tab == 2 ? "selected" : 'active'} title="Tempo de Duração" icon="a" onClickButton={() => { setTab(2) }} />
-                <VerticalIconButton state={tab == 3 ? "selected" : 'active'} title="Excluir Serviço" icon="a" onClickButton={() => { setTab(3) }} />
+                <VerticalIconButton state={tab == 0 ? "selected" : 'active'} title="Informações Individuais" icon={designCache[0].icons["service-info"][tab == 0 ? "active" : 'selected']} onClickButton={() => { setTab(0) }} />
+                <VerticalIconButton state={tab == 1 ? "inactive" : 'inactive'} title="Criar Promoção" icon={designCache[0].icons.promotion[tab == 1 ? "active" : 'selected']} onClickButton={() => { }} />
+                <VerticalIconButton state={tab == 2 ? "selected" : 'active'} title="Tempo de Duração" icon={designCache[0].icons.time[tab == 2 ? "active" : 'selected']} onClickButton={() => { setTab(2) }} />
+                <VerticalIconButton state={tab == 3 ? "selected" : 'active'} title="Excluir Serviço" icon={designCache[0].icons.delete[tab == 3 ? "active" : 'selected']} onClickButton={() => { setTab(3) }} />
             </div>
             {tabRender()}
         </div> :

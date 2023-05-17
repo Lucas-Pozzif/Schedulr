@@ -40,7 +40,7 @@ function ServiceList() {
                 title="Que tal adicionar um novo serviço?"
                 subtitle="Inovar sempre atrai novos clientes!"
                 buttonTitle="Entrar em contato"
-                onClickButton={() => { navigate('/schedule/add') }}
+                onClickButton={() => { navigate('/service/add') }}
                 onClickReturn={() => { navigate(-1) }}
             />
             <div className="service-list-block">
@@ -56,6 +56,7 @@ function ServiceList() {
                                     <ServiceButton
                                         state='active'
                                         service={service}
+                                        allowExpand={true}
                                         onClickButton={() => {
                                             navigate(`/service/edit/${serviceId}`)
                                         }}
