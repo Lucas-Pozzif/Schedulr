@@ -38,5 +38,6 @@
     width: 130px;
     border-radius: 5px;
     margin: 5px;
+    object-fit: cover;
 
 }

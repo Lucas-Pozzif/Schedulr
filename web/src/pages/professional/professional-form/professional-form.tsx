@@ -9,12 +9,16 @@ import { ProfessionalButton } from "../../../components/buttons/image-button/pro
 import { useNavigate } from "react-router-dom"
 
 import './style.css'
+import { DeleteTab } from "./delete-tab/delete-tab"
+import { uploadDataUrl } from "../../../controllers/imageController"
+const designCache = require("../../../cache/designCache.json")
 
 let professionalCache = require('../../../cache/professionalCache.json')
 
 export type professionalTabType = {
     professional: professionalType,
     setProfessional: (professional: professionalType) => void
+    professionalId?: number
 }
 
 type professionalFormType = {
@@ -30,23 +34,22 @@ function ProfessionalForm({ professionalId }: professionalFormType) {
             {
                 name: 'Novo Profissional',
                 email: null,
-                photo: null,
+                photo: designCache[0].icons.account,
                 occupations: [],
                 services: [],
                 disponibility: {
-                    0: Array(144).fill(true),
-                    1: Array(144).fill(true),
-                    2: Array(144).fill(true),
-                    3: Array(144).fill(true),
-                    4: Array(144).fill(true),
-                    5: Array(144).fill(true),
-                    6: Array(144).fill(true)
+                    0: Array(144).fill(false),
+                    1: Array(144).fill(false),
+                    2: Array(144).fill(false),
+                    3: Array(144).fill(false),
+                    4: Array(144).fill(false),
+                    5: Array(144).fill(false),
+                    6: Array(144).fill(false)
                 },
                 lastOnline: null
             } :
             professionalCache[professionalId]
     )
-
     function tabRender() {
         switch (tab) {
             case 0:
@@ -56,7 +59,7 @@ function ProfessionalForm({ professionalId }: professionalFormType) {
             case 2:
                 return <DisponibilityTab professional={professionalForm} setProfessional={setProfessionalForm} />
             default:
-                return <p>error</p>;
+                return <DeleteTab professional={professionalForm} setProfessional={setProfessionalForm} professionalId={professionalId} />
         }
     }
     return professionalForm ?
@@ -68,16 +71,16 @@ function ProfessionalForm({ professionalId }: professionalFormType) {
                     professional={professionalForm}
                     detailText="Salvar"
                     onClickDetailButton={async () => {
-                        setProfessional(professionalForm, professionalId?.toString())
-                        navigate('/professional')
+                        await setProfessional({ ...professionalForm, photo: await uploadDataUrl(professionalForm.photo, "professionals", professionalId) }, professionalId?.toString());
+                        navigate('/professional');
                     }}
                 />
             </div>
             <div className="p-form-tab-list flex-div">
-                <VerticalIconButton state={tab == 0 ? 'selected' : 'active'} title="Informações Pessoais" icon="a" onClickButton={() => { setTab(0) }} />
-                <VerticalIconButton state={tab == 1 ? 'selected' : 'active'} title="Alterar Serviços" icon="a" onClickButton={() => { setTab(1) }} />
-                <VerticalIconButton state={tab == 2 ? 'selected' : 'active'} title="Alterar Horários" icon="a" onClickButton={() => { setTab(2) }} />
-                <VerticalIconButton state={'inactive'} title="Excluir Conta" icon="a" onClickButton={() => { }} />
+                <VerticalIconButton state={tab == 0 ? 'selected' : 'active'} title="Informações Pessoais" icon={designCache[0].icons.idCard[tab == 0 ? "active" : "selected"]} onClickButton={() => { setTab(0) }} />
+                <VerticalIconButton state={tab == 1 ? 'selected' : 'active'} title="Alterar Serviços" icon={designCache[0].icons.service[tab == 1 ? "active" : "selected"]} onClickButton={() => { setTab(1) }} />
+                <VerticalIconButton state={tab == 2 ? 'selected' : 'active'} title="Alterar Horários" icon={designCache[0].icons.time[tab == 2 ? "active" : "selected"]} onClickButton={() => { setTab(2) }} />
+                <VerticalIconButton state={tab == 3 ? 'selected' : 'active'} title="Excluir Conta" icon={designCache[0].icons.delete[tab == 3 ? "active" : "selected"]} onClickButton={() => { setTab(3) }} />
             </div>
             {tabRender()}
         </div> :

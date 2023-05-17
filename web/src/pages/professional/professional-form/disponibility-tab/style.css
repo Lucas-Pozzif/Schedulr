@@ -14,3 +14,8 @@
     display: grid;
     gap: 10px;
 }
+
+.p-form-dispotab-time-handler {
+    justify-content: center;
+    gap: 10px;
+}

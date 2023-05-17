@@ -5,6 +5,10 @@ import updateProfessional from "../../../../functions/updaters/update-profession
 import { ServiceButton } from "../../../../components/buttons/item-button/service-button/service-button";
 
 import './style.css'
+import { ItemButton } from "../../../../components/buttons/item-button/item-button";
+import ServiceForm from "../../../service/service-form/service-form";
+import { Header } from "../../../../components/header/header";
+import { Line } from "../../../../components/line/line";
 
 const serviceCache = require('../../../../cache/serviceCache.json')
 
@@ -21,6 +25,11 @@ export function ServiceTab({ professional, setProfessional }: professionalTabTyp
 
     return (
         <div className="p-form-servtab">
+            <Header
+                title="Não encontrou seu serviço?"
+                subtitle="Você pode salvar para editar depois de criar o serviço"
+            />
+            <Line />
             {
                 loading ?
                     <p>loading...</p> :

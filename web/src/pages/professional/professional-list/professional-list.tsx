@@ -26,10 +26,10 @@ function ProfessionalList() {
     return (
         <div className="professional-list-page">
             <Header
-                title="Não sabe exatamente quem escolher?"
-                subtitle="Deixa isso com a gente!"
-                buttonTitle="Sem preferência"
-                onClickButton={() => { navigate('/schedule') }}
+                title="Chegou alguém novo no time?"
+                subtitle="Todos precisam estar presentes"
+                buttonTitle="Novo profissional"
+                onClickButton={() => { navigate('/professional/add') }}
                 onClickReturn={() => { navigate(-1) }}
             />
             <div className="professional-list-block">
@@ -46,7 +46,7 @@ function ProfessionalList() {
                                         state='active'
                                         professional={professional}
                                         detailText="Ver serviços"
-                                        onClickButton={() => { }}
+                                        onClickButton={() => { navigate(`/professional/edit/${professionalId}`) }}
                                     />
                                 )
                             })
