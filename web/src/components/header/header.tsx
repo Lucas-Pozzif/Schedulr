@@ -4,9 +4,13 @@ import { headerType } from "./header-type";
 
 import './style.css'
 
-export function Header({ title, subtitle, buttonTitle, onClickButton, onClickReturn }: headerType) {
+export function Header({ title, subtitle, buttonTitle, onClickButton, onClickReturn, state = 'active' }: headerType) {
     const RenderReturn = () => onClickReturn ? <ReturnButton onClickButton={onClickReturn} /> : null
-    const RenderButton = () => onClickButton && buttonTitle ? <SmallButton title={buttonTitle} state="active" onClickButton={onClickButton} /> : null
+    const RenderButton = () => onClickButton && buttonTitle ? <SmallButton
+        title={buttonTitle}
+        state={state}
+        onClickButton={() => { if (state !== 'inactive') onClickButton() }
+        } /> : null
 
     return (
         <div className="header flex-div">
