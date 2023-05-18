@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import ServiceForm from "../service-form/service-form";
 import { getService } from "../../../controllers/serviceController";
+import { LoadingScreen } from "../../../components/loading/loading-screen/loading-screen";
 
 
 export default function ServiceEdit() {
@@ -18,7 +19,7 @@ export default function ServiceEdit() {
     });
 
     if (loading) {
-        return <p>Loading...</p>;
+        return <LoadingScreen />;
     }
 
     if (!serviceData) {

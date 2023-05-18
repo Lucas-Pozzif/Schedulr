@@ -9,6 +9,7 @@ import { ItemButton } from "../../../../components/buttons/item-button/item-butt
 import ServiceForm from "../../../service/service-form/service-form";
 import { Header } from "../../../../components/header/header";
 import { Line } from "../../../../components/line/line";
+import { LoadingScreen } from "../../../../components/loading/loading-screen/loading-screen";
 
 const serviceCache = require('../../../../cache/serviceCache.json')
 
@@ -32,7 +33,7 @@ export function ServiceTab({ professional, setProfessional }: professionalTabTyp
             <Line />
             {
                 loading ?
-                    <p>loading...</p> :
+                    <LoadingScreen /> :
                     serviceIds!.map((serviceId: string) => {
                         const service = serviceCache[serviceId]
                         if (service === undefined) return null

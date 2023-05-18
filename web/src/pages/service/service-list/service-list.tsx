@@ -9,6 +9,7 @@ import { ServiceButton } from "../../../components/buttons/item-button/service-b
 import { Input } from "../../../components/input/input";
 
 import './style.css'
+import { LoadingScreen } from "../../../components/loading/loading-screen/loading-screen";
 
 const serviceCache = require('../../../cache/serviceCache.json')
 
@@ -48,7 +49,7 @@ function ServiceList() {
                 <div className="service-list">
                     {
                         loading ?
-                            <p>loading...</p> :
+                            <LoadingScreen /> :
                             serviceIds!.map((serviceId: string) => {
                                 const service = serviceCache[serviceId]
                                 if (!service.name.toLowerCase().includes(searchBar)) return null

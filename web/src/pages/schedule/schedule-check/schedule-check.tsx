@@ -8,6 +8,7 @@ import ProfessionalSchedule from "./professional-schedule/professional-schedule"
 import ClientSchedule from "./client-schedule/client-schedule";
 
 import './style.css'
+import { LoadingScreen } from "../../../components/loading/loading-screen/loading-screen";
 
 const professionalCache = require('../../../cache/professionalCache.json')
 const clientCache = require('../../../cache/clientCache.json')
@@ -38,7 +39,7 @@ export default function ScheduleCheck() {
     }, [navigate])
 
 
-    if (loading) return <p>Loading...</p>
+    if (loading) return <LoadingScreen />
     return professional !== null ?
         <ProfessionalSchedule profId={professional} /> :
         <ClientSchedule />

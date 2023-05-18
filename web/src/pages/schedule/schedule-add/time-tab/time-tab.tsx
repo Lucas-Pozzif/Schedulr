@@ -5,6 +5,7 @@ import { ItemButton } from '../../../../components/buttons/item-button/item-butt
 import { arrayIndexToTime } from '../../../../functions/array-index-to-time/array-index-to-time';
 import { ReturnButton } from '../../../../components/buttons/return-button/return-button';
 import { ScheduleButton } from '../../../../components/buttons/item-button/schedule-button/schedule-button';
+import { LoadingScreen } from '../../../../components/loading/loading-screen/loading-screen';
 
 const serviceCache = require('../../../../cache/serviceCache.json')
 const scheduleCache = require('../../../../cache/scheduleCache.json')
@@ -81,8 +82,8 @@ function TimeList({ services, selectedService, setSelectedService, schedule, set
         <div className='service-tab'>
             {
                 loading ?
-                    <p>loading</p> :
-                    hours.map((hour,index) => {
+                    <LoadingScreen /> :
+                    hours.map((hour, index) => {
                         const hourIndex = hours.indexOf(hour);
 
                         const isValid = () => {

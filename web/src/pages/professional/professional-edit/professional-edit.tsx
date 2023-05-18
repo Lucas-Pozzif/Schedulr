@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { getService } from "../../../controllers/serviceController";
 import ProfessionalForm from "../professional-form/professional-form";
+import { LoadingScreen } from "../../../components/loading/loading-screen/loading-screen";
 
 
 export default function ProfessionalEdit() {
@@ -18,7 +19,7 @@ export default function ProfessionalEdit() {
     });
 
     if (loading) {
-        return <p>Loading...</p>;
+        return <LoadingScreen />;
     }
 
     if (!serviceData) {

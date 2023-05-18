@@ -7,6 +7,7 @@ import { getAllOccupations } from '../../../../controllers/occupationController'
 import { ProfessionalButton } from '../../../../components/buttons/image-button/professional-button/professional-button';
 import { ReturnButton } from '../../../../components/buttons/return-button/return-button';
 import { ScheduleButton } from '../../../../components/buttons/item-button/schedule-button/schedule-button';
+import { LoadingScreen } from '../../../../components/loading/loading-screen/loading-screen';
 
 const professionalCache = require('../../../../cache/professionalCache.json')
 const serviceCache = require('../../../../cache/serviceCache.json')
@@ -71,7 +72,7 @@ function ProfessionalList({ selectedProfessional, setSelectedProfessional, selec
         <div className='pt-professional-list'>
             {
                 loading ?
-                    <p>loading...</p> :
+                    <LoadingScreen /> :
                     professionalIds!.map((professionalId: string) => {
                         const selectedServiceIndex = selectedServices.indexOf(selectedServices.find(service => service.service === selectedService.service) || selectedService)
                         const serviceId = selectedService.service

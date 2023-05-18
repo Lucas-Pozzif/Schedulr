@@ -10,6 +10,7 @@ import { VerticalLine } from '../../../../components/line/vertical-line';
 import { IconButton2 } from '../../../../components/buttons/icon-button-2/icon-button-2';
 
 import './style.css'
+import { LoadingScreen } from '../../../../components/loading/loading-screen/loading-screen';
 
 const occupationCache = require('../../../../cache/occupationCache.json')
 
@@ -71,7 +72,7 @@ export function InformationTab({ professional, setProfessional }: professionalTa
                     <div className='p-form-occupation-list'>
                         {
                             occupationIds === null ?
-                                <p>loading</p> :
+                                <LoadingScreen/> :
                                 occupationIds!.map((occupationId: string) =>
                                     <DetailButton
                                         state={professional.occupations.includes(occupationId) ? 'selected' : 'active'}

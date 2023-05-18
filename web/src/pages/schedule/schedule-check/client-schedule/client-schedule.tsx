@@ -10,6 +10,7 @@ import { getProfessional } from "../../../../controllers/professionalController"
 import { ScheduleButton } from "../../../../components/buttons/item-button/schedule-button/schedule-button";
 import { selectedServiceType } from "../../schedule-add/schedule-add";
 import { SmallButton } from "../../../../components/buttons/small-button/small-button";
+import { LoadingScreen } from "../../../../components/loading/loading-screen/loading-screen";
 
 const clientCache = require('../../../../cache/clientCache.json')
 
@@ -49,7 +50,7 @@ export default function ClientSchedule() {
     const sortedDates = newDates.sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
 
     return loading ?
-        <p>loading...</p> :
+        <LoadingScreen /> :
         <div className="schedule-check">
             <Header
                 title="Aqui estão todos seus agendamentos."

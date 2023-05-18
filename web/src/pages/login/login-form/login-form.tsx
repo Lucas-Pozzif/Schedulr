@@ -6,6 +6,7 @@ import { clientType, getClient, setClient } from "../../../controllers/clientCon
 import { SubmitButton } from "../../../components/buttons/submit-button/submit-button";
 import { AuthTab } from "./auth-tab/auth-tab";
 import { InputTab } from "./input-tab/input-tab";
+import { LoadingScreen } from "../../../components/loading/loading-screen/loading-screen";
 
 const clientCache = require('../../../cache/clientCache.json')
 
@@ -56,9 +57,7 @@ export function LoginForm() {
     switch (tab) {
         case 'loading':
             return (
-                <>
-                    <p>loading</p>
-                </>
+                <LoadingScreen />
             )
         case 'log-in':
             return (

@@ -5,6 +5,7 @@ import { getAllServices } from "../../../../controllers/serviceController";
 import './style.css'
 import { ServiceButton } from "../../../../components/buttons/item-button/service-button/service-button";
 import { Header } from "../../../../components/header/header";
+import { LoadingScreen } from "../../../../components/loading/loading-screen/loading-screen";
 
 const serviceCache = require('../../../../cache/serviceCache.json')
 
@@ -97,7 +98,7 @@ export function ServiceTab({ schedule, setSchedule, setTab }: scheduleTabType) {
             />
             {
                 loading ?
-                    <p>loading...</p> :
+                    <LoadingScreen /> :
                     serviceIds!.map((serviceId: string) => {
                         let selectedServices = [...schedule.selectedServices]
                         const service = serviceCache[serviceId]

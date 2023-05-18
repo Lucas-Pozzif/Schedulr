@@ -6,6 +6,7 @@ import { ProfessionalButton } from "../../../components/buttons/image-button/pro
 
 import './style.css'
 import { Input } from "../../../components/input/input";
+import { LoadingScreen } from "../../../components/loading/loading-screen/loading-screen";
 
 const professionalCache = require('../../../cache/professionalCache.json')
 
@@ -37,7 +38,7 @@ function ProfessionalList() {
                 <div className="professional-list">
                     {
                         loading ?
-                            <p>loading...</p> :
+                            <LoadingScreen /> :
                             professionalIds!.map((professionalId: string) => {
                                 const professional = professionalCache[professionalId]
                                 if (!professional.name.toLowerCase().includes(searchBar)) return null

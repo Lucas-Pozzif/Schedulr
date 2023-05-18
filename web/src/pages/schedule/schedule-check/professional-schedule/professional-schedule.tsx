@@ -11,6 +11,7 @@ import { ItemButton } from "../../../../components/buttons/item-button/item-butt
 import { arrayIndexToTime } from "../../../../functions/array-index-to-time/array-index-to-time";
 import { getService } from "../../../../controllers/serviceController";
 import { SubmitButton } from "../../../../components/buttons/submit-button/submit-button";
+import { LoadingScreen } from "../../../../components/loading/loading-screen/loading-screen";
 
 const scheduleCache = require('../../../../cache/scheduleCache.json')
 const serviceCache = require('../../../../cache/serviceCache.json')
@@ -63,7 +64,7 @@ export default function ProfessionalSchedule(props: any) {
     const sortedDates = newDates.sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
 
     return loading ?
-        <p>Loading...</p> :
+        <LoadingScreen /> :
         <div className="schedule-check">
             <Header
                 title="Precisa de um tempinho na sua agenda?"
