@@ -76,7 +76,7 @@ function ProfessionalList({ selectedProfessional, setSelectedProfessional, selec
                         const selectedServiceIndex = selectedServices.indexOf(selectedServices.find(service => service.service === selectedService.service) || selectedService)
                         const serviceId = selectedService.service
 
-                        const isValid = () => professionalCache[professionalId].services.includes(serviceId)
+                        const isValid = () => professionalCache[professionalId].services.includes(serviceId?.toString())
                         return isValid() ?
                             <ProfessionalButton
                                 state={selectedService.professional == parseInt(professionalId) ? 'selected' : 'active'}

@@ -25,7 +25,7 @@ export function ConfirmationTab({ schedule, setSchedule, setTab }: scheduleTabTy
                     schedule.selectedServices.map((selectedService) => {
                         if (selectedService.service != null && selectedService.professional != null) {
                             return (
-                                <ScheduleButton state="active" selectedService={selectedService} detailText="Editar" onClickButton={() => setTab(1)} />
+                                <ScheduleButton state="active" selectedService={selectedService} detailText={schedule.selectedDate} onClickButton={() => setTab(1)} />
                             )
                         }
                     })

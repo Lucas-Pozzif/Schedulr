@@ -73,6 +73,7 @@ export function ServiceTab({ schedule, setSchedule, setTab }: scheduleTabType) {
         'active' | 'selected' | 'inactive'
     ] {
         let selectedServices = [...schedule.selectedServices]
+
         const filteredService = selectedServices.filter((selectedService) => selectedService.service === parseInt(serviceId))
 
         return [
@@ -90,7 +91,7 @@ export function ServiceTab({ schedule, setSchedule, setTab }: scheduleTabType) {
                 title="Escolha os serviços que interessam"
                 subtitle="Selecione e continue"
                 buttonTitle="Escolher Serviços"
-
+                state={(schedule.selectedServices.length > 0) ? 'active' : 'inactive'}
                 onClickReturn={() => setTab(0)}
                 onClickButton={() => setTab(2)}
             />
@@ -101,11 +102,12 @@ export function ServiceTab({ schedule, setSchedule, setTab }: scheduleTabType) {
                         let selectedServices = [...schedule.selectedServices]
                         const service = serviceCache[serviceId]
                         const filteredService = selectedServices.filter((selectedService) => selectedService.service === parseInt(serviceId))
-
+                        if (service === undefined) return null
                         return (
                             <ServiceButton
                                 state={filteredService.length > 0 ? 'selected' : 'active'}
                                 expandedState={expandedSelectedList(serviceId)}
+                                allowExpand={true}
                                 service={service}
                                 onClickButton={() => { onClickHandler(serviceId) }}
                                 onClickExpanded={onClickExpandedHandler(serviceId)}

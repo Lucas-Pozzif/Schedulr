@@ -8,6 +8,7 @@ import { ScheduleButton } from '../../../../components/buttons/item-button/sched
 
 const serviceCache = require('../../../../cache/serviceCache.json')
 const scheduleCache = require('../../../../cache/scheduleCache.json')
+const professionalCache = require('../../../../cache/professionalCache.json')
 
 type serviceListType = {
     services: selectedServiceType[],
@@ -81,7 +82,7 @@ function TimeList({ services, selectedService, setSelectedService, schedule, set
             {
                 loading ?
                     <p>loading</p> :
-                    hours.map((hour) => {
+                    hours.map((hour,index) => {
                         const hourIndex = hours.indexOf(hour);
 
                         const isValid = () => {
@@ -116,7 +117,7 @@ function TimeList({ services, selectedService, setSelectedService, schedule, set
 
                             //const sameProfessionalServices = schedule.selectedServices.filter(service => (service.professional == professionalId && service.service !== serviceId))
 
-                            return true
+                            return professionalCache[professionalId].disponibility[new Date(schedule.selectedDate).getDay()][index]
                         }
 
                         return isValid() ?
