@@ -35,6 +35,7 @@ export function ServiceTab({ professional, setProfessional }: professionalTabTyp
                     <p>loading...</p> :
                     serviceIds!.map((serviceId: string) => {
                         const service = serviceCache[serviceId]
+                        if (service === undefined) return null
                         return (
                             <ServiceButton
                                 state={professional.services.includes(serviceId) ? 'selected' : 'active'}

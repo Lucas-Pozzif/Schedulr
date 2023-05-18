@@ -71,7 +71,10 @@ function ProfessionalForm({ professionalId }: professionalFormType) {
                     professional={professionalForm}
                     detailText="Salvar"
                     onClickDetailButton={async () => {
-                        await setProfessional({ ...professionalForm, photo: await uploadDataUrl(professionalForm.photo, "professionals", professionalId) }, professionalId?.toString());
+                        const photo = professionalForm.photo.startsWith("http")
+                            ? professionalForm.photo
+                            : await uploadDataUrl(professionalForm.photo, "professionals", professionalId);
+                        await setProfessional({ ...professionalForm, photo: photo }, professionalId?.toString());
                         navigate('/professional');
                     }}
                 />
