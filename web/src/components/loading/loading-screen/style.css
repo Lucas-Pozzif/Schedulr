@@ -1,0 +1,27 @@
+.loading-screen {
+  display: grid;
+  justify-items: center;
+  align-items: center;
+}
+
+.loading-logo {
+  width: 200px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 5px;
+  animation: blink 2s infinite;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 0.3;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.3;
+  }
+}
