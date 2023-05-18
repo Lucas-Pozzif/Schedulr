@@ -15,6 +15,7 @@ import { SubmitButton } from "../../../../components/buttons/submit-button/submi
 const scheduleCache = require('../../../../cache/scheduleCache.json')
 const serviceCache = require('../../../../cache/serviceCache.json')
 const clientCache = require('../../../../cache/clientCache.json')
+const professionalCache = require('../../../../cache/professionalCache.json')
 
 export default function ProfessionalSchedule(props: any) {
     const [loading, setLoading] = useState(true);
@@ -67,7 +68,7 @@ export default function ProfessionalSchedule(props: any) {
             <Header
                 title="Precisa de um tempinho na sua agenda?"
                 subtitle="Bloqueie os horários para evitar agendamentos"
-                buttonTitle={blockMode ? 'Esconder' : 'Mostrar horários livres'}
+                buttonTitle={blockMode ? 'Mostar Agendamentos' : 'Mostrar Tudo'}
                 onClickButton={() => setBlockMode(!blockMode)}
                 onClickReturn={() => navigate(-1)}
             />
@@ -89,6 +90,7 @@ export default function ProfessionalSchedule(props: any) {
 
                                         switch (time.takenAt) {
                                             case null:
+                                                if (!professionalCache[profId].disponibility[new Date(date).getDay()][index]) return null
                                                 return blockMode ?
                                                     <ItemButton
                                                         state={unsavedChanges ? 'selected' : 'active'}
@@ -139,15 +141,13 @@ export default function ProfessionalSchedule(props: any) {
                                             case 'permablock':
                                                 return null
                                             default:
-                                                return blockMode ?
-                                                    null :
-                                                    <ItemButton
-                                                        state="active"
-                                                        title={`${serviceCache[time.service!.toString()].name} - ${arrayIndexToTime(index)}`}
-                                                        subtitle={`Agendado ${new Date(time.takenAt).toLocaleString('pt-BR', { day: '2-digit', month: 'long', 'hour': '2-digit', minute: '2-digit' })}`}
-                                                        detailSubtitleText={time.client ? time.client : 'Cliente não encontrado'}
-                                                        detailText="Editar"
-                                                    />
+                                                return <ItemButton
+                                                    state={blockMode ? 'selected' : 'active'}
+                                                    title={`${serviceCache[time.service!.toString()].name} - ${arrayIndexToTime(index)}`}
+                                                    subtitle={`Agendado ${new Date(time.takenAt).toLocaleString('pt-BR', { day: '2-digit', month: 'long', 'hour': '2-digit', minute: '2-digit' })}`}
+                                                    detailSubtitleText={time.client ? time.client : 'Cliente não encontrado'}
+                                                    detailText="Editar"
+                                                />
                                         }
                                     })
                                 }
