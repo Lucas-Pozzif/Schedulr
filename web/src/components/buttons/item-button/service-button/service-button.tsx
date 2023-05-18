@@ -54,7 +54,7 @@ export function ServiceButton(
                 highlightText={service.inicial && !service.haveStates ? 'A partir de' : undefined}
                 detailSubtitleText={service.haveStates ? undefined : durationCalculator(service.duration)}
                 onClickButton={onClickButton}
-                onClickDetailButton={() => { if(allowExpand) setExpanded(!expanded) }}
+                onClickDetailButton={() => { if (allowExpand && service.haveStates) setExpanded(!expanded) }}
             />
             {
                 expanded ?
