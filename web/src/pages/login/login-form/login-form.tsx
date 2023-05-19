@@ -1,4 +1,4 @@
-import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup } from "firebase/auth";
+import { GoogleAuthProvider, onAuthStateChanged, signInAnonymously, signInWithPopup } from "firebase/auth";
 import { useState, useEffect } from "react";
 import { auth } from "../../../firebase/firebase";
 import { useNavigate } from "react-router-dom";
@@ -50,9 +50,17 @@ export function LoginForm() {
         return unsubscribe
     }, []);
 
-    const handleSignIn = async () => {
+    const googleSignIn = async () => {
         const provider = new GoogleAuthProvider();
         await signInWithPopup(auth, provider);
+    }
+
+    const appleSignIn = async () => {
+        const provider = new GoogleAuthProvider();
+        await signInWithPopup(auth, provider);
+    }
+    const anonimousSignIn = async () => {
+        await signInAnonymously(auth);
     }
     switch (tab) {
         case 'loading':
@@ -63,8 +71,9 @@ export function LoginForm() {
             return (
                 <>
                     <AuthTab
-                        loginWithApple={handleSignIn}
-                        loginWithGoogle={handleSignIn}
+                        googleSignIn={googleSignIn}
+                        appleSignIn={appleSignIn}
+                        anonSignIn={anonimousSignIn}
                     />
                 </>
             )
