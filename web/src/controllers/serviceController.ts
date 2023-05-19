@@ -7,7 +7,7 @@ let serviceCache = require('../cache/serviceCache.json')
 export type serviceType = {
     name: string,
     stateNames: string[],
-    stateValues: number[],
+    stateValues: (number | string)[],
     stateDurations: {
         0: boolean[],
         1: boolean[],
@@ -17,7 +17,7 @@ export type serviceType = {
     haveStates: boolean,
     photo: string | null,
     inicial: boolean,
-    value: number,
+    value: number | string,
     duration: boolean[],
     promotion: {
         currentPromotion: null | string, //promotionId

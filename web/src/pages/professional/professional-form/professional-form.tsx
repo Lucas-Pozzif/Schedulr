@@ -34,7 +34,7 @@ function ProfessionalForm({ professionalId }: professionalFormType) {
     const [professionalForm, setProfessionalForm] = useState<professionalType>(
         professionalId === undefined ?
             {
-                name: 'Novo Profissional',
+                name: '',
                 email: null,
                 photo: designCache[0].icons.account.selected,
                 occupations: [],

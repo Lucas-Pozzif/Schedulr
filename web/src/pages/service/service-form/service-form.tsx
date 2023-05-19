@@ -29,7 +29,7 @@ function ServiceForm({ serviceId }: serviceFormType) {
     const [serviceForm, setServiceForm] = useState<serviceType>(
         serviceId === undefined ?
             {
-                name: 'Novo serviço',
+                name: '',
                 stateNames: ['Curto', 'Médio', 'Longo', 'Extra-Longo'],
                 stateValues: [50, 100, 150, 200],
                 stateDurations: {
@@ -40,7 +40,7 @@ function ServiceForm({ serviceId }: serviceFormType) {
                 },
                 photo: null,
                 inicial: false,
-                haveStates: true,
+                haveStates: false,
                 value: 100,
                 duration: [true, ...Array(143).fill(false)],
                 promotion: {

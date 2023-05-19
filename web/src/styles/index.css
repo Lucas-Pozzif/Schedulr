@@ -107,3 +107,12 @@ html {
     user-select: none;
     /* Standard syntax */
 }
+
+@font-face {
+    font-family: 'actor';
+    src: url('./Actor-Regular.ttf');
+}
+
+p {
+    font-family: BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif !important; 
+}

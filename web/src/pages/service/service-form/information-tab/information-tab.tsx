@@ -61,7 +61,7 @@ export function InformationTab({ service, setService }: ServiceTabType) {
                                     placeholder="Alterar valor do estado"
                                     value={newValues[state].toString()}
                                     onValueChange={(e) => {
-                                        newValues[state] = parseInt(e.target.value);
+                                        newValues[state] = e.target.value;
                                         setService({
                                             ...service,
                                             stateValues: newValues,
@@ -77,7 +77,7 @@ export function InformationTab({ service, setService }: ServiceTabType) {
                                 onValueChange={(e) =>
                                     setService({
                                         ...service,
-                                        value: parseInt(e.target.value),
+                                        value: e.target.value,
                                     })
                                 }
                             />

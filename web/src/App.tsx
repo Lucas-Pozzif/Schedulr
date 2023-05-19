@@ -17,7 +17,7 @@ import { LoadingScreen } from "./components/loading/loading-screen/loading-scree
 const designCache = require('./cache/designCache.json')
 
 function App() {
-	const [loading, setLoading] = useState(true)
+	const [loading, setLoading] = useState(true);
 
 	const routes = [
 		{ path: '/service', element: <ServiceList /> },
