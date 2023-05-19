@@ -42,7 +42,7 @@ function ServiceList() {
                 subtitle="Inovar sempre atrai novos clientes!"
                 buttonTitle="Entrar em contato"
                 onClickButton={() => { navigate('/service/add') }}
-                onClickReturn={() => { navigate(-1) }}
+                onClickReturn={() => { navigate('/') }}
             />
             <div className="service-list-block">
                 <Input placeholder="Pesquisar" onValueChange={(e) => { setSearchBar(e.target.value.toLowerCase()) }} />
