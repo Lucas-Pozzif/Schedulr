@@ -7,10 +7,11 @@ import { VerticalIconButton } from "../../../components/buttons/vertical-icon-bu
 import { ReturnButton } from "../../../components/buttons/return-button/return-button"
 import { ProfessionalButton } from "../../../components/buttons/image-button/professional-button/professional-button"
 import { useNavigate } from "react-router-dom"
-
-import './style.css'
 import { DeleteTab } from "./delete-tab/delete-tab"
 import { uploadDataUrl } from "../../../controllers/imageController"
+import { LoadingScreen } from "../../../components/loading/loading-screen/loading-screen"
+
+import './style.css'
 const designCache = require("../../../cache/designCache.json")
 
 let professionalCache = require('../../../cache/professionalCache.json')
@@ -28,13 +29,14 @@ type professionalFormType = {
 function ProfessionalForm({ professionalId }: professionalFormType) {
     const navigate = useNavigate()
 
+    const [loading, setLoading] = useState(false);
     const [tab, setTab] = useState(0)
     const [professionalForm, setProfessionalForm] = useState<professionalType>(
         professionalId === undefined ?
             {
                 name: 'Novo Profissional',
                 email: null,
-                photo: designCache[0].icons.account,
+                photo: designCache[0].icons.account.selected,
                 occupations: [],
                 services: [],
                 disponibility: {
@@ -62,7 +64,7 @@ function ProfessionalForm({ professionalId }: professionalFormType) {
                 return <DeleteTab professional={professionalForm} setProfessional={setProfessionalForm} professionalId={professionalId} />
         }
     }
-    return professionalForm ?
+    return !loading ?
         <div className="p-form">
             <div className="flex-div p-form-header">
                 <ReturnButton onClickButton={() => navigate(-1)} />
@@ -71,6 +73,7 @@ function ProfessionalForm({ professionalId }: professionalFormType) {
                     professional={professionalForm}
                     detailText="Salvar"
                     onClickDetailButton={async () => {
+                        setLoading(true)
                         const photo = professionalForm.photo.startsWith("http")
                             ? professionalForm.photo
                             : await uploadDataUrl(professionalForm.photo, "professionals", professionalId);
@@ -87,7 +90,7 @@ function ProfessionalForm({ professionalId }: professionalFormType) {
             </div>
             {tabRender()}
         </div> :
-        <p>error</p>
+        <LoadingScreen />
 }
 
 export default ProfessionalForm
