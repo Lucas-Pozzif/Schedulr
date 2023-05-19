@@ -18,7 +18,7 @@ function Home() {
     const [userId, setUserId] = useState<string | undefined>()
 
     const logo = designCache[0].lightLogo
-    const accountIcon = designCache[0].icons.account
+    const accountIcon = designCache[0].icons.account.selected
     const date = new Date().getHours()
 
     useEffect(() => {
@@ -43,7 +43,7 @@ function Home() {
 
     }
 
-    let nextService: string = 'Você não possui nenhum agendamento marcado para essa semana'
+    let nextService: string = 'Você pode ver seus agendamentos na aba minha agenda'
     if (userId) {
         const today = new Date()
         const nowIndex = timeToArrayIndex(new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }))
