@@ -76,7 +76,7 @@ export function DisponibilityTab({ professional, setProfessional }: professional
             <div className='flex-div p-form-dispotab-time-handler'>
                 <SmallButton
                     state={!displayMorning ? "active" : "selected"}
-                    title={"Exibir antes das 6h"}
+                    title={"Antes das 6h"}
                     onClickButton={() => {
                         setDisplayMorning(!displayMorning)
                     }}
@@ -84,7 +84,7 @@ export function DisponibilityTab({ professional, setProfessional }: professional
 
                 <SmallButton
                     state={!displayNight ? "active" : "selected"}
-                    title={"Exibir depois das 18h"}
+                    title={"Depois das 18h"}
                     onClickButton={() => {
                         setDisplayNight(!displayNight)
                     }}
