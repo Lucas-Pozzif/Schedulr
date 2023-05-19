@@ -49,7 +49,7 @@ export function InformationTab({ professional, setProfessional }: professionalTa
         });
     }, []);
 
-    if(selectedImage !== null){
+    if (selectedImage !== null) {
     }
 
     return (
@@ -72,7 +72,7 @@ export function InformationTab({ professional, setProfessional }: professionalTa
                     <div className='p-form-occupation-list'>
                         {
                             occupationIds === null ?
-                                <LoadingScreen/> :
+                                <LoadingScreen /> :
                                 occupationIds!.map((occupationId: string) =>
                                     <DetailButton
                                         state={professional.occupations.includes(occupationId) ? 'selected' : 'active'}
