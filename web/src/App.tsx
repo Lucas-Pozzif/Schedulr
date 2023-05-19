@@ -12,6 +12,7 @@ import ServiceEdit from "./pages/service/service-edit/service-edit";
 import ScheduleAdd from "./pages/schedule/schedule-add/schedule-add";
 import ProfessionalEdit from "./pages/professional/professional-edit/professional-edit";
 import ScheduleCheck from "./pages/schedule/schedule-check/schedule-check";
+import { LoadingScreen } from "./components/loading/loading-screen/loading-screen";
 
 const designCache = require('./cache/designCache.json')
 
@@ -33,6 +34,7 @@ function App() {
 		{ path: '/', element: <Home /> },
 
 		{ path: '/login', element: <LoginPage /> },
+		{ path: '/loading', element: <LoadingScreen /> },
 	]
 	useEffect(() => {
 		getDesigns().then(() => {
@@ -50,7 +52,7 @@ function App() {
 		<>
 			{
 				loading ?
-					<p>loading</p> :
+					<LoadingScreen /> :
 					<BrowserRouter>
 						<Routes>
 							{
