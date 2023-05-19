@@ -5,11 +5,11 @@
 
 .login-header-title {
     max-width: 300px;
-    font-size: 28px;
+    font-size: 23px;
     color: var(--accent-light);
 }
 
 .login-header-subtitle {
-    font-size: 20px;
+    font-size: 15px;
     color: var(--secondary);
 }
