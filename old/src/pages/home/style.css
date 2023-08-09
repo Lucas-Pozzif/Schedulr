@@ -1,0 +1,35 @@
+.home {
+    padding: 15px;
+}
+
+.home-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 5px;
+    margin-bottom: 20px;
+}
+
+.home-logo {
+    height: 70px;
+    width: 120px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.home-account-icon {
+    height: 50px;
+    width: 50px;
+}
+
+.home-header-block {
+    display: grid;
+    gap: 20px;
+}
+
+.home-button-tab {
+    margin-top: 35px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}

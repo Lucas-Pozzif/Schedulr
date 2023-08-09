@@ -1,0 +1,16 @@
+.p-form-dispotab {
+    display: grid;
+    gap: 10px;
+}
+
+.p-form-dispotab-week-list {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 5px;
+}
+
+.p-form-dispotab-time-list {
+    width: 100%;
+    display: grid;
+    gap: 10px;
+}

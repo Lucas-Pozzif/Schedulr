@@ -1,0 +1,10 @@
+.professional-list {
+    display: grid;
+    gap: 10px;
+}
+
+.professional-list-block {
+    display: grid;
+    gap: 20px;
+    margin-top: 30px;
+}

@@ -1,0 +1,10 @@
+.s-form-durtab {
+    display: grid;
+    gap: 10px;
+}
+
+.s-form-durtab-time-list {
+    width: 100%;
+    display: grid;
+    gap: 10px;
+}

@@ -1,0 +1,25 @@
+.header {
+    gap: 10px
+}
+
+.header-title-block {
+    width: 100%;
+}
+
+.header-title {
+    max-width: 230px;
+    font-size: 22px;
+    color: var(--accent-light);
+}
+
+.header-button-block {
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.header-subtitle {
+    max-width: 300px;
+    font-size: 14px;
+    color: var(--secondary);
+}

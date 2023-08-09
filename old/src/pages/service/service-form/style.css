@@ -1,0 +1,38 @@
+.s-form {
+  display: grid;
+  justify-content: center;
+}
+
+.s-form-header {
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.s-form-save-block {
+  width: 100%;
+  display: grid;
+  gap: 5px;
+}
+
+.s-form-save-button {
+  display: grid;
+  justify-items: center;
+
+}
+
+.s-form-tab-list {
+  gap: 10px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.s-form-state-tab {
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.s-form-state-block {
+  display: grid;
+  justify-items: center;
+}
