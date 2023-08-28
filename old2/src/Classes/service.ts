@@ -1,11 +1,4 @@
-import {
-  DocumentSnapshot,
-  addDoc,
-  collection,
-  deleteDoc,
-  doc,
-  getDoc,
-} from "firebase/firestore";
+import { DocumentSnapshot, addDoc, collection, deleteDoc, doc, getDoc } from "firebase/firestore";
 import { db } from "../Services/firebase/firebase";
 
 type serviceType = {
@@ -17,7 +10,7 @@ type serviceType = {
   subServices?: serviceType[];
 };
 
-class Service {
+export class Service {
   private id: string;
   private name: string;
   private value: string;
@@ -26,15 +19,7 @@ class Service {
   private inicial: string;
   private subServices?: Service[];
 
-  constructor(
-    id: string,
-    name: string,
-    value: string,
-    photo: string,
-    duration: string,
-    inicial: string,
-    subServices?: Service[]
-  ) {
+  constructor(id: string = "", name: string = "", value: string = "", photo: string = "", duration: string = "", inicial: string = "", subServices: Service[] = []) {
     this.id = id;
     this.name = name;
     this.value = value;
@@ -43,7 +28,7 @@ class Service {
     this.inicial = inicial;
     this.subServices = subServices;
   }
-
+  
   // Setters
   public setId(id: string): void {
     this.id = id;
