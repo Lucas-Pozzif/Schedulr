@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { User } from "./Classes/user";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { onAuthStateChanged, User as FirebaseUser } from "firebase/auth";
@@ -7,26 +7,26 @@ import { LoadingScreen } from "./Components/loading/loading-screen/loading-scree
 import { routes } from "./_routes";
 
 export function App() {
-  const user = new User();
   const [loading, setLoading] = useState(false);
+  const user = new User();
 
   useEffect(() => {
     onAuthStateChanged(auth, (client: FirebaseUser | null) => {
       setLoading(true);
-      if (!client) return;
-      user.setId(client.uid);
-      user.getUser();
+      if (!client) return setLoading(false);
+      user.getUser(client.uid);
+      user.setName('teste');
+      setLoading(false);
     });
-    setLoading(false);
   }, []);
 
-  loading ? (
+  return loading ? (
     <LoadingScreen />
   ) : (
     <BrowserRouter>
       <Routes>
         {routes.map((route: any) => {
-          return <Route path={route.path} element={route.element}></Route>;
+          return <Route path={route.path} element={React.cloneElement(route.element, { user: user })}></Route>;
         })}
       </Routes>
     </BrowserRouter>
