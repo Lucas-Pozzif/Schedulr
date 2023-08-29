@@ -90,7 +90,7 @@ export class User {
 
   //Fill user methods
 
-  public fillFromAuth() {}
+  public fillFromAuth() { }
 
   private fillFromSnapshot(snap: DocumentSnapshot) {
     const userData = snap.data();
@@ -134,13 +134,11 @@ export class User {
     await this.updateTimeStamp();
   }
 
-  public async getUser() {
-    if (this._id == "") {
-      return console.error("no id was found");
-    }
-
-    const docRef = doc(db, "users", this._id);
+  public async getUser(id: string) {
+    const docRef = doc(db, "users", id);
     const docSnap = await getDoc(docRef);
+    if (!docSnap.data()) return
+    console.log('test')
 
     this.fillFromSnapshot(docSnap);
   }
