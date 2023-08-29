@@ -1,26 +1,34 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from "react";
+import { User } from "./Classes/user";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { onAuthStateChanged, User as FirebaseUser } from "firebase/auth";
+import { auth } from "./Services/firebase/firebase";
+import { LoadingScreen } from "./Components/loading/loading-screen/loading-screen";
+import { routes } from "./_routes";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+export function App() {
+  const user = new User();
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (client: FirebaseUser | null) => {
+      setLoading(true);
+      if (!client) return;
+      user.setId(client.uid);
+      user.getUser();
+    });
+    setLoading(false);
+  }, []);
+
+  loading ? (
+    <LoadingScreen />
+  ) : (
+    <BrowserRouter>
+      <Routes>
+        {routes.map((route: any) => {
+          return <Route path={route.path} element={route.element}></Route>;
+        })}
+      </Routes>
+    </BrowserRouter>
   );
 }
-
-export default App;
