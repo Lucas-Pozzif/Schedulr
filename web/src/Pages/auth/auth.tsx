@@ -48,7 +48,6 @@ export function Auth({ user = new User() }: AuthType) {
     }, [])
 
     const tabHandler = () => {
-        console.log(userForm)
         switch (tab) {
             case 'loading':
                 return (<LoadingScreen />);
