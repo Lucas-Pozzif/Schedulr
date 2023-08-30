@@ -7,4 +7,5 @@ export const routes = [
     { path: "/auth", element: <Auth /> },
 
     { path: "/service/edit/:serviceId", element: <ServiceForm /> },
+    { path: "/service/edit/", element: <ServiceForm /> },
 ];

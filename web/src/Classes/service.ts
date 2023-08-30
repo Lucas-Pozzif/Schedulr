@@ -16,8 +16,8 @@ export class Service {
     private _name: string;
     private _value: string;
     private _photo: string;
-    private _duration: string;
-    private _inicial: string;
+    private _duration: boolean[];
+    private _inicial: boolean;
     private _subServices: Service[];
 
     constructor(
@@ -25,8 +25,8 @@ export class Service {
         name: string = "",
         value: string = "",
         photo: string = "",
-        duration: string = "",
-        inicial: string = "",
+        duration: boolean[] = [true],
+        inicial: boolean = false,
         subServices: Service[] = []
     ) {
         this._id = id;
@@ -72,19 +72,19 @@ export class Service {
         this._photo = value;
     }
 
-    public getDuration(): string {
+    public getDuration(): boolean[] {
         return this._duration;
     }
 
-    public setDuration(value: string) {
+    public setDuration(value: boolean[]) {
         this._duration = value;
     }
 
-    public getInicial(): string {
+    public getInicial(): boolean {
         return this._inicial;
     }
 
-    public setInicial(value: string) {
+    public setInicial(value: boolean) {
         this._inicial = value;
     }
 

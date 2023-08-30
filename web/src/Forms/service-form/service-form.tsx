@@ -7,6 +7,10 @@ import { VerticalIconButton } from "../../Components/buttons/vertical-icon-butto
 import { LoadingScreen } from "../../Components/loading/loading-screen/loading-screen"
 import { Input } from "../../Components/input/input"
 import { ErrorScreen } from "../../Components/error/error-screen/error-screen"
+import { VerticalLine } from "../../Components/line/vertical-line"
+import { SmallButton } from "../../Components/buttons/small-button/small-button"
+import { ItemButton } from "../../Components/buttons/item-button/item-button"
+import { Header } from "../../Components/header/header"
 
 type ServiceFormType = {
     user?: User
@@ -25,9 +29,8 @@ export function ServiceForm({ user, service = new Service() }: ServiceFormType) 
     useEffect(() => {
         setLoading(true)
         if (serviceId) {
-            service.getService(serviceId).then(() => {
-                setServiceForm(service)
-            })
+            const updatedService = new Service()
+            updatedService.getService(serviceId).then(() => setServiceForm(updatedService))
         }
         setLoading(false)
     }, []);
@@ -48,10 +51,10 @@ export function ServiceForm({ user, service = new Service() }: ServiceFormType) 
                             }}
                             placeholder="Digite o nome do serviço"
                         />
-                        <div className="sf-info-bottom">
+                        <div className="sf-info-bottom flex-div">
                             <div className="sfib-left">
                                 {
-                                    service.getInicial() ?
+                                    serviceForm.getSubServices()?.length > 0 ?
                                         <>
                                             <Input
                                                 label="Digite o nome do estado"
@@ -80,16 +83,30 @@ export function ServiceForm({ user, service = new Service() }: ServiceFormType) 
                                         <Input
                                             label="Digite o valor do serviço"
                                             placeholder="Alterar valor do serviço"
-                                            value={service.getValue()}
+                                            value={serviceForm.getValue()}
                                             onValueChange={(e) => {
-                                                service.setValue(e.target.value);
+                                                serviceForm.setValue(e.target.value);
                                                 const updatedService = new Service();
                                                 updatedService.fillFromService(serviceForm);
                                                 setServiceForm(updatedService);
                                             }}
                                         />
-
                                 }
+                            </div>
+                            <VerticalLine />
+                            <div className="sfib-right">
+                                <SmallButton
+                                    state={serviceForm.getInicial() ? 'selected' : 'active'}
+                                    title="A partir de"
+                                    onClickButton={() => {
+                                        serviceForm.setInicial(!serviceForm.getInicial())
+                                        console.log(serviceForm)
+                                        const updatedService = new Service()
+                                        updatedService.fillFromService(serviceForm)
+                                        setServiceForm(updatedService)
+                                    }}
+                                />
+
                             </div>
                         </div>
                     </div>
@@ -102,15 +119,58 @@ export function ServiceForm({ user, service = new Service() }: ServiceFormType) 
 
                 )
             case 2:
+                const timespan: string[] = []
+
+                for (let hour = 0; hour < 24; hour++) {
+                    timespan.push(`${hour}:00`)
+                    timespan.push(`${hour}:10`)
+                    timespan.push(`${hour}:20`)
+                    timespan.push(`${hour}:30`)
+                    timespan.push(`${hour}:40`)
+                    timespan.push(`${hour}:50`)
+
+                }
                 return (
                     <div className="sf-tab sf-duration">
-
+                        {
+                            timespan.map((period, index) => {
+                                if (index == 0) return null
+                                return (
+                                    <ItemButton
+                                        state={serviceForm.getDuration()[index] ? 'selected' : 'active'}
+                                        title={period}
+                                        detailText={serviceForm.getDuration()[index] ? 'Selecionado' : 'Selecionar'}
+                                        onClickButton={
+                                            () => {
+                                                var duration = serviceForm.getDuration(); //boolean[]
+                                                if (duration.length <= index) duration = duration.concat(Array(index - duration.length).fill(false), true);
+                                                else {
+                                                    duration[index] = !duration[index]
+                                                    while (!duration[duration.length - 1]) duration.pop()
+                                                }
+                                                const updatedService = new Service()
+                                                updatedService.fillFromService(serviceForm)
+                                                updatedService.setDuration(duration)
+                                                setServiceForm(updatedService)
+                                            }
+                                        }
+                                    />
+                                )
+                            })
+                        }
                     </div>
 
                 )
             case 3:
                 return (
                     <div className="sf-tab sf-delete">
+                        <Header
+                            title="Tem certeza que deseja excluir esse serviço?"
+                            subtitle="não irá remover os agendamentos que já foram feitos com ele."
+                            buttonTitle="Excluir"
+                            onClickButton={async () => {
+                                await serviceForm.deleteService()
+                            }} />
 
                     </div>
 
