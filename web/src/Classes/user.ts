@@ -138,7 +138,6 @@ export class User {
     const docRef = doc(db, "users", id);
     const docSnap = await getDoc(docRef);
     if (!docSnap.data()) return
-    console.log('test')
 
     this.fillFromSnapshot(docSnap);
   }
