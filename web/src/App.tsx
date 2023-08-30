@@ -6,6 +6,10 @@ import { auth } from "./Services/firebase/firebase";
 import { LoadingScreen } from "./Components/loading/loading-screen/loading-screen";
 import { routes } from "./_routes";
 
+
+import './Styles/reset.css'
+import './Styles/style.css'
+
 export function App() {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(new User());
