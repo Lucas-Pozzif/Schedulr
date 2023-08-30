@@ -40,63 +40,73 @@ export class Service {
 
     // Getters and setters
 
-    get id(): string {
+    public getId(): string {
         return this._id;
     }
 
-    set id(value: string) {
+    public setId(value: string) {
         this._id = value;
     }
 
-    get name(): string {
+    public getName(): string {
         return this._name;
     }
 
-    set name(value: string) {
+    public setName(value: string) {
         this._name = value;
     }
 
-    get value(): string {
+    public getValue(): string {
         return this._value;
     }
 
-    set value(value: string) {
+    public setValue(value: string) {
         this._value = value;
     }
 
-    get photo(): string {
+    public getPhoto(): string {
         return this._photo;
     }
 
-    set photo(value: string) {
+    public setPhoto(value: string) {
         this._photo = value;
     }
 
-    get duration(): string {
+    public getDuration(): string {
         return this._duration;
     }
 
-    set duration(value: string) {
+    public setDuration(value: string) {
         this._duration = value;
     }
 
-    get inicial(): string {
+    public getInicial(): string {
         return this._inicial;
     }
 
-    set inicial(value: string) {
+    public setInicial(value: string) {
         this._inicial = value;
     }
 
-    get subServices(): Service[] {
+    public getSubServices(): Service[] {
         return this._subServices;
     }
 
-    set subServices(value: Service[]) {
+    public setSubServices(value: Service[]) {
         this._subServices = value;
     }
 
-    //Fill user methods
+    //Fill service methods
+
+    public fillFromService(service: Service) {
+        this._id = service.getId();
+        this._name = service.getName();
+        this._value = service.getValue();
+        this._photo = service.getPhoto();
+        this._duration = service.getDuration();
+        this._inicial = service.getInicial();
+        this._subServices = service.getSubServices();
+    }
 
     public fillFromAuth() { }
 
