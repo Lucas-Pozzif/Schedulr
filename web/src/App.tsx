@@ -8,14 +8,15 @@ import { routes } from "./_routes";
 
 export function App() {
   const [loading, setLoading] = useState(false);
-  const user = new User();
+  const [user, setUser] = useState(new User());
 
   useEffect(() => {
-    onAuthStateChanged(auth, (client: FirebaseUser | null) => {
-      setLoading(true);
+    setLoading(true);
+    onAuthStateChanged(auth, async (client: FirebaseUser | null) => {
       if (!client) return setLoading(false);
-      user.getUser(client.uid);
-      user.setName('teste');
+      await user.getUser(client.uid);
+      console.log('user updated')
+      setUser(user); // Update the user state with the fetched user data
       setLoading(false);
     });
   }, []);
@@ -26,7 +27,12 @@ export function App() {
     <BrowserRouter>
       <Routes>
         {routes.map((route: any) => {
-          return <Route path={route.path} element={React.cloneElement(route.element, { user: user })}></Route>;
+          return (
+            <Route
+              path={route.path}
+              element={React.cloneElement(route.element, { user: user })}
+            ></Route>
+          );
         })}
       </Routes>
     </BrowserRouter>
