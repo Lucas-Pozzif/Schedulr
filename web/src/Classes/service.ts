@@ -184,4 +184,41 @@ export class Service {
         const userRef = doc(db, "services", this._id);
         await updateDoc(userRef, { timestamp: serverTimestamp() });
     }
+
+    //Life quality metods
+
+    public addSubService() {
+        if (!this._subServices.length) {
+            this._subServices.push(this);
+            this.convertToSubservice();
+        }
+        else {
+            this._subServices.push(new Service())
+        }
+    }
+    public removeSubService(index: number) {
+        if (this._subServices.length == 1) {
+            this.convertToService(index)
+        }
+        if (index >= this._subServices.length) return
+        this._subServices.splice(index, 1)
+        console.log(this._subServices)
+    }
+
+    private convertToSubservice() {
+        this._name = "";
+        this._value = "";
+        this._photo = "";
+        this._duration = [true];
+        this._inicial = false;
+    }
+
+    private convertToService(index: number) {
+        this._name = this._subServices[index]._name;
+        this._value = this._subServices[index]._value;
+        this._photo = this._subServices[index]._photo;
+        this._duration = this._subServices[index]._duration;
+        this._inicial = this._subServices[index]._inicial;
+
+    }
 }
