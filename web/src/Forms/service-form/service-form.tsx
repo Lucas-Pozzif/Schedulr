@@ -106,6 +106,20 @@ export function ServiceForm({ user, service = new Service() }: ServiceFormType) 
                                         setServiceForm(updatedService)
                                     }}
                                 />
+                                <SmallButton
+                                    state={serviceForm.getInicial() ? 'selected' : 'active'}
+                                    title="Adicionar Subserviço"
+                                    onClickButton={() => {
+                                        serviceForm.addSubService()
+                                    }}
+                                />
+                                <SmallButton
+                                    state={serviceForm.getInicial() ? 'selected' : 'active'}
+                                    title="Excluir Subserviço"
+                                    onClickButton={() => {
+                                        serviceForm.removeSubService(sService)
+                                    }}
+                                />
 
                             </div>
                         </div>
