@@ -1,6 +1,7 @@
-import { DocumentData, DocumentSnapshot, deleteDoc, doc, getDoc, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
+import { DocumentData, DocumentSnapshot, collection, deleteDoc, doc, getDoc, getDocs, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
 import { auth, db } from "../Services/firebase/firebase";
 import { GoogleAuthProvider, signInWithRedirect } from "firebase/auth";
+import { Service } from "./service";
 
 interface UserInterface {
   name: string;
@@ -172,5 +173,22 @@ export class User {
   public async AuthWithGoogle() {
     const provider = new GoogleAuthProvider();
     await signInWithRedirect(auth, provider);
+  }
+
+  //List calling methods
+
+  public async getServiceList() {
+    const colRef = collection(db, "services")
+    const querySnap = await getDocs(colRef)
+    const serviceList: Service[] = [];
+
+    querySnap.forEach((docSnap) => {
+      const service = new Service();
+      service.fillFromSnapshot(docSnap);
+      serviceList.push(service);
+    })
+
+    serviceList.sort((a,b)=>a.getName().localeCompare(b.getName()))
+    return serviceList
   }
 }
