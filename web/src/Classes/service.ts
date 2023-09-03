@@ -11,6 +11,7 @@ interface ServiceInterface {
     inicial: string;
     subServices: Service[];
 }
+
 export class SubService {
     private _name: string;
     private _value: string;
@@ -187,7 +188,7 @@ export class Service {
 
     public fillFromAuth() { }
 
-    private fillFromSnapshot(snap: DocumentSnapshot) {
+    public fillFromSnapshot(snap: DocumentSnapshot) {
         const servData = snap.data();
 
         this._id = snap.id;
