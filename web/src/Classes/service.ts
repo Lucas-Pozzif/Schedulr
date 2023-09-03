@@ -1,5 +1,6 @@
-import { DocumentSnapshot, deleteDoc, doc, getDoc, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
+import { DocumentSnapshot, addDoc, collection, deleteDoc, doc, getDoc, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "../Services/firebase/firebase";
+import { config } from "process";
 
 interface ServiceInterface {
     id: string;
@@ -10,6 +11,82 @@ interface ServiceInterface {
     inicial: string;
     subServices: Service[];
 }
+export class SubService {
+    private _name: string;
+    private _value: string;
+    private _photo: string;
+    private _duration: boolean[];
+
+    constructor(
+        name: string = "",
+        value: string = "",
+        photo: string = "",
+        duration: boolean[] = [true],
+    ) {
+        this._name = name;
+        this._value = value;
+        this._photo = photo;
+        this._duration = duration;
+    }
+    // Getter for _name
+    getName(): string {
+        return this._name;
+    }
+
+    // Setter for _name
+    setName(name: string): void {
+        this._name = name;
+    }
+
+    // Getter for _value
+    getValue(): string {
+        return this._value;
+    }
+
+    // Setter for _value
+    setValue(value: string): void {
+        this._value = value;
+    }
+
+    // Getter for _photo
+    getPhoto(): string {
+        return this._photo;
+    }
+
+    // Setter for _photo
+    setPhoto(photo: string): void {
+        this._photo = photo;
+    }
+
+    // Getter for _duration
+    getDuration(): boolean[] {
+        return this._duration;
+    }
+
+    // Setter for _duration
+    setDuration(duration: boolean[]): void {
+        this._duration = duration;
+    }
+
+
+    // Convert firebase data to usualData
+    fillFromFirebase(sServiceData: any) {
+        this._name = sServiceData!.name;
+        this._value = sServiceData!.value;
+        this._photo = sServiceData!.photo;
+        this._duration = sServiceData!.duration;
+    }
+
+    // Formatter for firebase
+    getFirestoreFormat() {
+        return {
+            name: this._name,
+            value: this._value,
+            photo: this._photo,
+            duration: this._duration,
+        }
+    }
+}
 
 export class Service {
     private _id: string;
@@ -18,7 +95,7 @@ export class Service {
     private _photo: string;
     private _duration: boolean[];
     private _inicial: boolean;
-    private _subServices: Service[];
+    private _subServices: SubService[];
 
     constructor(
         id: string = "",
@@ -27,7 +104,7 @@ export class Service {
         photo: string = "",
         duration: boolean[] = [true],
         inicial: boolean = false,
-        subServices: Service[] = []
+        subServices: SubService[] = []
     ) {
         this._id = id;
         this._name = name;
@@ -88,11 +165,11 @@ export class Service {
         this._inicial = value;
     }
 
-    public getSubServices(): Service[] {
+    public getSubServices(): SubService[] {
         return this._subServices;
     }
 
-    public setSubServices(value: Service[]) {
+    public setSubServices(value: SubService[]) {
         this._subServices = value;
     }
 
@@ -119,10 +196,19 @@ export class Service {
         this._photo = servData!.photo;
         this._duration = servData!.duration;
         this._inicial = servData!.inicial;
-        this._subServices = servData!.subServices;
+        this._subServices = servData!.subServices.map((sServiceData: any) => {
+            const sService = new SubService()
+            sService.fillFromFirebase(sServiceData)
+            return sService
+        });
     }
 
     //Firestore methods
+
+    public async addService() {
+        this._id = await this.updateServiceId()
+        await this.setService()
+    }
 
     public async setService() {
         if (this._id == "") {
@@ -142,7 +228,7 @@ export class Service {
         const docRef = doc(db, "services", this._id);
         const propertiesToUpdate: (keyof ServiceInterface)[] = ["name", "value", "photo", "duration", "inicial", "subServices"];
 
-        propertiesToUpdate.forEach((prop) => {
+        propertiesToUpdate.map((prop) => {
             if (updates[prop] !== undefined) {
                 (this as any)[`_${prop}`] = updates[prop]!;
             }
@@ -170,13 +256,16 @@ export class Service {
     }
 
     private getFirestoreFormat() {
+        const subServiceFormats = this._subServices.map((sService: SubService) => {
+            return sService.getFirestoreFormat()
+        })
         return {
             name: this._name,
             value: this._value,
             photo: this._photo,
             duration: this._duration,
             inicial: this._inicial,
-            subServices: this._subServices,
+            subServices: subServiceFormats
         };
     }
 
@@ -185,40 +274,74 @@ export class Service {
         await updateDoc(userRef, { timestamp: serverTimestamp() });
     }
 
+    private async updateServiceId() {
+        const docRef = doc(db, "config", "ids")
+        const configSnap = await getDoc(docRef)
+        if (!configSnap.data()) return
+
+        var config = configSnap.data()
+        config!.service++
+        await setDoc(docRef, config)
+
+        return configSnap.data()!.service.toString()
+    }
+
     //Life quality metods
 
     public addSubService() {
         if (!this._subServices.length) {
-            this._subServices.push(this);
+            this._subServices.push(new SubService());
             this.convertToSubservice();
         }
         else {
-            this._subServices.push(new Service())
+            this._subServices.push(new SubService())
         }
     }
+
     public removeSubService(index: number) {
+        if (index >= this._subServices.length) return
         if (this._subServices.length == 1) {
             this.convertToService(index)
+            this._subServices = []
         }
-        if (index >= this._subServices.length) return
         this._subServices.splice(index, 1)
-        console.log(this._subServices)
+    }
+
+    public hasEnoughData() {
+        const hasName = this._name != "";
+        const hasValue = this._value != "";
+        const hasDuration = this._duration.length > 1
+        const hasSubservices = this._subServices.length > 0
+
+        if (!hasName) return "missing name"
+        if (!hasValue && !hasSubservices) return "missing value"
+        if (!hasDuration && !hasSubservices) return "missing duration"
+        if (hasSubservices) {
+            const subServiceComplains = this._subServices.map((sService, index) => {
+                const hasSName = sService.getName() != ""
+                const hasSValue = sService.getValue() != ""
+                const hasSDuration = sService.getDuration().length > 1
+
+                if (!hasSName) return `missing name on the ${index + 1}º subservice`
+                if (!hasSValue) return `missing value on the ${sService.getName()} subservice`
+                if (!hasSDuration) return `missing duration on the ${sService.getName()} subservice`
+                else return true
+            })
+            const firstNonTrue = subServiceComplains.find(i => i !== true)
+            return firstNonTrue !== undefined ? firstNonTrue : true
+        }
+        else return true
     }
 
     private convertToSubservice() {
-        this._name = "";
+        this._subServices[0].setValue(this._value)
+        this._subServices[0].setDuration(this._duration)
         this._value = "";
-        this._photo = "";
         this._duration = [true];
-        this._inicial = false;
     }
 
     private convertToService(index: number) {
-        this._name = this._subServices[index]._name;
-        this._value = this._subServices[index]._value;
-        this._photo = this._subServices[index]._photo;
-        this._duration = this._subServices[index]._duration;
-        this._inicial = this._subServices[index]._inicial;
-
+        this._value = this._subServices[index].getValue();
+        this._duration = this._subServices[index].getDuration();
     }
 }
