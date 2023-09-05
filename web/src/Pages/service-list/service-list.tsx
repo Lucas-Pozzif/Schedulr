@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { User } from "../../Classes/user";
 import { Service } from "../../Classes/service";
 import { ServiceButton } from "../../Components/buttons/item-button/service-button/service-button";
+import { useNavigate } from "react-router-dom";
 
 type ServiceListType = {
     user?: User
@@ -9,6 +10,8 @@ type ServiceListType = {
 export function ServiceList({ user }: ServiceListType) {
     const [loading, setLoading] = useState(false);
     const [serviceList, setServiceList] = useState<Service[]>([]);
+
+    const navigate = useNavigate()
 
     useEffect(() => {
         setLoading(true);
@@ -29,6 +32,7 @@ export function ServiceList({ user }: ServiceListType) {
                             service={service}
                             allowExpand={false}
                             onClickButton={() => {
+                                navigate(`/service/edit/${service.getId( )}`)
                                 console.log(service)
                             }}
                         />
