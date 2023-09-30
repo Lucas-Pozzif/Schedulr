@@ -1,8 +1,8 @@
 :root {
-    --primary: black;
-    --secondary: white;
-    --accent-dark: darkgrey;
-    -accent-light: lightgrey;
+    --primary: #1E1E1E;
+    --secondary: #C6AC8F;
+    --accent-dark: #5E503F;
+    --accent-light: #EAE0D5;
 }
 
 html {
