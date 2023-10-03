@@ -1,3 +1,6 @@
+import { Professional } from "./professional";
+import { Service } from "./service";
+
 export class Group {
     private _id: string;
     private _title: string;
@@ -6,8 +9,10 @@ export class Group {
     private _ratings: string[];
     private _location: any;
     private _hours: number[][];
-    private _services: string[];
-    private _professionals: string[];
+    private _servicesIds: string[];
+    private _professionalsIds: string[];
+    private _services: Service[];
+    private _professionals: Professional[];
     private _images: string[];
     private _profile: string;
     private _banner: string;
@@ -37,8 +42,8 @@ export class Group {
                 _ratings,
                 _location,
                 _hours,
-                _services,
-                _professionals,
+                _servicesIds,
+                _professionalsIds,
                 _images,
                 _profile,
                 _banner,
@@ -50,8 +55,8 @@ export class Group {
             this._ratings = _ratings;
             this._location = _location;
             this._hours = _hours;
-            this._services = _services;
-            this._professionals = _professionals;
+            this._servicesIds = _servicesIds;
+            this._professionalsIds = _professionalsIds;
             this._images = _images;
             this._profile = _profile;
             this._banner = _banner;
@@ -64,14 +69,16 @@ export class Group {
             this._ratings = ratings;
             this._location = location;
             this._hours = hours;
-            this._services = services;
-            this._professionals = professionals;
+            this._servicesIds = services;
+            this._professionalsIds = professionals;
             this._images = images;
             this._profile = profile;
             this._banner = banner;
         }
+        // Initialize the arrays if they are not provided
+        this._services = [];
+        this._professionals = [];
     }
-
 
 
     // Getters
@@ -103,11 +110,19 @@ export class Group {
         return this._hours;
     }
 
-    getServices(): any {
+    getServicesIds(): string[] {
+        return this._servicesIds;
+    }
+
+    getProfessionalsids(): string[] {
+        return this._professionalsIds;
+    }
+
+    getServices(): Service[] {
         return this._services;
     }
 
-    getProfessionals(): any {
+    getProfessionals(): Professional[] {
         return this._professionals;
     }
 
@@ -152,11 +167,19 @@ export class Group {
         this._hours = hours;
     }
 
-    setServices(services: any) {
+    setServicesIds(servicesIds: string[]) {
+        this._servicesIds = servicesIds;
+    }
+
+    setProfessionalsIds(professionalsIds: string[]) {
+        this._professionalsIds = professionalsIds;
+    }
+
+    setServices(services: Service[]) {
         this._services = services;
     }
 
-    setProfessionals(professionals: any) {
+    setProfessionals(professionals: Professional[]) {
         this._professionals = professionals;
     }
 
@@ -171,5 +194,4 @@ export class Group {
     setBanner(banner: string) {
         this._banner = banner;
     }
-
 }
