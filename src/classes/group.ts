@@ -1,7 +1,7 @@
 export class Group {
     private _id: string;
     private _title: string;
-    private _category: string;
+    private _type: string;
     private _pricing: number; //this varies from 0 to 3 to store how expensive the group is
     private _ratings: string[];
     private _location: any;
@@ -11,11 +11,12 @@ export class Group {
     private _images: string[];
     private _profile: string;
     private _banner: string;
-    
+
+    /** Constructs a new Group instance. Accepts as possible inputs, nothing, an ID, a group or everything*/
     constructor(
-        id: string,
+        arg?: string | Group,
         title: string = "",
-        category: string = "",
+        type: string = "",
         pricing: number = 0,
         ratings: string[] = [],
         location: any = {},
@@ -24,22 +25,55 @@ export class Group {
         professionals: string[] = [],
         images: string[] = [],
         profile: string = "",
-        banner: string = "",
+        banner: string = ""
     ) {
-        this._id = id;
-        this._title = title;
-        this._category = category;
-        this._pricing = pricing;
-        this._ratings = ratings;
-        this._location = location;
-        this._hours = hours;
-        this._services = services;
-        this._professionals = professionals;
-        this._images = images;
-        this._profile = profile;
-        this._banner = banner;
+        if (arg instanceof Group) {
+            // Case: Another Group object provided
+            const {
+                _id,
+                _title,
+                _type,
+                _pricing,
+                _ratings,
+                _location,
+                _hours,
+                _services,
+                _professionals,
+                _images,
+                _profile,
+                _banner,
+            } = arg;
+            this._id = _id;
+            this._title = _title;
+            this._type = _type;
+            this._pricing = _pricing;
+            this._ratings = _ratings;
+            this._location = _location;
+            this._hours = _hours;
+            this._services = _services;
+            this._professionals = _professionals;
+            this._images = _images;
+            this._profile = _profile;
+            this._banner = _banner;
+        } else {
+            // Case: ID or no arguments provided
+            this._id = arg || "";
+            this._title = title;
+            this._type = type;
+            this._pricing = pricing;
+            this._ratings = ratings;
+            this._location = location;
+            this._hours = hours;
+            this._services = services;
+            this._professionals = professionals;
+            this._images = images;
+            this._profile = profile;
+            this._banner = banner;
+        }
     }
-    
+
+
+
     // Getters
     getId(): string {
         return this._id;
@@ -49,8 +83,8 @@ export class Group {
         return this._title;
     }
 
-    getCategory(): string {
-        return this._category;
+    gettype(): string {
+        return this._type;
     }
 
     getPricing(): number {
@@ -98,8 +132,8 @@ export class Group {
         this._title = title;
     }
 
-    setCategory(category: string) {
-        this._category = category;
+    settype(type: string) {
+        this._type = type;
     }
 
     setPricing(pricing: number) {
