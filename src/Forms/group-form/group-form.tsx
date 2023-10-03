@@ -4,6 +4,7 @@ import { User } from "../../Classes/user";
 import { LoadingScreen } from "../../Components/loading/loading-screen/loading-screen";
 import { Line } from "../../Components/line/line";
 import { Service } from "../../Classes/service";
+import { start } from "repl";
 
 type GroupFormType = {
     user?: User
@@ -19,6 +20,7 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
     const [selectedService, setSelectedService] = useState<null | string>(null);
 
     const days = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"]
+    const fullDays = ["Domingo", "Segunda-Feira", "Terça-Feira", "Quarta-Feira", "Quinta-Feira", "Sexta-Feira", "Sábado"]
 
     const addImage = require("../../Assets/add-image.png");
     const locationPin = require("../../Assets/location-pin.png");
@@ -146,7 +148,62 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                     </div>
                 )
             case 2:
-                return
+                const timeArray = [];
+
+                for (let i = 0; i <= 24; i++) {
+                    timeArray.push(`${i}:00`, `${i}:30`);
+                }
+                return (
+                    <div className="gf-time-tab">
+                        <div className="gf-header">
+                            <img className="return-button left" src={arrow} onClick={() => {
+                                setTab(1)
+                            }} />
+                            <p className="gf-header-title">Alterar Horários</p>
+                        </div>
+                        <div className="gf-sub-header">
+                            <div className="gf-sub-header-left">
+                                <p className="gf-sub-header-text">{fullDays[selectedDay]}</p>
+                            </div>
+                            <button className="gf-sub-header-button" onClick={() => {
+                            }}>Bloquear o dia</button>
+                        </div>
+                        <div className="gf-day-carrousel">
+                            {
+                                fullDays.map((day, index) => {
+                                    return (
+                                        <div className="gf-day-carrousel-item" onClick={() => { setSelectedDay(index) }}>
+                                            <p className="gf-day-carrousel-title">{day}</p>
+                                        </div>
+                                    )
+                                })
+                            }
+                        </div>
+                        <div className="gf-time-list">
+                            {
+                                timeArray.map((timeValue, index) => {
+                                    const startHour = groupForm.getStartHour()[selectedDay]
+                                    return (
+                                        <div className={"gf-time-button" + groupForm.getHours()[selectedDay][index + startHour] ? " selected" : ""} onClick={() => {
+                                            if (index < startHour) {
+
+                                            } else {
+                                                const hours = groupForm.getHours()
+                                                hours[selectedDay][index] = !hours[selectedDay][index]
+                                            }
+                                        }}>
+                                            <p className="gf-time-button-title">{timeValue}</p>
+                                            <p className="gf-time-button-subtitle">pendente{ }</p>
+                                            <div className={"selection-circle" + groupForm.getHours()[selectedDay][index + startHour] ? " selected" : ""}>
+                                                <div className="selection-inner-circle"></div>
+                                            </div>
+                                        </div>
+                                    )
+                                })
+                            }
+                        </div>
+                    </div>
+                )
             default:
                 return
         }
