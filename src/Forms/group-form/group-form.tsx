@@ -3,6 +3,7 @@ import { Group } from "../../Classes/group";
 import { User } from "../../Classes/user";
 import { LoadingScreen } from "../../Components/loading/loading-screen/loading-screen";
 import { Line } from "../../Components/line/line";
+import { Service } from "../../Classes/service";
 
 type GroupFormType = {
     user?: User
@@ -15,12 +16,14 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
     const [tab, setTab] = useState(0);
     const [dayList, setDayList] = useState(false);
     const [selectedDay, setSelectedDay] = useState(1);
+    const [selectedService, setSelectedService] = useState<null | string>(null);
 
     const days = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"]
 
     const addImage = require("../../Assets/add-image.png");
     const locationPin = require("../../Assets/location-pin.png");
     const arrow = require("../../Assets/arrow.png");
+    const more = require("../../Assets/more.png");
 
     const tabHandler = () => {
         switch (tab) {
@@ -100,23 +103,45 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                 return (
                     <div className="gf-service-tab">
                         <div className="gf-header">
-                            <img className="return-button left" src={arrow} onClick={() => setTab(0)} />
+                            <img className="return-button left" src={arrow} onClick={() => {
+                                setTab(0)
+                                setSelectedService(null)
+                            }} />
                             <p className="gf-header-title">Editar Serviços</p>
+                            <img className="gf-add-service-button" src={more} onClick={() => { alert('ainda não implementado') }} />
                         </div>
                         <div className="gf-sub-header">
-                            <p className="gf-sub-header-title">{ }</p>
-                            <button className="gf-sub-header-button">Alterar Horários</button>
+                            <div className="gf-sub-header-left"></div>
+                            <button className="gf-sub-header-button" onClick={() => {
+                                setTab(2)
+                                setSelectedService(null)
+                            }}>Alterar Horários</button>
                         </div>
                         <div className="gf-service-list">
-                            {groupForm.getServices().map((service: string) => {
-                                return (
-                                    <div className="gf-service-button">
-                                        <p className="gf-service-button-title">{ }</p>
-                                        <p className="gf-service-button-subtitle">{ }</p>
-                                        <div className="selection-circle"></div>
-                                    </div>
-                                )
-                            })}
+                            {
+                                groupForm.getServicesIds().map((serviceId: string, index: number) => {
+                                    const service = new Service()
+                                    const serviceList = groupForm.getServices()
+                                    service.getService(serviceId)
+                                    serviceList[index] = service
+
+                                    const updatedGroup = new Group(groupForm)
+                                    setGroupForm(updatedGroup)
+
+                                    return (
+                                        <div className={"gf-service-button" + selectedService === serviceId ? " selected" : ""} onClick={() => { setSelectedService(serviceId) }}>
+                                            <p className="gf-service-button-title">{service.getName()}</p>
+                                            <p className="gf-service-button-subtitle">profissionais que fazem o serviço, pendente{ }</p>
+                                            <div className={"selection-circle" + selectedService === serviceId ? " selected" : ""}>
+                                                <div className="selection-inner-circle"></div>
+                                            </div>
+                                        </div>
+                                    )
+                                })
+                            }
+                        </div>
+                        <div className={"gf-service-edit-button" + selectedService !== null ? "" : " hidden"} onClick={() => { alert("ainda não implementado") }}>
+                            <p className="gf-service-edit-button-title">Editar Serviço</p>
                         </div>
                     </div>
                 )
