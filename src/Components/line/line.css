@@ -1,11 +1,13 @@
 .line {
     height: 1px;
     width: 100%;
-    background-color: var(--accent-light);
+    background-color: #212529;
+    opacity: .8;
 }
 
 .vertical-line {
     height: 100%;
     width: 1px;
-    background-color: var(--accent-light);
+    background-color: #212529;
+    opacity: .8;
 }
