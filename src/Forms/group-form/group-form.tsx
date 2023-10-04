@@ -14,9 +14,9 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
     const [loading, setLoading] = useState(false);
     const [groupForm, setGroupForm] = useState(group);
     const [GTShow, setGTShow] = useState(false); //Group type
-    const [tab, setTab] = useState(0);
+    const [tab, setTab] = useState(2);
     const [dayList, setDayList] = useState(false);
-    const [selectedDay, setSelectedDay] = useState(1);
+    const [selectedDay, setSelectedDay] = useState(2);
     const [selectedService, setSelectedService] = useState<null | string>(null);
 
     const days = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"]
@@ -182,19 +182,65 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                         <div className="gf-time-list">
                             {
                                 timeArray.map((timeValue, index) => {
-                                    const startHour = groupForm.getStartHour()[selectedDay]
                                     return (
-                                        <div className={"gf-time-button" + groupForm.getHours()[selectedDay][index + startHour] ? " selected" : ""} onClick={() => {
-                                            if (index < startHour) {
+                                        <div className={"gf-time-button"} onClick={() => {
+                                            const startHour = groupForm.getStartHours()
+                                            const hours = [...groupForm.getHours()]; // Create a shallow copy of the array
 
-                                            } else {
-                                                const hours = groupForm.getHours()
-                                                hours[selectedDay][index] = !hours[selectedDay][index]
+                                            if (!startHour[selectedDay]) startHour[selectedDay] = 0
+                                            // Convert startHour to a number
+                                            startHour[selectedDay] = parseInt(startHour[selectedDay].toString());
+
+                                            // Check if startHour is a valid number
+                                            if (isNaN(startHour[selectedDay])) {
+                                                // Set startHour to 0 if it's not a valid number
+                                                startHour[selectedDay] = 0;
                                             }
+
+                                            if (startHour[selectedDay] > 0) {
+                                                const falseValuesToAdd = Array(startHour[selectedDay]).fill(false);
+                                                hours[selectedDay] = [...falseValuesToAdd, ...hours[selectedDay]];
+                                                startHour[selectedDay] = 0; // Assuming startHour is a variable that can be reassigned
+                                            }
+
+                                            // Ensure the array includes the index value
+                                            if (!hours[selectedDay]) {
+                                                // If the array for the selected day doesn't exist, create it
+                                                hours[selectedDay] = [];
+                                            }
+                                            // Ensure the array includes the index value
+                                            if (index >= hours[selectedDay].length) {
+                                                const diff = index - hours[selectedDay].length + 1;
+                                                hours[selectedDay].push(...Array(diff).fill(false));
+                                            }
+
+                                            hours[selectedDay][index] = !hours[selectedDay][index];
+
+                                            // Remove trailing false values
+                                            let lastIndex = hours[selectedDay].length - 1;
+                                            while (lastIndex >= 0 && !hours[selectedDay][lastIndex]) {
+                                                hours[selectedDay].pop();
+                                                lastIndex--;
+                                            }
+
+                                            let firstIndex = 1;
+                                            while (firstIndex < hours[selectedDay].length-1 && !hours[selectedDay][firstIndex-1]) {
+                                                console.log(firstIndex,hours[selectedDay].length)
+                                                hours[selectedDay].shift();
+                                                console.log(hours[selectedDay])
+                                                startHour[selectedDay]++; // Increase startHour for each false value removed from the start
+                                                firstIndex++;
+                                            }
+
+                                            console.log(hours[selectedDay], startHour[selectedDay])
+
+                                            groupForm.setHours(hours)
+                                            const updatedGroupForm = new Group(groupForm)
+                                            setGroupForm(updatedGroupForm)
                                         }}>
                                             <p className="gf-time-button-title">{timeValue}</p>
                                             <p className="gf-time-button-subtitle">pendente{ }</p>
-                                            <div className={"selection-circle" + groupForm.getHours()[selectedDay][index + startHour] ? " selected" : ""}>
+                                            <div className={"selection-circle" + groupForm.getHours() ? " selected" : ""}>
                                                 <div className="selection-inner-circle"></div>
                                             </div>
                                         </div>
@@ -205,7 +251,7 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                     </div>
                 )
             default:
-                return
+                return <p></p>
         }
     }
 
