@@ -1,4 +1,5 @@
+import { GroupForm } from "./Forms/group-form/group-form";
 
 export const routes = [
-    //{ path: "/", element: <Home /> },
+    { path: "/", element: <GroupForm /> },
 ];
