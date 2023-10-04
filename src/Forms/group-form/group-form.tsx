@@ -182,64 +182,46 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                         <div className="gf-time-list">
                             {
                                 timeArray.map((timeValue, index) => {
+                                    const startHour = [...groupForm.getStartHours()]
+                                    const hours = [...groupForm.getHours()];
+
                                     return (
                                         <div className={"gf-time-button"} onClick={() => {
-                                            const startHour = groupForm.getStartHours()
-                                            const hours = [...groupForm.getHours()]; // Create a shallow copy of the array
-
-                                            if (!startHour[selectedDay]) startHour[selectedDay] = 0
-                                            // Convert startHour to a number
+                                            if (!startHour[selectedDay]) { startHour[selectedDay] = 0; }
                                             startHour[selectedDay] = parseInt(startHour[selectedDay].toString());
 
-                                            // Check if startHour is a valid number
-                                            if (isNaN(startHour[selectedDay])) {
-                                                // Set startHour to 0 if it's not a valid number
-                                                startHour[selectedDay] = 0;
-                                            }
+                                            if (isNaN(startHour[selectedDay])) { startHour[selectedDay] = 0; }
 
                                             if (startHour[selectedDay] > 0) {
                                                 const falseValuesToAdd = Array(startHour[selectedDay]).fill(false);
                                                 hours[selectedDay] = [...falseValuesToAdd, ...hours[selectedDay]];
-                                                startHour[selectedDay] = 0; // Assuming startHour is a variable that can be reassigned
+                                                startHour[selectedDay] = 0;
                                             }
+                                            if (!hours[selectedDay]) { hours[selectedDay] = []; }
 
-                                            // Ensure the array includes the index value
-                                            if (!hours[selectedDay]) {
-                                                // If the array for the selected day doesn't exist, create it
-                                                hours[selectedDay] = [];
-                                            }
-                                            // Ensure the array includes the index value
                                             if (index >= hours[selectedDay].length) {
                                                 const diff = index - hours[selectedDay].length + 1;
                                                 hours[selectedDay].push(...Array(diff).fill(false));
                                             }
-
                                             hours[selectedDay][index] = !hours[selectedDay][index];
-
-                                            // Remove trailing false values
                                             let lastIndex = hours[selectedDay].length - 1;
                                             while (lastIndex >= 0 && !hours[selectedDay][lastIndex]) {
                                                 hours[selectedDay].pop();
                                                 lastIndex--;
                                             }
-
-                                            let firstIndex = 1;
-                                            while (firstIndex < hours[selectedDay].length-1 && !hours[selectedDay][firstIndex-1]) {
-                                                console.log(firstIndex,hours[selectedDay].length)
+                                            startHour[selectedDay] = hours[selectedDay].indexOf(true);
+                                            for (let i = 0; i < startHour[selectedDay]; i++) {
                                                 hours[selectedDay].shift();
-                                                console.log(hours[selectedDay])
-                                                startHour[selectedDay]++; // Increase startHour for each false value removed from the start
-                                                firstIndex++;
                                             }
-
-                                            console.log(hours[selectedDay], startHour[selectedDay])
-
                                             groupForm.setHours(hours)
+                                            groupForm.setStartHours(startHour)
                                             const updatedGroupForm = new Group(groupForm)
                                             setGroupForm(updatedGroupForm)
+
+                                            console.log(groupForm.getHours()[selectedDay][index - groupForm.getStartHours()[selectedDay]])
                                         }}>
-                                            <p className="gf-time-button-title">{timeValue}</p>
-                                            <p className="gf-time-button-subtitle">pendente{ }</p>
+                                            <p className="gf-time-button-title">{timeValue}{groupForm.getHours()[selectedDay]?.[index - groupForm.getStartHours()[selectedDay]] === true ? " - selected" : ""}</p>
+                                            <p className="gf-time-button-subtitle">pendente{groupForm.getHours()[index]}</p>
                                             <div className={"selection-circle" + groupForm.getHours() ? " selected" : ""}>
                                                 <div className="selection-inner-circle"></div>
                                             </div>
