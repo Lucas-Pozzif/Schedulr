@@ -4,7 +4,8 @@ import { User } from "../../Classes/user";
 import { LoadingScreen } from "../../Components/loading/loading-screen/loading-screen";
 import { Line } from "../../Components/line/line";
 import { Service } from "../../Classes/service";
-import { start } from "repl";
+
+import "./group-form.css"
 
 type GroupFormType = {
     user?: User
@@ -14,7 +15,7 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
     const [loading, setLoading] = useState(false);
     const [groupForm, setGroupForm] = useState(group);
     const [GTShow, setGTShow] = useState(false); //Group type
-    const [tab, setTab] = useState(2);
+    const [tab, setTab] = useState(0);
     const [dayList, setDayList] = useState(false);
     const [selectedDay, setSelectedDay] = useState(2);
     const [selectedService, setSelectedService] = useState<null | string>(null);
@@ -52,7 +53,9 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                                 const updatedGroup = new Group(groupForm);
                                 setGroupForm(updatedGroup);
                             }} />
-                            <div className="gf-group-type-selector"></div>
+                            <div className="gf-group-type-selector">
+                                <p className="gf-group-type-selector-title">Tipo de estabelecimento</p>
+                            </div>
                         </div>
                         <div className="gf-data-block">
                             <div className="gf-location-block">
@@ -66,21 +69,21 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                             <Line />
                             <div className="gf-bottom-columns">
                                 <div className="gf-left-column">
-                                    <div className="gf-day-selector">
-                                        <p className="gf-day-selector-text">{days[selectedDay]}</p>
-                                        <img className={"sched-arrow" + dayList ? " up" : " down"} src={arrow} />
+                                    <div className="gf-selector">
+                                        <p className="gf-selector-text">{days[selectedDay]}</p>
+                                        <img className={"sched-arrow" + (dayList ? " up" : " down")} src={arrow} />
                                     </div>
-                                    <div className={"gf-day-list" + dayList ? "" : " hidden"}>
+                                    <div className={"gf-day-list" + (dayList ? "" : " hidden")}>
                                         {days.map((day) => { return (<p className="gf-day-list-item">{day}</p>) })}
                                     </div>
                                 </div>
                                 <div className="gf-right-column">
-                                    <div className="gf-service-link">
-                                        <p className="gf-day-selector-text">Alterar Serviços e Horários</p>
+                                    <div className="gf-selector" onClick={() => { setTab(1) }}>
+                                        <p className="gf-selector-text">Alterar Serviços e Horários</p>
                                         <img className={"sched-arrow right"} src={arrow} />
                                     </div>
-                                    <div className="gf-professional-link">
-                                        <p className="gf-day-selector-text">Alterar Profissionais</p>
+                                    <div className="gf-selector" onClick={() => { setTab(3) }}>
+                                        <p className="gf-selector-text">Alterar Profissionais</p>
                                         <img className={"sched-arrow right"} src={arrow} />
                                     </div>
                                     <div className="gf-image-group">
@@ -94,10 +97,10 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                         </div>
                         <div className="gf-confirm-tab">
                             <div className="gf-confirm-tab-text-block">
-                                <p className="gf-confirm-tab-title"></p>
-                                <p className="gf-confirm-tab-subtitle"></p>
+                                <p className="gf-confirm-tab-title">Editando...</p>
+                                <p className="gf-confirm-tab-subtitle">Possui Alterações</p>
                             </div>
-                            <button className="gf-confirm-button"></button>
+                            <p className="gf-confirm-button">Salvar Alterações</p>
                         </div>
                     </div >
                 )
@@ -184,9 +187,10 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                                 timeArray.map((timeValue, index) => {
                                     const startHour = [...groupForm.getStartHours()]
                                     const hours = [...groupForm.getHours()];
+                                    const selected = groupForm.getHours()[selectedDay]?.[index - groupForm.getStartHours()[selectedDay]]
 
                                     return (
-                                        <div className={"gf-time-button"} onClick={() => {
+                                        <div className={"gf-time-button" + (selected ? " selected" : "")} onClick={() => {
                                             if (!startHour[selectedDay]) { startHour[selectedDay] = 0; }
                                             startHour[selectedDay] = parseInt(startHour[selectedDay].toString());
 
@@ -217,12 +221,10 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                                             groupForm.setStartHours(startHour)
                                             const updatedGroupForm = new Group(groupForm)
                                             setGroupForm(updatedGroupForm)
-
-                                            console.log(groupForm.getHours()[selectedDay][index - groupForm.getStartHours()[selectedDay]])
                                         }}>
-                                            <p className="gf-time-button-title">{timeValue}{groupForm.getHours()[selectedDay]?.[index - groupForm.getStartHours()[selectedDay]] === true ? " - selected" : ""}</p>
+                                            <p className="gf-time-button-title">{timeValue}{selected ? " - selected" : ""}</p>
                                             <p className="gf-time-button-subtitle">pendente{groupForm.getHours()[index]}</p>
-                                            <div className={"selection-circle" + groupForm.getHours() ? " selected" : ""}>
+                                            <div className={"selection-circle" + (selected ? " selected" : "")}>
                                                 <div className="selection-inner-circle"></div>
                                             </div>
                                         </div>
@@ -232,8 +234,10 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                         </div>
                     </div>
                 )
+            case 3:
+                return (<div className=""></div>)
             default:
-                return <p></p>
+                return <div />
         }
     }
 
