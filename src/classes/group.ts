@@ -8,7 +8,7 @@ export class Group {
     private _pricing: number; //this varies from 0 to 3 to store how expensive the group is
     private _ratings: string[];
     private _location: any;
-    private _startHour: number[];
+    private _startHours: number[];
     private _hours: boolean[][];
     private _servicesIds: string[];
     private _professionalsIds: string[];
@@ -26,7 +26,7 @@ export class Group {
         pricing: number = 0,
         ratings: string[] = [],
         location: any = {},
-        startHour: number[] = [],
+        startHours: number[] = [],
         hours: boolean[][] = [],
         services: string[] = [],
         professionals: string[] = [],
@@ -43,7 +43,7 @@ export class Group {
                 _pricing,
                 _ratings,
                 _location,
-                _startHour,
+                _startHours,
                 _hours,
                 _servicesIds,
                 _professionalsIds,
@@ -57,7 +57,7 @@ export class Group {
             this._pricing = _pricing;
             this._ratings = _ratings;
             this._location = _location;
-            this._startHour = _startHour;
+            this._startHours = _startHours;
             this._hours = _hours;
             this._servicesIds = _servicesIds;
             this._professionalsIds = _professionalsIds;
@@ -72,7 +72,7 @@ export class Group {
             this._pricing = pricing;
             this._ratings = ratings;
             this._location = location;
-            this._startHour = startHour;
+            this._startHours = startHours;
             this._hours = hours;
             this._servicesIds = services;
             this._professionalsIds = professionals;
@@ -111,8 +111,8 @@ export class Group {
         return this._location;
     }
 
-    getStartHour(): number[] {
-        return this._startHour;
+    getStartHours(): number[] {
+        return this._startHours;
     }
 
     getHours(): boolean[][] {
@@ -172,8 +172,8 @@ export class Group {
         this._location = location;
     }
 
-    setStartHour(startHour: number[]) {
-        this._startHour = startHour;
+    setStartHours(startHours: number[]) {
+        this._startHours = startHours;
     }
 
     setHours(hours: boolean[][]) {
