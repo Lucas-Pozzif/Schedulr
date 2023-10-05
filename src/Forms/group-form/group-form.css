@@ -201,6 +201,13 @@
     opacity: .8;
 }
 
+.gf-add-professional-button {
+    height: 26px;
+    width: 26px;
+    opacity: .8;
+
+}
+
 .gf-sub-header {
     display: flex;
     gap: 5px;
@@ -331,4 +338,14 @@
 
 .gf-day-carrousel-item.selected {
     outline: #212529 .5px solid;
+}
+
+.gf-professional-list {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding-inline: 10px;
+    padding-bottom: 80px;
+    margin-top: 10px;
+
 }
