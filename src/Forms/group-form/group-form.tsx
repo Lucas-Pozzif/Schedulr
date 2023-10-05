@@ -15,7 +15,7 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
     const [loading, setLoading] = useState(false);
     const [groupForm, setGroupForm] = useState(group);
     const [GTShow, setGTShow] = useState(false); //Group type
-    const [tab, setTab] = useState(0);
+    const [tab, setTab] = useState(1);
     const [dayList, setDayList] = useState(false);
     const [selectedDay, setSelectedDay] = useState(2);
     const [selectedService, setSelectedService] = useState<null | string>(null);
@@ -106,7 +106,7 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                 )
             case 1:
                 return (
-                    <div className="gf-service-tab">
+                    <div className="gf-tab">
                         <div className="gf-header">
                             <img className="return-button left" src={arrow} onClick={() => {
                                 setTab(0)
@@ -117,12 +117,12 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                         </div>
                         <div className="gf-sub-header">
                             <div className="gf-sub-header-left"></div>
-                            <button className="gf-sub-header-button" onClick={() => {
+                            <p className="gf-sub-header-button" onClick={() => {
                                 setTab(2)
                                 setSelectedService(null)
-                            }}>Alterar Horários</button>
+                            }}>Alterar Horários</p>
                         </div>
-                        <div className="gf-service-list">
+                        <div className="gf-list">
                             {
                                 groupForm.getServicesIds().map((serviceId: string, index: number) => {
                                     const service = new Service()
@@ -134,10 +134,10 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                                     setGroupForm(updatedGroup)
 
                                     return (
-                                        <div className={"gf-service-button" + selectedService === serviceId ? " selected" : ""} onClick={() => { setSelectedService(serviceId) }}>
-                                            <p className="gf-service-button-title">{service.getName()}</p>
-                                            <p className="gf-service-button-subtitle">profissionais que fazem o serviço, pendente{ }</p>
-                                            <div className={"selection-circle" + selectedService === serviceId ? " selected" : ""}>
+                                        <div className={"gf-button" + (selectedService === serviceId ? " selected" : "")} onClick={() => { setSelectedService(serviceId) }}>
+                                            <p className="gf-button-title">{service.getName()}</p>
+                                            <p className="gf-button-subtitle">profissionais que fazem o serviço, pendente{ }</p>
+                                            <div className={"selection-circle" + (selectedService === serviceId ? " selected" : "")}>
                                                 <div className="selection-inner-circle"></div>
                                             </div>
                                         </div>
@@ -145,9 +145,7 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                                 })
                             }
                         </div>
-                        <div className={"gf-service-edit-button" + selectedService !== null ? "" : " hidden"} onClick={() => { alert("ainda não implementado") }}>
-                            <p className="gf-service-edit-button-title">Editar Serviço</p>
-                        </div>
+                        <p className={"gf-service-edit-button" + (selectedService !== null ? "" : " hidden")} onClick={() => { alert("ainda não implementado") }}>Editar Serviço</p>
                     </div>
                 )
             case 2:
@@ -157,7 +155,7 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                     timeArray.push(`${i}:00`, `${i}:30`);
                 }
                 return (
-                    <div className="gf-time-tab">
+                    <div className="gf-tab">
                         <div className="gf-header">
                             <img className="return-button left" src={arrow} onClick={() => {
                                 setTab(1)
@@ -168,21 +166,17 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                             <div className="gf-sub-header-left">
                                 <p className="gf-sub-header-text">{fullDays[selectedDay]}</p>
                             </div>
-                            <button className="gf-sub-header-button" onClick={() => {
-                            }}>Bloquear o dia</button>
+                            <p className="gf-sub-header-button" onClick={() => {
+                            }}>Bloquear o dia</p>
                         </div>
                         <div className="gf-day-carrousel">
                             {
                                 fullDays.map((day, index) => {
-                                    return (
-                                        <div className="gf-day-carrousel-item" onClick={() => { setSelectedDay(index) }}>
-                                            <p className="gf-day-carrousel-title">{day}</p>
-                                        </div>
-                                    )
+                                    return (<p className={"gf-day-carrousel-item" + (selectedDay == index ? " selected" : "")} onClick={() => { setSelectedDay(index) }}>{day}</p>)
                                 })
                             }
                         </div>
-                        <div className="gf-time-list">
+                        <div className="gf-list">
                             {
                                 timeArray.map((timeValue, index) => {
                                     const startHour = [...groupForm.getStartHours()]
@@ -190,7 +184,7 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                                     const selected = groupForm.getHours()[selectedDay]?.[index - groupForm.getStartHours()[selectedDay]]
 
                                     return (
-                                        <div className={"gf-time-button" + (selected ? " selected" : "")} onClick={() => {
+                                        <div className={"gf-button" + (selected ? " selected" : "")} onClick={() => {
                                             if (!startHour[selectedDay]) { startHour[selectedDay] = 0; }
                                             startHour[selectedDay] = parseInt(startHour[selectedDay].toString());
 
@@ -222,8 +216,8 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                                             const updatedGroupForm = new Group(groupForm)
                                             setGroupForm(updatedGroupForm)
                                         }}>
-                                            <p className="gf-time-button-title">{timeValue}{selected ? " - selected" : ""}</p>
-                                            <p className="gf-time-button-subtitle">pendente{groupForm.getHours()[index]}</p>
+                                            <p className="gf-button-title">{timeValue}</p>
+                                            <p className="gf-button-subtitle">pendente{groupForm.getHours()[index]}</p>
                                             <div className={"selection-circle" + (selected ? " selected" : "")}>
                                                 <div className="selection-inner-circle"></div>
                                             </div>
@@ -232,6 +226,7 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                                 })
                             }
                         </div>
+                        <p className={"gf-service-edit-button" + (selectedService !== null ? "" : " hidden")} onClick={() => { setTab(1) }}>Confirmar</p>
                     </div>
                 )
             case 3:
