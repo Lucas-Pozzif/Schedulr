@@ -123,7 +123,7 @@ export class Group {
         return this._servicesIds;
     }
 
-    getProfessionalsids(): string[] {
+    getProfessionalsIds(): string[] {
         return this._professionalsIds;
     }
 
