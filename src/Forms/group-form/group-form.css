@@ -27,7 +27,6 @@
     background-color: #DEE2E6;
     filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.25));
     border-radius: 35px;
-
 }
 
 .gf-profile-placeholder {
@@ -56,7 +55,7 @@
 .gf-data-block {
     background-color: #CED4DA;
     padding-inline: 10px;
-    min-height: calc(100%+40px);
+    min-height: calc(100% + 40px);
 }
 
 .gf-location-block {
@@ -93,7 +92,6 @@
     opacity: .8;
     padding-block: 3px;
     text-align: center;
-
 }
 
 .gf-selector {
