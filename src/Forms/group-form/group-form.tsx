@@ -6,6 +6,7 @@ import { Line } from "../../Components/line/line";
 import { Service } from "../../Classes/service";
 
 import "./group-form.css"
+import { Professional } from "../../Classes/professional";
 
 type GroupFormType = {
     user?: User
@@ -19,6 +20,7 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
     const [dayList, setDayList] = useState(false);
     const [selectedDay, setSelectedDay] = useState(2);
     const [selectedService, setSelectedService] = useState<null | string>(null);
+    const [selectedProfessional, setSelectedProfessional] = useState<null | string>(null);
 
     const days = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"]
     const fullDays = ["Domingo", "Segunda-Feira", "Terça-Feira", "Quarta-Feira", "Quinta-Feira", "Sexta-Feira", "Sábado"]
@@ -27,6 +29,7 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
     const locationPin = require("../../Assets/location-pin.png");
     const arrow = require("../../Assets/arrow.png");
     const more = require("../../Assets/more.png");
+    const addUser = require("../../Assets/add-user.png");
 
     const tabHandler = () => {
         switch (tab) {
@@ -230,7 +233,42 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                     </div>
                 )
             case 3:
-                return (<div className=""></div>)
+                return (
+                    <div className="gf-tab">
+                        <div className="gf-header">
+                            <img className="return-button left" src={arrow} onClick={() => {
+                                setTab(0)
+                                setSelectedProfessional(null)
+                            }} />
+                            <p className="gf-h eader-title">Editar Profissionais</p>
+                            <img className="gf-add-professional-button" src={addUser} onClick={() => { alert('ainda não implementado') }} />
+                        </div>
+                        <div className="gf-professional-list">
+                            {
+                                groupForm.getProfessionalsIds().map((professionalId: string, index: number) => {
+                                    const professional = new Professional()
+                                    const professionalList = groupForm.getProfessionals()
+                                    professional.getProfessional(professionalId)
+                                    professionalList[index] = professional
+
+                                    const updatedGroup = new Group(groupForm)
+                                    setGroupForm(updatedGroup)
+
+                                    return (
+                                        <div className={"gf-button" + (selectedProfessional === professionalId ? " selected" : "")} onClick={() => { setSelectedProfessional(professionalId) }}>
+                                            <p className="gf-button-title">{professional.getName()}</p>
+                                            <p className="gf-button-subtitle">{professional.getOccupations()}</p>
+                                            <div className={"selection-circle" + (selectedProfessional === professionalId ? " selected" : "")}>
+                                                <div className="selection-inner-circle"></div>
+                                            </div>
+                                        </div>
+                                    )
+                                })
+                            }
+                        </div>
+                        <p className={"gf-service-edit-button" + (selectedProfessional !== null ? "" : " hidden")} onClick={() => { alert("ainda não implementado") }}>Editar Serviço</p>
+                    </div>
+                )
             default:
                 return <div />
         }
