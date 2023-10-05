@@ -15,6 +15,16 @@
     rotate: 180deg;
 }
 
+.left {
+    rotate: 0deg;
+}
+
+.return-button {
+    height: 40px;
+    right: 40px;
+    opacity: .8;
+}
+
 input {
     all: unset;
 }
