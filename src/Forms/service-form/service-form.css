@@ -1,0 +1,100 @@
+.service-form {
+    background-color: #CED4DA;
+    min-height: 100vh;
+}
+
+.sf-header {
+    background-color: #DEE2E6;
+    height: 64px;
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    padding-left: 7px;
+    padding-right: 15px;
+}
+
+.sf-header-text-block {
+    padding-left: 10px;
+}
+
+.sf-header-title {
+    font-size: 20px;
+    color: #212529;
+}
+
+.sf-header-subtitle {
+    font-size: 12px;
+    color: #212529;
+    opacity: .8;
+}
+
+.sf-delete-button {
+    height: 26px;
+    width: 26px;
+    opacity: .8;
+}
+
+.sf-value-block {
+    display: flex;
+    align-items: center;
+    padding-block: 17px;
+}
+
+.sf-value-icon {
+    width: 20px;
+    height: 20px;
+    margin-left: 2px;
+
+}
+
+.sf-value-input {
+    padding-left: 5px;
+}
+
+.sf-data-block {
+    background-color: #CED4DA;
+    padding-inline: 10px;
+    min-height: calc(100% + 40px);
+}
+
+.sf-bottom-columns {
+    display: flex;
+}
+
+.sf-image-group {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 5px;
+    padding-bottom: 90px;
+}
+
+.sf-image-add {
+    height: 80px;
+    width: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(33, 48, 64, 0.5);
+    border-radius: 2px;
+}
+
+.sf-image-add-icon {
+    height: 30px;
+    width: 30px;
+}
+
+.sf-image {
+    height: 80px;
+    width: 120px;
+    background-color: rgba(33, 48, 64, 0.5);
+    border-radius: 2px;
+}
+
+.sf-item-list {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding-inline: 10px;
+    padding-bottom: 80px;
+    margin-top: 10px;
+}
