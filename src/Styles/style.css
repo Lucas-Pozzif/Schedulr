@@ -29,6 +29,10 @@ input {
     all: unset;
 }
 
+.hidden {
+    display: none;
+}
+
 ::placeholder {
     color: #212529;
 }
