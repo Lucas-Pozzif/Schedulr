@@ -14,6 +14,7 @@ import { SubHeader } from "../../Components/sub-header/sub-header";
 import { ItemButton } from "../../Components/buttons/item-button/item-button";
 
 import "./group-form.css"
+import { ServiceForm } from "../service-form/service-form";
 
 type GroupFormType = {
     user?: User
@@ -116,7 +117,7 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                                 setTab(0)
                                 setSelectedService(null)
                             }}
-                            onClickIcon={() => { alert('ainda não implementado') }}
+                            onClickIcon={() => { setTab(4) }}
                         />
                         <SubHeader
                             title=""
@@ -292,6 +293,12 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                         />
                     </div>
                 )
+            case 4:
+
+                const services = groupForm.getServices()
+                const service = services.find((service) => { return service.getId() == selectedService })
+                console.log(services, service)
+                return (<ServiceForm user={user} groupForm={groupForm} setGroupForm={setGroupForm} service={service} onClickReturn={() => { setTab(1) }} />)
             default:
                 return <div />
         }
