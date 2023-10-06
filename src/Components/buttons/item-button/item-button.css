@@ -1,0 +1,49 @@
+.item-button {
+    height: 40px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-left: 10px;
+    background-color: #DEE2E6;
+    border-radius: 2px;
+}
+
+.item-button.selected {
+    outline: #212529 .5px solid;
+}
+
+.ib-title {
+    font-size: 14px;
+    color: black;
+}
+
+.ib-subtitle {
+    font-size: 11px;
+    color: #212529;
+    opacity: .8;
+}
+
+.selection-circle {
+    top: 5px;
+    right: 5px;
+    position: absolute;
+    height: 10px;
+    width: 10px;
+    background-color: #CED4DA;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.selection-circle.selected {
+    background-color: #212529;
+}
+
+.selection-inner-circle {
+    height: 6px;
+    width: 6px;
+    background-color: #DEE2E6;
+    border-radius: 3px;
+}

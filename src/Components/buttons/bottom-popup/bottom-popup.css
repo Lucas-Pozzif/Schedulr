@@ -1,0 +1,33 @@
+.bottom-popup {
+    position: fixed;
+    height: 70px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #DEE2E6;
+    border-top-right-radius: 20px;
+    border-top-left-radius: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-inline: 10px;
+}
+
+.bp-title {
+    font-size: 16px;
+    color: #212529;
+}
+
+.bp-subtitle {
+    font-size: 12px;
+    color: #212529;
+}
+
+.bp-button {
+    font-size: 16px;
+    background-color: #212529;
+    color: #F8F9FA;
+    padding-block: 8px;
+    padding-inline: 37px;
+    border-radius: 5px;
+}
