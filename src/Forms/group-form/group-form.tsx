@@ -4,9 +4,16 @@ import { User } from "../../Classes/user";
 import { LoadingScreen } from "../../Components/loading/loading-screen/loading-screen";
 import { Line } from "../../Components/line/line";
 import { Service } from "../../Classes/service";
+import { Professional } from "../../Classes/professional";
+import { Header } from "../../Components/header/header";
+import { LinkButton } from "../../Components/buttons/link-button/link-button";
+import { BottomPopup } from "../../Components/buttons/bottom-popup/bottom-popup";
+import { DropdownButton } from "../../Components/buttons/dropdown-button/dropdown-button";
+import { BottomButton } from "../../Components/buttons/bottom-button/bottom-button";
+import { SubHeader } from "../../Components/sub-header/sub-header";
+import { ItemButton } from "../../Components/buttons/item-button/item-button";
 
 import "./group-form.css"
-import { Professional } from "../../Classes/professional";
 
 type GroupFormType = {
     user?: User
@@ -72,23 +79,14 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                             <Line />
                             <div className="gf-bottom-columns">
                                 <div className="gf-left-column">
-                                    <div className="gf-selector">
-                                        <p className="gf-selector-text">{days[selectedDay]}</p>
-                                        <img className={"sched-arrow" + (dayList ? " up" : " down")} src={arrow} />
-                                    </div>
-                                    <div className={"gf-day-list" + (dayList ? "" : " hidden")}>
-                                        {days.map((day) => { return (<p className="gf-day-list-item">{day}</p>) })}
-                                    </div>
+                                    <DropdownButton
+                                        title={days[selectedDay]}
+                                        dropDownItems={days.map((day, index) => { return [day, () => setSelectedDay(index)] })}
+                                    />
                                 </div>
                                 <div className="gf-right-column">
-                                    <div className="gf-selector" onClick={() => { setTab(1) }}>
-                                        <p className="gf-selector-text">Alterar Serviços e Horários</p>
-                                        <img className={"sched-arrow right"} src={arrow} />
-                                    </div>
-                                    <div className="gf-selector" onClick={() => { setTab(3) }}>
-                                        <p className="gf-selector-text">Alterar Profissionais</p>
-                                        <img className={"sched-arrow right"} src={arrow} />
-                                    </div>
+                                    <LinkButton title="Alterar Serviços e Horários" onClick={() => { setTab(1) }} />
+                                    <LinkButton title="Alterar Profissionais" onClick={() => { setTab(3) }} />
                                     <div className="gf-image-group">
                                         <div className="gf-image-add">
                                             <img className="gf-image-add-icon" src={addImage} />
@@ -98,33 +96,36 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                                 </div>
                             </div>
                         </div>
-                        <div className="gf-confirm-tab">
-                            <div className="gf-confirm-tab-text-block">
-                                <p className="gf-confirm-tab-title">Editando...</p>
-                                <p className="gf-confirm-tab-subtitle">Possui Alterações</p>
-                            </div>
-                            <p className="gf-confirm-button">Salvar Alterações</p>
-                        </div>
+                        <BottomPopup
+                            title="Editando..."
+                            subtitle="Possui Alterações"
+                            buttonTitle="Salvar Alterações"
+                            onClick={() => {
+
+                            }}
+                        />
                     </div >
                 )
             case 1:
                 return (
                     <div className="gf-tab">
-                        <div className="gf-header">
-                            <img className="return-button left" src={arrow} onClick={() => {
+                        <Header
+                            title="Editar Serviços"
+                            icon={more}
+                            onClickReturn={() => {
                                 setTab(0)
                                 setSelectedService(null)
-                            }} />
-                            <p className="gf-header-title">Editar Serviços</p>
-                            <img className="gf-add-service-button" src={more} onClick={() => { alert('ainda não implementado') }} />
-                        </div>
-                        <div className="gf-sub-header">
-                            <div className="gf-sub-header-left"></div>
-                            <p className="gf-sub-header-button" onClick={() => {
+                            }}
+                            onClickIcon={() => { alert('ainda não implementado') }}
+                        />
+                        <SubHeader
+                            title=""
+                            buttonTitle="Alterar Horários"
+                            onClick={() => {
                                 setTab(2)
                                 setSelectedService(null)
-                            }}>Alterar Horários</p>
-                        </div>
+                            }}
+                        />
                         <div className="gf-list">
                             {
                                 groupForm.getServicesIds().map((serviceId: string, index: number) => {
@@ -148,7 +149,11 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                                 })
                             }
                         </div>
-                        <p className={"gf-service-edit-button" + (selectedService !== null ? "" : " hidden")} onClick={() => { alert("ainda não implementado") }}>Editar Serviço</p>
+                        <BottomButton
+                            hide={selectedService == null}
+                            title="Editar Serviço"
+                            onClick={() => { alert("ainda não implementado") }}
+                        />
                     </div>
                 )
             case 2:
@@ -159,19 +164,26 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                 }
                 return (
                     <div className="gf-tab">
-                        <div className="gf-header">
-                            <img className="return-button left" src={arrow} onClick={() => {
-                                setTab(1)
-                            }} />
-                            <p className="gf-header-title">Alterar Horários</p>
-                        </div>
-                        <div className="gf-sub-header">
-                            <div className="gf-sub-header-left">
-                                <p className="gf-sub-header-text">{fullDays[selectedDay]}</p>
-                            </div>
-                            <p className="gf-sub-header-button" onClick={() => {
-                            }}>Bloquear o dia</p>
-                        </div>
+                        <Header
+                            title="Alterar Horários"
+                            icon=""
+                            onClickIcon={() => { }}
+                            onClickReturn={() => { setTab(1) }}
+                        />
+                        <SubHeader
+                            title={fullDays[selectedDay]}
+                            buttonTitle="Limpar horários"
+                            onClick={() => {
+                                const startHours = [...groupForm.getStartHours()]
+                                const hours = [...groupForm.getHours()]
+                                startHours[selectedDay] = 0
+                                hours[selectedDay] = []
+                                groupForm.setStartHours(startHours)
+                                groupForm.setHours([])
+                                const updatedGroupForm = new Group(groupForm)
+                                setGroupForm(updatedGroupForm)
+                            }}
+                        />
                         <div className="gf-day-carrousel">
                             {
                                 fullDays.map((day, index) => {
@@ -187,62 +199,70 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                                     const selected = groupForm.getHours()[selectedDay]?.[index - groupForm.getStartHours()[selectedDay]]
 
                                     return (
-                                        <div className={"gf-button" + (selected ? " selected" : "")} onClick={() => {
-                                            if (!startHour[selectedDay]) { startHour[selectedDay] = 0; }
-                                            startHour[selectedDay] = parseInt(startHour[selectedDay].toString());
+                                        <ItemButton
+                                            title={timeValue}
+                                            subtitle={"Pendente"}
+                                            isSelected={selected}
+                                            onClick={() => {
+                                                if (!startHour[selectedDay]) { startHour[selectedDay] = 0; }
+                                                startHour[selectedDay] = parseInt(startHour[selectedDay].toString());
 
-                                            if (isNaN(startHour[selectedDay])) { startHour[selectedDay] = 0; }
+                                                if (isNaN(startHour[selectedDay])) { startHour[selectedDay] = 0; }
 
-                                            if (startHour[selectedDay] > 0) {
-                                                const falseValuesToAdd = Array(startHour[selectedDay]).fill(false);
-                                                hours[selectedDay] = [...falseValuesToAdd, ...hours[selectedDay]];
-                                                startHour[selectedDay] = 0;
-                                            }
-                                            if (!hours[selectedDay]) { hours[selectedDay] = []; }
+                                                if (startHour[selectedDay] > 0) {
+                                                    const falseValuesToAdd = Array(startHour[selectedDay]).fill(false);
+                                                    hours[selectedDay] = [...falseValuesToAdd, ...hours[selectedDay]];
+                                                    startHour[selectedDay] = 0;
+                                                }
+                                                if (!hours[selectedDay]) { hours[selectedDay] = []; }
 
-                                            if (index >= hours[selectedDay].length) {
-                                                const diff = index - hours[selectedDay].length + 1;
-                                                hours[selectedDay].push(...Array(diff).fill(false));
-                                            }
-                                            hours[selectedDay][index] = !hours[selectedDay][index];
-                                            let lastIndex = hours[selectedDay].length - 1;
-                                            while (lastIndex >= 0 && !hours[selectedDay][lastIndex]) {
-                                                hours[selectedDay].pop();
-                                                lastIndex--;
-                                            }
-                                            startHour[selectedDay] = hours[selectedDay].indexOf(true);
-                                            for (let i = 0; i < startHour[selectedDay]; i++) {
-                                                hours[selectedDay].shift();
-                                            }
-                                            groupForm.setHours(hours)
-                                            groupForm.setStartHours(startHour)
-                                            const updatedGroupForm = new Group(groupForm)
-                                            setGroupForm(updatedGroupForm)
-                                        }}>
-                                            <p className="gf-button-title">{timeValue}</p>
-                                            <p className="gf-button-subtitle">pendente{groupForm.getHours()[index]}</p>
-                                            <div className={"selection-circle" + (selected ? " selected" : "")}>
-                                                <div className="selection-inner-circle"></div>
-                                            </div>
-                                        </div>
+                                                if (index >= hours[selectedDay].length) {
+                                                    const diff = index - hours[selectedDay].length + 1;
+                                                    hours[selectedDay].push(...Array(diff).fill(false));
+                                                }
+                                                hours[selectedDay][index] = !hours[selectedDay][index];
+                                                let lastIndex = hours[selectedDay].length - 1;
+                                                while (lastIndex >= 0 && !hours[selectedDay][lastIndex]) {
+                                                    hours[selectedDay].pop();
+                                                    lastIndex--;
+                                                }
+                                                startHour[selectedDay] = hours[selectedDay].indexOf(true);
+                                                for (let i = 0; i < startHour[selectedDay]; i++) {
+                                                    hours[selectedDay].shift();
+                                                }
+                                                groupForm.setHours(hours)
+                                                groupForm.setStartHours(startHour)
+                                                const updatedGroupForm = new Group(groupForm)
+                                                setGroupForm(updatedGroupForm)
+                                            }}
+                                        />
+
                                     )
                                 })
                             }
                         </div>
-                        <p className={"gf-service-edit-button" + (selectedService !== null ? "" : " hidden")} onClick={() => { setTab(1) }}>Confirmar</p>
+                        <BottomButton
+                            hide={false}
+                            title={"Confirmar"}
+                            onClick={() => { setTab(1) }}
+                        />
                     </div>
                 )
             case 3:
                 return (
                     <div className="gf-tab">
-                        <div className="gf-header">
-                            <img className="return-button left" src={arrow} onClick={() => {
+                        <Header
+                            title={"Editar Profissionais"}
+                            icon={addUser}
+                            onClickReturn={() => {
                                 setTab(0)
                                 setSelectedProfessional(null)
-                            }} />
-                            <p className="gf-h eader-title">Editar Profissionais</p>
-                            <img className="gf-add-professional-button" src={addUser} onClick={() => { alert('ainda não implementado') }} />
-                        </div>
+                            }}
+                            onClickIcon={() => {
+                                alert('ainda não implementado')
+
+                            }}
+                        />
                         <div className="gf-professional-list">
                             {
                                 groupForm.getProfessionalsIds().map((professionalId: string, index: number) => {
@@ -255,18 +275,21 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                                     setGroupForm(updatedGroup)
 
                                     return (
-                                        <div className={"gf-button" + (selectedProfessional === professionalId ? " selected" : "")} onClick={() => { setSelectedProfessional(professionalId) }}>
-                                            <p className="gf-button-title">{professional.getName()}</p>
-                                            <p className="gf-button-subtitle">{professional.getOccupations()}</p>
-                                            <div className={"selection-circle" + (selectedProfessional === professionalId ? " selected" : "")}>
-                                                <div className="selection-inner-circle"></div>
-                                            </div>
-                                        </div>
+                                        <ItemButton
+                                            title={professional.getName()}
+                                            subtitle={professional.getOccupations().join(', ')}
+                                            isSelected={selectedProfessional === professionalId}
+                                            onClick={() => { setSelectedProfessional(professionalId) }}
+                                        />
                                     )
                                 })
                             }
                         </div>
-                        <p className={"gf-service-edit-button" + (selectedProfessional !== null ? "" : " hidden")} onClick={() => { alert("ainda não implementado") }}>Editar Serviço</p>
+                        <BottomButton
+                            hide={selectedProfessional == null}
+                            title={"Editar Serviço"}
+                            onClick={() => { alert('ainda não implementado') }}
+                        />
                     </div>
                 )
             default:
