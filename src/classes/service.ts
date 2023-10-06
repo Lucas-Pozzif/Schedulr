@@ -4,7 +4,7 @@ interface ServiceInterface {
     id: string;
     name: string;
     value: string;
-    photo: string;
+    photos: string[];
     duration: string;
     inicial: string;
     subServices: SubService[];
@@ -85,7 +85,7 @@ export class Service {
     private _id: string;
     private _name: string;
     private _value: string;
-    private _photo: string;
+    private _photos: string[];
     private _duration: boolean[];
     private _inicial: boolean;
     private _subServices: SubService[];
@@ -94,7 +94,7 @@ export class Service {
         arg?: string | Service,
         name: string = "",
         value: string = "",
-        photo: string = "",
+        photos: string[] = [],
         duration: boolean[] = [true],
         inicial: boolean = false,
         subServices: SubService[] = []
@@ -104,7 +104,7 @@ export class Service {
             this._id = arg;
             this._name = name;
             this._value = value;
-            this._photo = photo;
+            this._photos = photos;
             this._duration = duration;
             this._inicial = inicial;
             this._subServices = subServices;
@@ -114,7 +114,7 @@ export class Service {
                 _id,
                 _name,
                 _value,
-                _photo,
+                _photos,
                 _duration,
                 _inicial,
                 _subServices,
@@ -122,7 +122,7 @@ export class Service {
             this._id = _id;
             this._name = _name;
             this._value = _value;
-            this._photo = _photo;
+            this._photos = _photos;
             this._duration = _duration;
             this._inicial = _inicial;
             this._subServices = _subServices;
@@ -131,7 +131,7 @@ export class Service {
             this._id = "";
             this._name = name;
             this._value = value;
-            this._photo = photo;
+            this._photos = photos;
             this._duration = duration;
             this._inicial = inicial;
             this._subServices = subServices;
@@ -151,8 +151,8 @@ export class Service {
         return this._value;
     }
 
-    getPhoto(): string {
-        return this._photo;
+    getPhotos(): string[] {
+        return this._photos;
     }
 
     getDuration(): boolean[] {
@@ -180,8 +180,8 @@ export class Service {
         this._value = value;
     }
 
-    setPhoto(photo: string) {
-        this._photo = photo;
+    setPhotos(photos: string[]) {
+        this._photos = photos;
     }
 
     setDuration(duration: boolean[]) {
@@ -202,7 +202,7 @@ export class Service {
         this._id = service.getId();
         this._name = service.getName();
         this._value = service.getValue();
-        this._photo = service.getPhoto();
+        this._photos = service.getPhotos();
         this._duration = service.getDuration();
         this._inicial = service.getInicial();
         this._subServices = service.getSubServices();
@@ -216,7 +216,7 @@ export class Service {
         this._id = snap.id;
         this._name = servData!.name;
         this._value = servData!.value;
-        this._photo = servData!.photo;
+        this._photos = servData!.photos;
         this._duration = servData!.duration;
         this._inicial = servData!.inicial;
         this._subServices = servData!.subServices.map((sServiceData: any) => {
@@ -249,7 +249,7 @@ export class Service {
         }
 
         const docRef = doc(db, "services", this._id);
-        const propertiesToUpdate: (keyof ServiceInterface)[] = ["name", "value", "photo", "duration", "inicial", "subServices"];
+        const propertiesToUpdate: (keyof ServiceInterface)[] = ["name", "value", "photos", "duration", "inicial", "subServices"];
 
         propertiesToUpdate.map((prop) => {
             if (updates[prop] !== undefined) {
@@ -285,7 +285,7 @@ export class Service {
         return {
             name: this._name,
             value: this._value,
-            photo: this._photo,
+            photos: this._photos,
             duration: this._duration,
             inicial: this._inicial,
             subServices: subServiceFormats
