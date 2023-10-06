@@ -91,7 +91,7 @@ export class Service {
     private _subServices: SubService[];
 
     constructor(
-        id: string = "",
+        arg?: string | Service,
         name: string = "",
         value: string = "",
         photo: string = "",
@@ -99,15 +99,45 @@ export class Service {
         inicial: boolean = false,
         subServices: SubService[] = []
     ) {
-        this._id = id;
-        this._name = name;
-        this._value = value;
-        this._photo = photo;
-        this._duration = duration;
-        this._inicial = inicial;
-        this._subServices = subServices;
+        if (typeof arg === "string") {
+            // Case: ID provided
+            this._id = arg;
+            this._name = name;
+            this._value = value;
+            this._photo = photo;
+            this._duration = duration;
+            this._inicial = inicial;
+            this._subServices = subServices;
+        } else if (arg instanceof Service) {
+            // Case: Another Service object provided
+            const {
+                _id,
+                _name,
+                _value,
+                _photo,
+                _duration,
+                _inicial,
+                _subServices,
+            } = arg;
+            this._id = _id;
+            this._name = _name;
+            this._value = _value;
+            this._photo = _photo;
+            this._duration = _duration;
+            this._inicial = _inicial;
+            this._subServices = _subServices;
+        } else {
+            // Case: No arguments or invalid argument type
+            this._id = "";
+            this._name = name;
+            this._value = value;
+            this._photo = photo;
+            this._duration = duration;
+            this._inicial = inicial;
+            this._subServices = subServices;
+        }
     }
-
+    
     // Getters
     getId(): string {
         return this._id;
