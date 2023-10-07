@@ -17,16 +17,32 @@ export class SubService {
     private _duration: boolean[];
 
     constructor(
-        name: string = "",
+        arg?: string | SubService,
         value: string = "",
         inicial: boolean = false,
         duration: boolean[] = [true],
     ) {
-        this._name = name;
-        this._value = value;
-        this._inicial = inicial;
-        this._duration = duration;
-    }
+        if (typeof arg === "string") {
+            // Case: Name provided, assuming default values for other properties
+            this._name = arg;
+            this._value = value;
+            this._inicial = inicial;
+            this._duration = duration;
+        } else if (arg instanceof SubService) {
+            // Case: Another SubService object provided
+            const { _name, _value, _inicial, _duration } = arg;
+            this._name = _name;
+            this._value = _value;
+            this._inicial = _inicial;
+            this._duration = _duration;
+        } else {
+            // Case: No arguments or invalid argument type
+            this._name = "";
+            this._value = value;
+            this._inicial = inicial;
+            this._duration = duration;
+        }
+    } 
 
     // Getters
     getName(): string {
@@ -137,7 +153,7 @@ export class Service {
             this._subServices = subServices;
         }
     }
-    
+
     // Getters
     getId(): string {
         return this._id;
