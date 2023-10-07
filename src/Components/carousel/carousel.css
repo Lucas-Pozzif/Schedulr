@@ -1,0 +1,30 @@
+.carousel {
+    display: flex;
+    overflow-x: auto;
+    text-align: center;
+    gap: 5px;
+    padding-bottom: 10px;
+    padding-top: 1px;
+    padding-inline: 95px;
+}
+
+.carousel::-webkit-scrollbar {
+    display: none;
+}
+
+.carousel-item {
+    height: 40px;
+    width: 85px;
+    font-size: 12px;
+    background-color: #DEE2E6;
+    color: black;
+    border-radius: 2px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.carousel-item.selected {
+    outline: #212529 .5px solid;
+}
