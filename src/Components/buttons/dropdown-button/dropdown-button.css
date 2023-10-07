@@ -28,6 +28,7 @@
 }
 
 .ddb-item {
+    width: 80px;
     background-color: #DEE2E6;
     border-radius: 2px;
     margin-block: 1px;
