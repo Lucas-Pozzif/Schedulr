@@ -1,11 +1,8 @@
 import { Dispatch, SetStateAction, useState } from "react";
-import { Service } from "../../Classes/service";
+import { Service, SubService } from "../../Classes/service";
 import { User } from "../../Classes/user";
 import { LoadingScreen } from "../../Components/loading/loading-screen/loading-screen";
 import { Line } from "../../Components/line/line";
-import { useNavigate } from "react-router-dom";
-
-import "./service-form.css"
 import { SmallButton } from "../../Components/buttons/small-button/small-button";
 import { DropdownButton } from "../../Components/buttons/dropdown-button/dropdown-button";
 import { LinkButton } from "../../Components/buttons/link-button/link-button";
@@ -14,6 +11,9 @@ import { SubHeader } from "../../Components/sub-header/sub-header";
 import { ItemButton } from "../../Components/buttons/item-button/item-button";
 import { Group } from "../../Classes/group";
 import { Professional } from "../../Classes/professional";
+
+import "./service-form.css"
+import { Carousel } from "../../Components/carousel/carousel";
 
 type ServiceFormType = {
     user?: User
@@ -26,13 +26,29 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
     const [loading, setLoading] = useState(false);
     const [serviceForm, setServiceForm] = useState(service);
     const [tab, setTab] = useState(0)
-    const [selectedSService, setSelectedSService] = useState<null | string>(null)
+    const [selectedSService, setSelectedSService] = useState<null | number>(null)
 
     const arrow = require("../../Assets/arrow.png");
+    const more = require("../../Assets/more.png");
     const bin = require("../../Assets/delete.png");
     const money = require("../../Assets/money.png");
     const addImage = require("../../Assets/add-image.png");
     const addUser = require("../../Assets/add-user.png");
+
+    var SServDropList: [string, () => void][] = serviceForm.getSubServices().map((SubService, index) => {
+        return (
+            [
+                SubService.getName(),
+                () => setSelectedSService(index)
+            ]
+        )
+    })
+    SServDropList.push(
+        [
+            "Editar Subserviços",
+            () => { setTab(3) }
+        ]
+    )
 
     const tabHandler = () => {
         switch (tab) {
@@ -73,8 +89,8 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
                                         }}
                                     />
                                     <DropdownButton
-                                        title={""}
-                                        dropDownItems={[]}
+                                        title={selectedSService !== null ? serviceForm.getSubServices()[selectedSService].getName() : "Tamanho"}
+                                        dropDownItems={SServDropList}
                                     />
                                 </div>
                                 <div className="sf-right-column">
@@ -110,6 +126,7 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
                 }
                 timeArray.push(`12:00`);
                 const duration = [...serviceForm.getDuration()]
+                const sSDuration = [...selectedSService !== null ? serviceForm.getSubServices()[selectedSService].getDuration() : []]
                 return (
                     <div className="service-form">
                         <Header
@@ -130,6 +147,15 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
 
                             }}
                         />
+                        <Carousel items={
+                            serviceForm.getSubServices().map((sserv, index) => {
+                                return {
+                                    title: sserv.getName(),
+                                    isSelected: index == selectedSService,
+                                    onClick: () => setSelectedSService(index)
+                                }
+                            })
+                        } />
                         <div className="sf-item-list">
                             {
                                 timeArray.map((timeValue, index) => {
@@ -139,18 +165,34 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
                                             subtitle={"Pendente"}
                                             isSelected={serviceForm.getDuration()?.[index]}
                                             onClick={() => {
+                                                if (selectedSService !== null) {
+                                                    if (index >= sSDuration.length) {
+                                                        const diff = index - sSDuration.length + 1;
+                                                        sSDuration.push(...Array(diff).fill(false));
+                                                    }
+                                                    sSDuration[index] = !sSDuration[index];
+                                                    let lastIndex = sSDuration.length - 1;
+                                                    while (lastIndex >= 0 && !sSDuration[lastIndex]) {
+                                                        sSDuration.pop();
+                                                        lastIndex--;
+                                                    }
+                                                    const subServices = [...serviceForm.getSubServices()]
+                                                    subServices[selectedSService].setDuration(sSDuration)
+                                                    serviceForm.setSubServices(subServices)
 
-                                                if (index >= duration.length) {
-                                                    const diff = index - duration.length + 1;
-                                                    duration.push(...Array(diff).fill(false));
+                                                } else {
+                                                    if (index >= duration.length) {
+                                                        const diff = index - duration.length + 1;
+                                                        duration.push(...Array(diff).fill(false));
+                                                    }
+                                                    duration[index] = !duration[index];
+                                                    let lastIndex = duration.length - 1;
+                                                    while (lastIndex >= 0 && !duration[lastIndex]) {
+                                                        duration.pop();
+                                                        lastIndex--;
+                                                    }
+                                                    serviceForm.setDuration(duration)
                                                 }
-                                                duration[index] = !duration[index];
-                                                let lastIndex = duration.length - 1;
-                                                while (lastIndex >= 0 && !duration[lastIndex]) {
-                                                    duration.pop();
-                                                    lastIndex--;
-                                                }
-                                                serviceForm.setDuration(duration)
                                                 const updatedService = new Service(serviceForm)
                                                 setServiceForm(updatedService)
                                             }}
@@ -172,26 +214,34 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
                                 setTab(0)
                             }}
                             onClickIcon={() => {
-                                alert('ainda não implementado')
+                                setTab(4)
                             }}
                         />
                         <div className="gf-professional-list">
                             {
-                                groupForm.getProfessionalsIds().map((professionalId: string, index: number) => {
-                                    const professional = new Professional()
-                                    const professionalList = groupForm.getProfessionals()
-                                    professional.getProfessional(professionalId)
-                                    professionalList[index] = professional
-
+                                groupForm.getProfessionals().map((professional: Professional, index: number) => {
                                     const updatedGroup = new Group(groupForm)
                                     setGroupForm(updatedGroup)
+
+                                    var profServices = professional.getServices()
 
                                     return (
                                         <ItemButton
                                             title={professional.getName()}
                                             subtitle={professional.getOccupations().join(', ')}
-                                            isSelected={false}
-                                            onClick={() => { }}
+                                            isSelected={profServices.includes(serviceForm.getId())}
+                                            onClick={() => {
+                                                if (profServices.includes(serviceForm.getId())) {
+                                                    profServices = profServices.filter(id => id !== serviceForm.getId());
+                                                } else {
+                                                    profServices.push(serviceForm.getId())
+                                                }
+                                                const professionals = groupForm.getProfessionals()
+                                                professionals[index].setServices(profServices)
+                                                groupForm.setProfessionals(professionals)
+                                                const updatedGroup = new Group(groupForm)
+                                                setGroupForm(updatedGroup)
+                                            }}
                                         />
                                     )
                                 })
@@ -199,6 +249,19 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
                         </div>
                     </div>
                 )
+            case 3://Subservice list
+                return (
+                    <div className="service-form">
+                        <Header
+                            title={"Editar Subserviços"}
+                            icon={more}
+                            onClickReturn={() => { setTab(0) }}
+                            onClickIcon={() => { setTab(5) }}
+                        />
+                    </div>
+                )
+            case 4://Professional Form
+                return (<div />)
             default: return <div />
         }
     }
