@@ -20,6 +20,7 @@
 .sf-header-title {
     font-size: 20px;
     color: #212529;
+    width: 100%;
 }
 
 .sf-header-subtitle {
@@ -59,6 +60,7 @@
 
 .sf-bottom-columns {
     display: flex;
+    gap: 10px;
 }
 
 .sf-image-group {
