@@ -14,6 +14,7 @@ import { Professional } from "../../Classes/professional";
 
 import "./service-form.css"
 import { Carousel } from "../../Components/carousel/carousel";
+import { SubServiceForm } from "../sub-service-form/sub-service-form";
 
 type ServiceFormType = {
     user?: User
@@ -262,6 +263,16 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
                 )
             case 4://Professional Form
                 return (<div />)
+            case 5:
+                return (
+                    <SubServiceForm
+                        onClickReturn={() => { setTab(3) }}
+                        user={user}
+                        serviceForm={serviceForm}
+                        setServiceForm={setServiceForm}
+                        subService={serviceForm.getSubServices()[selectedSService || serviceForm.getSubServices().length]}
+                    />
+                )
             default: return <div />
         }
     }
