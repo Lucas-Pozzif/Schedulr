@@ -20,7 +20,7 @@ export class Professional {
     private _images: string[]
 
     constructor(
-        id: string = "",
+        arg?: string | Professional,
         name: string = "",
         occupations: string[] = [],
         email: string = "",
@@ -29,16 +29,48 @@ export class Professional {
         shift: boolean[][] = [],
         images: string[] = []
     ) {
-        this._id = id;
-        this._name = name;
-        this._occupations = occupations;
-        this._email = email;
-        this._isAdmin = isAdmin;
-        this._services = services;
-        this._shift = shift;
-        this._images = images;
+        if (typeof arg === "string") {
+            // Case: ID provided
+            this._id = arg;
+            this._name = name;
+            this._occupations = occupations;
+            this._email = email;
+            this._isAdmin = isAdmin;
+            this._services = services;
+            this._shift = shift;
+            this._images = images;
+        } else if (arg instanceof Professional) {
+            // Case: Another Professional object provided
+            const {
+                _id,
+                _name,
+                _occupations,
+                _email,
+                _isAdmin,
+                _services,
+                _shift,
+                _images,
+            } = arg;
+            this._id = _id;
+            this._name = _name;
+            this._occupations = _occupations;
+            this._email = _email;
+            this._isAdmin = _isAdmin;
+            this._services = _services;
+            this._shift = _shift;
+            this._images = _images;
+        } else {
+            // Case: No arguments or invalid argument type
+            this._id = "";
+            this._name = name;
+            this._occupations = occupations;
+            this._email = email;
+            this._isAdmin = isAdmin;
+            this._services = services;
+            this._shift = shift;
+            this._images = images;
+        }
     }
-
     // Getters
     getId(): string {
         return this._id;
