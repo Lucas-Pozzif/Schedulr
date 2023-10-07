@@ -3,7 +3,7 @@ import './bottom-button.css'
 type bottomButtonType = {
     hide: boolean;
     title: string;
-    onClick: () => void
+    onClick?: () => void
 }
 
 export function BottomButton({ hide, title, onClick }: bottomButtonType) {
