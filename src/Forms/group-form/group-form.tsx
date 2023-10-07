@@ -15,6 +15,7 @@ import { ItemButton } from "../../Components/buttons/item-button/item-button";
 
 import "./group-form.css"
 import { ServiceForm } from "../service-form/service-form";
+import { Carousel } from "../../Components/carousel/carousel";
 
 type GroupFormType = {
     user?: User
@@ -185,13 +186,17 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                                 setGroupForm(updatedGroupForm)
                             }}
                         />
-                        <div className="gf-day-carrousel">
-                            {
-                                fullDays.map((day, index) => {
-                                    return (<p className={"gf-day-carrousel-item" + (selectedDay == index ? " selected" : "")} onClick={() => { setSelectedDay(index) }}>{day}</p>)
-                                })
-                            }
-                        </div>
+                        <Carousel items={
+                            fullDays.map((day, index) => {
+                                return {
+                                    title: day,
+                                    isSelected: selectedDay == index,
+                                    onClick: () => {
+                                        setSelectedDay(index)
+                                    }
+                                }
+                            })
+                        } />
                         <div className="gf-list">
                             {
                                 timeArray.map((timeValue, index) => {
