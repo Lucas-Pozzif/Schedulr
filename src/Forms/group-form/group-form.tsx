@@ -16,6 +16,7 @@ import { ItemButton } from "../../Components/buttons/item-button/item-button";
 import "./group-form.css"
 import { ServiceForm } from "../service-form/service-form";
 import { Carousel } from "../../Components/carousel/carousel";
+import { ProfessionalForm } from "../professional-form/professional-form";
 
 type GroupFormType = {
     user?: User
@@ -265,7 +266,7 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                                 setSelectedProfessional(null)
                             }}
                             onClickIcon={() => {
-                                alert('ainda não implementado')
+                                setTab(5)
 
                             }}
                         />
@@ -299,11 +300,13 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                     </div>
                 )
             case 4:
-
                 const services = groupForm.getServices()
                 const service = services.find((service) => { return service.getId() == selectedService })
-                console.log(services, service)
                 return (<ServiceForm user={user} groupForm={groupForm} setGroupForm={setGroupForm} service={service} onClickReturn={() => { setTab(1) }} />)
+            case 5:
+                const professionals = groupForm.getProfessionals()
+                const professional = professionals.find((professional) => { return professional.getId() == selectedProfessional })
+                return (<ProfessionalForm groupForm={groupForm} setGroupForm={setGroupForm} user={user} onClickReturn={() => setTab(3)} professional={professional} />)
             default:
                 return <div />
         }
