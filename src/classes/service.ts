@@ -42,7 +42,7 @@ export class SubService {
             this._inicial = inicial;
             this._duration = duration;
         }
-    } 
+    }
 
     // Getters
     getName(): string {
@@ -76,6 +76,13 @@ export class SubService {
 
     setDuration(duration: boolean[]) {
         this._duration = duration;
+    }
+    isValid() {
+        const hasName = this._name.length > 0;
+        const hasValue = this._value.length > 0
+        const hasDuration = this._duration.length > 0
+
+        return (hasName && hasValue && hasDuration)
     }
 
     // Convert firebase data to usualData
@@ -214,18 +221,6 @@ export class Service {
 
     //Fill service methods
 
-    public fillFromService(service: Service) {
-        this._id = service.getId();
-        this._name = service.getName();
-        this._value = service.getValue();
-        this._photos = service.getPhotos();
-        this._duration = service.getDuration();
-        this._inicial = service.getInicial();
-        this._subServices = service.getSubServices();
-    }
-
-    public fillFromAuth() { }
-
     public fillFromSnapshot(snap: DocumentSnapshot) {
         const servData = snap.data();
 
@@ -325,62 +320,14 @@ export class Service {
         return configSnap.data()!.service.toString()
     }
 
-    //Life quality metods
+    //qol methods
 
-    public addSubService() {
-        if (!this._subServices.length) {
-            this._subServices.push(new SubService());
-            this.convertToSubservice();
-        }
-        else {
-            this._subServices.push(new SubService())
-        }
-    }
+    public isValid() {
+        const hasName = this._name.length > 0;
+        const hasValue = this._value.length > 0
+        const hasDuration = this._duration.length > 0
+        const subservicesValid = this._subServices.map((subservice) => subservice.isValid())
 
-    public removeSubService(index: number) {
-        if (index >= this._subServices.length) return
-        if (this._subServices.length == 1) {
-            this.convertToService(index)
-            this._subServices = []
-        }
-        this._subServices.splice(index, 1)
-    }
-
-    public hasEnoughData() {
-        const hasName = this._name != "";
-        const hasValue = this._value != "";
-        const hasDuration = this._duration.length > 1
-        const hasSubservices = this._subServices.length > 0
-
-        if (!hasName) return "missing name"
-        if (!hasValue && !hasSubservices) return "missing value"
-        if (!hasDuration && !hasSubservices) return "missing duration"
-        if (hasSubservices) {
-            const subServiceComplains = this._subServices.map((sService, index) => {
-                const hasSName = sService.getName() != ""
-                const hasSValue = sService.getValue() != ""
-                const hasSDuration = sService.getDuration().length > 1
-
-                if (!hasSName) return `missing name on the ${index + 1}º subservice`
-                if (!hasSValue) return `missing value on the ${sService.getName()} subservice`
-                if (!hasSDuration) return `missing duration on the ${sService.getName()} subservice`
-                else return true
-            })
-            const firstNonTrue = subServiceComplains.find(i => i !== true)
-            return firstNonTrue !== undefined ? firstNonTrue : true
-        }
-        else return true
-    }
-
-    private convertToSubservice() {
-        this._subServices[0].setValue(this._value)
-        this._subServices[0].setDuration(this._duration)
-        this._value = "";
-        this._duration = [true];
-    }
-
-    private convertToService(index: number) {
-        this._value = this._subServices[index].getValue();
-        this._duration = this._subServices[index].getDuration();
-    }
+        return (hasName && hasValue && hasDuration && !subservicesValid.includes(false))
+    } 
 }
