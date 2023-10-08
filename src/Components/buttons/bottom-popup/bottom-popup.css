@@ -31,3 +31,7 @@
     padding-inline: 37px;
     border-radius: 5px;
 }
+
+.bp-button.inactive {
+    opacity: .5;
+}
