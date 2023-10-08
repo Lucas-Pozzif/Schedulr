@@ -50,7 +50,10 @@ export class Group {
                 _images,
                 _profile,
                 _banner,
+                _services,
+                _professionals,
             } = arg;
+
             this._id = _id;
             this._title = _title;
             this._type = _type;
@@ -59,11 +62,13 @@ export class Group {
             this._location = _location;
             this._startHours = _startHours;
             this._hours = _hours;
-            this._servicesIds = _servicesIds;
-            this._professionalsIds = _professionalsIds;
             this._images = _images;
             this._profile = _profile;
             this._banner = _banner;
+            this._servicesIds = _servicesIds;
+            this._professionalsIds = _professionalsIds;
+            this._services = _services;
+            this._professionals = _professionals;
         } else {
             // Case: ID or no arguments provided
             this._id = arg || "";
@@ -79,10 +84,11 @@ export class Group {
             this._images = images;
             this._profile = profile;
             this._banner = banner;
+
+            // Initialize the arrays if they are not provided
+            this._services = [];
+            this._professionals = [];
         }
-        // Initialize the arrays if they are not provided
-        this._services = [];
-        this._professionals = [];
     }
 
 
