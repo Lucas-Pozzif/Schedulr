@@ -7,7 +7,7 @@
     font-size: 12px;
     color: #212529;
     opacity: .8;
-    padding-right: 10px;
+    width: 80px;
 }
 
 .small-button.selected {
