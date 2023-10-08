@@ -15,13 +15,15 @@ import { Professional } from "../../Classes/professional";
 import "./service-form.css"
 import { Carousel } from "../../Components/carousel/carousel";
 import { SubServiceForm } from "../sub-service-form/sub-service-form";
+import { BottomPopup } from "../../Components/buttons/bottom-popup/bottom-popup";
+import { ProfessionalForm } from "../professional-form/professional-form";
 
 type ServiceFormType = {
     user?: User
     groupForm: Group
     setGroupForm: Dispatch<SetStateAction<Group>>
     service?: Service
-    onClickReturn?: () => void
+    onClickReturn: () => void
 }
 export function ServiceForm({ user, groupForm, setGroupForm, service = new Service(), onClickReturn }: ServiceFormType) {
     const [loading, setLoading] = useState(false);
@@ -90,7 +92,7 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
                                         }}
                                     />
                                     <DropdownButton
-                                        title={selectedSService !== null ? serviceForm.getSubServices()[selectedSService].getName() : "Tamanho"}
+                                        title={selectedSService !== null ? serviceForm.getSubServices()[selectedSService].getName() : "Subserviços"}
                                         dropDownItems={SServDropList}
                                     />
                                 </div>
@@ -116,6 +118,27 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
                                 </div>
                             </div>
                         </div>
+                        <BottomPopup
+                            title={"Editando..."}
+                            subtitle={`Serviço para ${groupForm.getTitle()}`}
+                            buttonTitle={"Salvar"}
+                            onClick={async () => {
+                                setLoading(true)
+                                console.log(serviceForm.getId())
+                                if (serviceForm.getId()) {
+                                    await serviceForm.setService()
+                                } else {
+                                    await serviceForm.addService()
+                                }
+                                console.log('done')
+                                groupForm.setServicesIds([...groupForm.getServicesIds(), serviceForm.getId()])
+                                groupForm.setServices([...groupForm.getServices(), serviceForm])
+                                setGroupForm(new Group(groupForm))
+                                setLoading(false)
+                                onClickReturn()
+                            }}
+                            isActive={serviceForm.isValid()}
+                        />
                     </div>
                 )
             case 1:
@@ -126,8 +149,7 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
                     timeArray.push(`${i}:00`, `${i}:10`, `${i}:20`, `${i}:30`, `${i}:40`, `${i}:50`);
                 }
                 timeArray.push(`12:00`);
-                const duration = [...serviceForm.getDuration()]
-                const sSDuration = [...selectedSService !== null ? serviceForm.getSubServices()[selectedSService].getDuration() : []]
+                const duration = [...selectedSService !== null ? serviceForm.getSubServices()[selectedSService].getDuration() : serviceForm.getDuration()]
                 return (
                     <div className="service-form">
                         <Header
@@ -140,11 +162,13 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
                             title={`${Math.floor((duration.length) / 6)}h ${((duration.length % 6) * 10)}m`}
                             buttonTitle={"Remover espaços"}
                             onClick={() => {
-                                const duration = serviceForm.getDuration()
                                 duration.map((value, index) => { duration[index] = true })
-                                serviceForm.setDuration(duration)
-                                const updatedService = new Service(serviceForm)
-                                setServiceForm(updatedService)
+                                if (selectedSService !== null) {
+                                    serviceForm.getSubServices()[selectedSService].setDuration(duration)
+                                } else {
+                                    serviceForm.setDuration(duration)
+                                }
+                                setServiceForm(new Service(serviceForm))
 
                             }}
                         />
@@ -164,38 +188,24 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
                                         <ItemButton
                                             title={timeValue}
                                             subtitle={"Pendente"}
-                                            isSelected={serviceForm.getDuration()?.[index]}
+                                            isSelected={duration?.[index]}
                                             onClick={() => {
+                                                if (index >= duration.length) {
+                                                    const diff = index - duration.length + 1;
+                                                    duration.push(...Array(diff).fill(false));
+                                                }
+                                                duration[index] = !duration[index];
+                                                let lastIndex = duration.length - 1;
+                                                while (lastIndex >= 0 && !duration[lastIndex]) {
+                                                    duration.pop();
+                                                    lastIndex--;
+                                                }
                                                 if (selectedSService !== null) {
-                                                    if (index >= sSDuration.length) {
-                                                        const diff = index - sSDuration.length + 1;
-                                                        sSDuration.push(...Array(diff).fill(false));
-                                                    }
-                                                    sSDuration[index] = !sSDuration[index];
-                                                    let lastIndex = sSDuration.length - 1;
-                                                    while (lastIndex >= 0 && !sSDuration[lastIndex]) {
-                                                        sSDuration.pop();
-                                                        lastIndex--;
-                                                    }
-                                                    const subServices = [...serviceForm.getSubServices()]
-                                                    subServices[selectedSService].setDuration(sSDuration)
-                                                    serviceForm.setSubServices(subServices)
-
+                                                    serviceForm.getSubServices()[selectedSService].setDuration(duration)
                                                 } else {
-                                                    if (index >= duration.length) {
-                                                        const diff = index - duration.length + 1;
-                                                        duration.push(...Array(diff).fill(false));
-                                                    }
-                                                    duration[index] = !duration[index];
-                                                    let lastIndex = duration.length - 1;
-                                                    while (lastIndex >= 0 && !duration[lastIndex]) {
-                                                        duration.pop();
-                                                        lastIndex--;
-                                                    }
                                                     serviceForm.setDuration(duration)
                                                 }
-                                                const updatedService = new Service(serviceForm)
-                                                setServiceForm(updatedService)
+                                                setServiceForm(new Service(serviceForm))
                                             }}
                                         />
 
@@ -259,10 +269,39 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
                             onClickReturn={() => { setTab(0) }}
                             onClickIcon={() => { setTab(5) }}
                         />
+                        <div className="sf-item-list">
+                            {
+                                serviceForm.getSubServices().map((sserivce: SubService, index: number) => {
+                                    return (
+                                        <ItemButton
+                                            title={sserivce.getName()}
+                                            subtitle={"Subserviço"}
+                                            isSelected={selectedSService === index}
+                                            onClick={() => {
+                                                if (selectedSService == index) {
+                                                    setSelectedSService(null)
+                                                } else {
+                                                    setSelectedSService(index)
+                                                }
+                                            }}
+                                        />
+                                    )
+                                })
+                            }
+
+                        </div>
                     </div>
                 )
             case 4://Professional Form
-                return (<div />)
+                return (
+                    <ProfessionalForm
+                        user={user}
+                        groupForm={groupForm}
+                        setGroupForm={setGroupForm}
+                        professional={new Professional()}
+                        onClickReturn={() => setTab(2)}
+                    />
+                )
             case 5:
                 return (
                     <SubServiceForm
@@ -276,7 +315,6 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
             default: return <div />
         }
     }
-
     return loading ?
         <LoadingScreen /> :
         tabHandler()
