@@ -17,13 +17,12 @@ type subServiceFormType = {
     serviceForm: Service
     setServiceForm: Dispatch<SetStateAction<Service>>
     subService?: SubService
-    onClickReturn?: () => void
+    onClickReturn: () => void
 }
 
 export function SubServiceForm({ user, serviceForm, setServiceForm, subService = new SubService(), onClickReturn }: subServiceFormType) {
     const [loading, setLoading] = useState(false);
     const [sServiceForm, setSServiceForm] = useState(subService);
-    const [tab, setTab] = useState(0)
 
     const arrow = require("../../Assets/arrow.png");
     const more = require("../../Assets/more.png");
@@ -123,7 +122,13 @@ export function SubServiceForm({ user, serviceForm, setServiceForm, subService =
                     </div>
                 </div>
             </div>
-            <BottomButton hide={false} title={"Salvar Subserviço"} onClick={onClickReturn} />
+            <BottomButton hide={!sServiceForm.isValid()} title={"Salvar Subserviço"} onClick={() => {
+                const subServices = [...serviceForm.getSubServices(), sServiceForm]
+                serviceForm.setSubServices(subServices)
+                const updatedService = new Service(serviceForm)
+                setServiceForm(updatedService)
+                onClickReturn()
+            }} />
         </div>
 
 }
