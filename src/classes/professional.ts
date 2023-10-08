@@ -7,6 +7,7 @@ interface ProfessionalInterface {
     isAdmin: boolean;
     services: string[];
     shift: boolean[][];
+    startHours: number[];
     images: string[];
 }
 export class Professional {
@@ -17,6 +18,7 @@ export class Professional {
     private _isAdmin: boolean;
     private _services: string[];
     private _shift: boolean[][];
+    private _startHours: number[];
     private _images: string[]
 
     constructor(
@@ -27,6 +29,7 @@ export class Professional {
         isAdmin: boolean = false,
         services: string[] = [],
         shift: boolean[][] = [],
+        startHours: number[] = [],
         images: string[] = []
     ) {
         if (typeof arg === "string") {
@@ -38,6 +41,7 @@ export class Professional {
             this._isAdmin = isAdmin;
             this._services = services;
             this._shift = shift;
+            this._startHours = startHours;
             this._images = images;
         } else if (arg instanceof Professional) {
             // Case: Another Professional object provided
@@ -49,6 +53,7 @@ export class Professional {
                 _isAdmin,
                 _services,
                 _shift,
+                _startHours,
                 _images,
             } = arg;
             this._id = _id;
@@ -58,6 +63,7 @@ export class Professional {
             this._isAdmin = _isAdmin;
             this._services = _services;
             this._shift = _shift;
+            this._startHours = _startHours;
             this._images = _images;
         } else {
             // Case: No arguments or invalid argument type
@@ -68,6 +74,7 @@ export class Professional {
             this._isAdmin = isAdmin;
             this._services = services;
             this._shift = shift;
+            this._startHours = startHours;
             this._images = images;
         }
     }
@@ -98,6 +105,10 @@ export class Professional {
 
     getShift(): boolean[][] {
         return this._shift;
+    }
+
+    getStartHours(): number[] {
+        return this._startHours;
     }
 
     getImages(): string[] {
@@ -133,6 +144,11 @@ export class Professional {
         this._shift = shift;
     }
 
+    setStartHours(startHours: number[]) {
+        this._startHours = startHours;
+    }
+
+
     setImages(images: string[]) {
         this._images = images;
     }
@@ -148,10 +164,16 @@ export class Professional {
         this._isAdmin = profData!.isAdmin
         this._services = profData!.services
         this._shift = profData!.shift
+        this._startHours = profData!.startHours
         this._images = profData!.images
     }
 
     //Firestore methods
+
+    public async addProfessional() {
+        this._id = await this.updateProfessionalId()
+        await this.setProfessional()
+    }
 
     public async setProfessional() {
         if (this._id == "") {
@@ -206,6 +228,7 @@ export class Professional {
             isAdmin: this._isAdmin,
             services: this._services,
             shift: this._shift,
+            startHours: this._startHours,
             images: this._images
         };
     }
@@ -213,6 +236,27 @@ export class Professional {
     private async updateTimeStamp() {
         const userRef = doc(db, "professionals_dev", this._id);
         await updateDoc(userRef, { timestamp: serverTimestamp() });
+    }
+
+    private async updateProfessionalId() {
+        const docRef = doc(db, "config", "ids")
+        const configSnap = await getDoc(docRef)
+        if (!configSnap.data()) return
+
+        var config = configSnap.data()
+        config!.professional++
+        await setDoc(docRef, config)
+
+        return configSnap.data()!.professional.toString()
+    }
+
+    //qol methods
+
+    public isValid() {
+        const hasName = this._name.length > 0;
+        const hasServices = this._services.length > 0
+
+        return (hasName && hasServices)
     }
 
 }
