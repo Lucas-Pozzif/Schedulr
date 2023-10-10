@@ -1,6 +1,23 @@
+import { DocumentSnapshot, deleteDoc, doc, getDoc, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
 import { Professional } from "./professional";
 import { Service } from "./service";
-
+import { db } from "../Services/firebase/firebase";
+interface GroupInterface {
+    title: string;
+    type: string;
+    pricing: number;
+    ratings: string[];
+    location: any;
+    startHours: number[];
+    hours: boolean[][];
+    servicesIds: string[];
+    professionalsIds: string[];
+    services: Service[];
+    professionals: Professional[];
+    images: string[];
+    profile: string;
+    banner: string;
+}
 export class Group {
     private _id: string;
     private _title: string;
@@ -25,9 +42,9 @@ export class Group {
         type: string = "",
         pricing: number = 0,
         ratings: string[] = [],
-        location: any = {},
-        startHours: number[] = [],
-        hours: boolean[][] = [],
+        location: any = "",
+        startHours: number[] = [-1, -1, -1, -1, -1, -1, -1],
+        hours: boolean[][] = [[false], [false], [false], [false], [false], [false], [false]],
         services: string[] = [],
         professionals: string[] = [],
         images: string[] = [],
@@ -213,4 +230,145 @@ export class Group {
     setBanner(banner: string) {
         this._banner = banner;
     }
+
+
+    //Fill professional methods
+
+    private fillFromSnapshot(snap: DocumentSnapshot) {
+        const profData = snap.data();
+        this._id = snap.id
+        this._title = profData!.title;
+        this._type = profData!.type;
+        this._pricing = profData!.pricing;
+        this._ratings = profData!.ratings;
+        this._location = profData!.location;
+        this._startHours = profData!.startHours;
+        this._hours = [profData!.hours[0], profData!.hours[1], profData!.hours[2], profData!.hours[3], profData!.hours[4], profData!.hours[5], profData!.hours[6]]
+        this._servicesIds = profData!.servicesIds;
+        this._professionalsIds = profData!.professionalsIds;
+        this._images = profData!.images;
+        this._profile = profData!.profile;
+        this._banner = profData!.banner;
+    }
+
+    //Firestore methods
+
+    public async addGroup() {
+        this._id = await this.updateGroupId()
+        await this.setGroup()
+    }
+
+    public async setGroup() {
+        if (this._id == "") {
+            return console.error("no id was found");
+        }
+
+        const docRef = doc(db, "groups", this._id);
+        console.log(this.getFirestoreFormat())
+        await setDoc(docRef, this.getFirestoreFormat());
+        await this.updateTimeStamp();
+    }
+
+    public async updateGroup(updates: Partial<GroupInterface>) {
+        if (this._id == "") {
+            return console.error("no id was found");
+        }
+
+        const docRef = doc(db, "groups", this._id);
+        const propertiesToUpdate: (keyof GroupInterface)[] = [
+            "title",
+            "type",
+            "pricing",
+            "ratings",
+            "location",
+            "startHours",
+            "hours",
+            "servicesIds",
+            "professionalsIds",
+            "services",
+            "professionals",
+            "images",
+            "profile",
+            "banner",
+        ];
+
+        propertiesToUpdate.forEach((prop) => {
+            if (updates[prop] !== undefined) {
+                (this as any)[`_${prop}`] = updates[prop]!;
+            }
+        });
+
+        await updateDoc(docRef, { updates });
+        await this.updateTimeStamp();
+    }
+
+    public async getGroup(id: string) {
+        const docRef = doc(db, "groups", id);
+        const docSnap = await getDoc(docRef);
+        if (!docSnap.data()) return
+
+        this.fillFromSnapshot(docSnap);
+    }
+
+    public async deleteProfessional() {
+        if (this._id == "") {
+            return console.error("no id was found");
+        }
+
+        const docRef = doc(db, "groups", this._id);
+        await deleteDoc(docRef);
+    }
+
+    private getFirestoreFormat() {
+        return {
+            title: this._title,
+            type: this._type,
+            pricing: this._pricing,
+            ratings: this._ratings,
+            location: this._location,
+            startHours: this._startHours,
+            hours: {
+                0: this._hours[0] || [],
+                1: this._hours[1] || [],
+                2: this._hours[2] || [],
+                3: this._hours[3] || [],
+                4: this._hours[4] || [],
+                5: this._hours[5] || [],
+                6: this._hours[6] || [],
+            },
+            servicesIds: this._servicesIds,
+            professionalsIds: this._professionalsIds,
+            images: this._images,
+            profile: this._profile,
+            banner: this._banner,
+        };
+    }
+
+    private async updateTimeStamp() {
+        const userRef = doc(db, "groups", this._id);
+        await updateDoc(userRef, { timestamp: serverTimestamp() });
+    }
+
+    private async updateGroupId() {
+        const docRef = doc(db, "config", "ids")
+        const configSnap = await getDoc(docRef)
+        if (!configSnap.data()) return
+
+        var config = configSnap.data()
+        config!.group++
+        await setDoc(docRef, config)
+
+        return configSnap.data()!.group.toString()
+    }
+
+    //qol methods
+
+    public isValid() {
+        const hasTitle = this._title.length > 0;
+        const hasLocation = this._location.length > 0;
+        console.log(this._location)
+
+        return (hasTitle && hasLocation)
+    }
+
 }

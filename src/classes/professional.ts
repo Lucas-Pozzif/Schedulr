@@ -163,7 +163,7 @@ export class Professional {
         this._email = profData!.email
         this._isAdmin = profData!.isAdmin
         this._services = profData!.services
-        this._shift = profData!.shift
+        this._shift = [profData!.shift[0], profData!.shift[1], profData!.shift[2], profData!.shift[3], profData!.shift[4], profData!.shift[5], profData!.shift[6]]
         this._startHours = profData!.startHours
         this._images = profData!.images
     }
@@ -181,6 +181,7 @@ export class Professional {
         }
 
         const docRef = doc(db, "professionals_dev", this._id);
+        console.log(this.getFirestoreFormat())
         await setDoc(docRef, this.getFirestoreFormat());
         await this.updateTimeStamp();
     }
@@ -227,7 +228,15 @@ export class Professional {
             email: this._email,
             isAdmin: this._isAdmin,
             services: this._services,
-            shift: this._shift,
+            shift: {
+                0: this._shift[0] || [],
+                1: this._shift[1] || [],
+                2: this._shift[2] || [],
+                3: this._shift[3] || [],
+                4: this._shift[4] || [],
+                5: this._shift[5] || [],
+                6: this._shift[6] || [],
+            },
             startHours: this._startHours,
             images: this._images
         };
@@ -254,9 +263,8 @@ export class Professional {
 
     public isValid() {
         const hasName = this._name.length > 0;
-        const hasServices = this._services.length > 0
 
-        return (hasName && hasServices)
+        return (hasName)
     }
 
 }

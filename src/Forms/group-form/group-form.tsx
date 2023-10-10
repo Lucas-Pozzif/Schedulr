@@ -42,7 +42,7 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
     const addUser = require("../../Assets/add-user.png");
     const block = require("../../Assets/block.png");
 
-    const updateGroup = (group: Group) => { setGroupForm(group) }
+    console.log(groupForm)
 
     const tabHandler = () => {
         switch (tab) {
@@ -106,10 +106,18 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                             title="Editando..."
                             subtitle="Possui Alterações"
                             buttonTitle="Salvar Alterações"
-                            onClick={() => {
+                            onClick={async () => {
+                                setLoading(true)
+                                if (groupForm.getId()) {
+                                    await groupForm.setGroup()
+                                } else {
+                                    await groupForm.addGroup()
+                                }
+                                console.log('done')
 
+                                setLoading(false)
                             }}
-                            isActive={false}
+                            isActive={groupForm.isValid()}
                         />
                     </div >
                 )
@@ -280,21 +288,13 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                         />
                         <div className="gf-professional-list">
                             {
-                                groupForm.getProfessionalsIds().map((professionalId: string, index: number) => {
-                                    const professional = new Professional()
-                                    const professionalList = groupForm.getProfessionals()
-                                    professional.getProfessional(professionalId)
-                                    professionalList[index] = professional
-
-                                    const updatedGroup = new Group(groupForm)
-                                    setGroupForm(updatedGroup)
-
+                                groupForm.getProfessionals().map((professional: Professional, index: number) => {
                                     return (
                                         <ItemButton
                                             title={professional.getName()}
                                             subtitle={professional.getOccupations().join(', ')}
-                                            isSelected={selectedProfessional === professionalId}
-                                            onClick={() => { setSelectedProfessional(professionalId) }}
+                                            isSelected={selectedProfessional === professional.getId()}
+                                            onClick={() => { setSelectedProfessional(professional.getId()) }}
                                         />
                                     )
                                 })
@@ -319,7 +319,7 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                 return <div />
         }
     }
-    
+
     return loading ?
         <LoadingScreen /> :
         tabHandler()

@@ -231,8 +231,6 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
                         <div className="gf-professional-list">
                             {
                                 groupForm.getProfessionals().map((professional: Professional, index: number) => {
-                                    const updatedGroup = new Group(groupForm)
-                                    setGroupForm(updatedGroup)
 
                                     var profServices = professional.getServices()
 
