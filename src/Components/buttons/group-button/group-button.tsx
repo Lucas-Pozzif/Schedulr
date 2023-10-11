@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Group } from "../../../Classes/group"
 import { Line } from "../../line/line"
 
@@ -11,9 +11,19 @@ type groupButtonType = {
 export function GroupButton({ group }: groupButtonType) {
     const [selectedDay, setSelectedDay] = useState(0);
     const days = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"]
-    console.log(group.getHours()[selectedDay], group.getStartHours()[selectedDay])
+    const timeArray = [];
+    var time = "Fechado"
 
+    const star = require("../../../Assets/star.png")
+    const starEmpty = require("../../../Assets/star-empty.png")
     const triangle = require('../../../Assets/triangle.png')
+
+    for (let i = 0; i <= 24; i++) {
+        timeArray.push(`${i}:00`, `${i}:30`);
+    }
+    if (group.getHours()[selectedDay].indexOf(true) !== -1) {
+        time = `${timeArray[group.getStartHours()[selectedDay]]} - ${timeArray[group.getStartHours()[selectedDay] + group.getHours()[selectedDay].length]}`
+    }
 
     return (
         <div className="group-button">
@@ -37,6 +47,17 @@ export function GroupButton({ group }: groupButtonType) {
                     }
                 }} />
             </div>
+            <div className="gb-bottom">
+                <p className="gb-time">{time}</p>
+                <div className="gb-rating-block">
+                    <img className="gb-star" src={Math.floor(group.getRatings()) > 0 ? star : starEmpty} />
+                    <img className="gb-star" src={Math.floor(group.getRatings()) > 1 ? star : starEmpty} />
+                    <img className="gb-star" src={Math.floor(group.getRatings()) > 2 ? star : starEmpty} />
+                    <img className="gb-star" src={Math.floor(group.getRatings()) > 3 ? star : starEmpty} />
+                    <img className="gb-star" src={Math.floor(group.getRatings()) > 4 ? star : starEmpty} />
+                </div>
+            </div>
+            <img className="gb-profile" src={group.getProfile()} />
 
         </div>
     )
