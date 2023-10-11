@@ -127,12 +127,15 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
                                 console.log(serviceForm.getId())
                                 if (serviceForm.getId()) {
                                     await serviceForm.setService()
+                                    const idIndex = groupForm.getServicesIds().indexOf(serviceForm.getId())
+                                    const services = groupForm.getServices()
+                                    services[idIndex] = serviceForm
                                 } else {
                                     await serviceForm.addService()
+                                    groupForm.setServicesIds([...groupForm.getServicesIds(), serviceForm.getId()])
+                                    groupForm.setServices([...groupForm.getServices(), serviceForm])
                                 }
                                 console.log('done')
-                                groupForm.setServicesIds([...groupForm.getServicesIds(), serviceForm.getId()])
-                                groupForm.setServices([...groupForm.getServices(), serviceForm])
                                 setGroupForm(new Group(groupForm))
                                 setLoading(false)
                                 onClickReturn()

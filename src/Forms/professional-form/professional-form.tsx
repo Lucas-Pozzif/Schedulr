@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useState, useEffect } from "react";
 import { Group } from "../../Classes/group"
 import { User } from "../../Classes/user"
 import { Professional } from "../../Classes/professional";
@@ -39,6 +39,15 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
     const addImage = require("../../Assets/add-image.png");
     const block = require("../../Assets/block.png");
 
+    useEffect(() => {
+        setLoading(true)
+        if (professional.getId() === "") {
+            professional.setStartHours(groupForm.getStartHours())
+            professional.setShift(groupForm.getHours())
+        }
+        setLoading(false)
+    }, []);
+
     const tabHandler = () => {
         function formatArray(arr: string[]) {
             const length = arr.length;
@@ -50,6 +59,9 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
                     : length === 2
                         ? `${arr[0]} & ${arr[1]}`
                         : `${arr[0]}, ${arr[1]} & ${length - 2} mais`;
+        }
+        if (professional.getId() !== "") {
+
         }
         switch (tab) {
             case 0:
@@ -126,11 +138,14 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
                                 setLoading(true)
                                 if (professionalForm.getId()) {
                                     await professionalForm.setProfessional()
+                                    const idIndex = groupForm.getProfessionalsIds().indexOf(professionalForm.getId())
+                                    const professional = groupForm.getProfessionals()
+                                    professional[idIndex] = professionalForm
                                 } else {
                                     await professionalForm.addProfessional()
+                                    groupForm.setProfessionalsIds([...groupForm.getProfessionalsIds(), professionalForm.getId()])
+                                    groupForm.setProfessionals([...groupForm.getProfessionals(), professionalForm])
                                 }
-                                groupForm.setProfessionalsIds([...groupForm.getProfessionalsIds(), professionalForm.getId()])
-                                groupForm.setProfessionals([...groupForm.getProfessionals(), professionalForm])
                                 setGroupForm(new Group(groupForm))
                                 setLoading(false)
                                 onClickReturn()
@@ -273,7 +288,7 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
                         <BottomButton
                             hide={false}
                             title={"Confirmar"}
-                            onClick={() => { setTab(1) }}
+                            onClick={() => { setTab(0) }}
                         />
                     </div>
                 )
