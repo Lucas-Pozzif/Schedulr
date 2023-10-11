@@ -264,7 +264,6 @@ export class Group {
         }
 
         const docRef = doc(db, "groups", this._id);
-        console.log(this.getFirestoreFormat())
         await setDoc(docRef, this.getFirestoreFormat());
         await this.updateTimeStamp();
     }
@@ -319,6 +318,23 @@ export class Group {
         await deleteDoc(docRef);
     }
 
+    public async updateServices() {
+        this._services = []
+        for (let i = 0; i < this._servicesIds.length; i++) {
+            const service = new Service()
+            await service.getService(this._servicesIds[i])
+            this._services.push(service)
+        }
+    }
+    public async updateProfessionals() {
+        this._professionals = []
+        for (let i = 0; i < this._professionalsIds.length; i++) {
+            const professional = new Professional()
+            await professional.getProfessional(this._professionalsIds[i])
+            this._professionals.push(professional)
+        }
+    }
+
     private getFirestoreFormat() {
         return {
             title: this._title,
@@ -366,7 +382,6 @@ export class Group {
     public isValid() {
         const hasTitle = this._title.length > 0;
         const hasLocation = this._location.length > 0;
-        console.log(this._location)
 
         return (hasTitle && hasLocation)
     }
