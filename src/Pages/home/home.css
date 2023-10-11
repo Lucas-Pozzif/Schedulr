@@ -1,0 +1,41 @@
+.home {
+    background-color: #E9ECEF;
+}
+
+.h-header {
+    padding-inline: 15px;
+    background-color: #CED4DA;
+    margin-bottom: 5px;
+}
+
+.h-title {
+    font-size: 18px;
+    padding-top: 20px;
+}
+
+.h-subtitle {
+    font-size: 12px;
+    padding-bottom: 20px;
+}
+
+.h-banner-block {
+    padding-top: 10px;
+    padding-inline: 10px;
+    padding-bottom: 5px;
+    background-color: #CED4DA;
+}
+
+.h-banner {
+    background-color: #212529;
+    height: 140px;
+    width: 100%;
+    border-radius: 10px;
+}
+
+.hb-list-title {
+    font-size: 17px;
+}
+.gbds{
+    margin-inline: 3px;
+    opacity: .8;
+}
