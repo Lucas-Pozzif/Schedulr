@@ -1,0 +1,30 @@
+.group-button {
+    background-color: #DEE2E6;
+    height: 190px;
+    width: 150px;
+    border-radius: 5px;
+}
+
+.gb-banner {
+    height: 80px;
+    width: 100%;
+}
+
+.gb-title {
+    font-size: 18px;
+    padding-top: 5px;
+    padding-inline: 5px;
+}
+
+.gb-day-selector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+}
+
+.gb-day {
+    font-size: 14px;
+    color: #212529;
+    opacity: .8;
+}
