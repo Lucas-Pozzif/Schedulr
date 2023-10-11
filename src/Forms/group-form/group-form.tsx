@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Group } from "../../Classes/group";
 import { User } from "../../Classes/user";
 import { LoadingScreen } from "../../Components/loading/loading-screen/loading-screen";
@@ -41,6 +41,19 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
     const more = require("../../Assets/more.png");
     const addUser = require("../../Assets/add-user.png");
     const block = require("../../Assets/block.png");
+
+    useEffect(() => {
+        setLoading(true)
+        if (group.getId() === "") {
+            groupForm.getGroup("1")
+                .then(async () => {
+                    await groupForm.updateProfessionals()
+                    await groupForm.updateServices()
+                    setGroupForm(new Group(groupForm))
+                })
+        }
+        setLoading(false)
+    }, []);
 
     console.log(groupForm)
 
@@ -113,7 +126,7 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                                 } else {
                                     await groupForm.addGroup()
                                 }
-                                console.log('done')
+                                console.log('Grupos atualizados')
 
                                 setLoading(false)
                             }}
@@ -164,7 +177,7 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                         <BottomButton
                             hide={selectedService == null}
                             title="Editar Serviço"
-                            onClick={() => { alert("ainda não implementado") }}
+                            onClick={() => { setTab(4) }}
                         />
                     </div>
                 )
@@ -303,7 +316,7 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                         <BottomButton
                             hide={selectedProfessional == null}
                             title={"Editar Serviço"}
-                            onClick={() => { alert('ainda não implementado') }}
+                            onClick={() => { setTab(5) }}
                         />
                     </div>
                 )
