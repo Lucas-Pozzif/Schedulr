@@ -1,6 +1,8 @@
 import { Group } from "../../Classes/group"
 import { GroupButton } from "../buttons/group-button/group-button"
 
+import "./group-list.css"
+
 type groupListType = {
     groupList: Group[]
 }
