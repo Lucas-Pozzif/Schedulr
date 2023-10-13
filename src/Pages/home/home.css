@@ -6,6 +6,7 @@
     padding-inline: 15px;
     background-color: #CED4DA;
     margin-bottom: 5px;
+    padding-bottom: 10px;
 }
 
 .h-title {
@@ -82,5 +83,5 @@
 }
 
 .hb-list-title {
-    font-size: 17px;
+    font-size: 18px;
 }
