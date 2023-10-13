@@ -12,6 +12,13 @@
     align-items: center;
 }
 
+.gf-banner-image {
+    object-fit: cover;
+    height: 50vw;
+    width: 100%;
+    background: linear-gradient(284deg, #212529 0%, rgba(0, 0, 0, 0.00) 100%);
+}
+
 /* Banner Placeholder */
 .gf-banner-placeholder {
     height: 30px;
@@ -31,6 +38,15 @@
     background-color: #DEE2E6;
     filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.25));
     border-radius: 35px;
+}
+
+.gf-profile-image {
+    object-fit: cover;
+    height: 70px;
+    width: 70px;
+    filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.25));
+    border-radius: 35px;
+
 }
 
 /* Profile Placeholder */
@@ -54,7 +70,7 @@
 }
 
 /* Group Type Selector Title */
-.gf-group-type-selector-title {
+.gf-group-type-selector {
     color: #212529;
     font-size: 12px;
     padding-left: 10px;

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Group } from "../../Classes/group";
 import { User } from "../../Classes/user";
 import { LoadingScreen } from "../../Components/loading/loading-screen/loading-screen";
@@ -17,18 +17,18 @@ import "./group-form.css"
 import { ServiceForm } from "../service-form/service-form";
 import { Carousel } from "../../Components/carousel/carousel";
 import { ProfessionalForm } from "../professional-form/professional-form";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../../Services/firebase/firebase";
+import { useNavigate } from "react-router-dom";
 
-type GroupFormType = {
-    user?: User
-    group?: Group
-}
-export function GroupForm({ user, group = new Group() }: GroupFormType) {
+export function GroupForm() {
+    const [user, setUser] = useState(new User())
     const [loading, setLoading] = useState(false);
-    const [groupForm, setGroupForm] = useState(group);
+    const [groupForm, setGroupForm] = useState(new Group());
     const [GTShow, setGTShow] = useState(false); //Group type
     const [tab, setTab] = useState(0);
     const [dayList, setDayList] = useState(false);
-    const [selectedDay, setSelectedDay] = useState(2);
+    const [selectedDay, setSelectedDay] = useState(1);
     const [selectedService, setSelectedService] = useState<null | string>(null);
     const [selectedProfessional, setSelectedProfessional] = useState<null | string>(null);
 
@@ -42,34 +42,60 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
     const addUser = require("../../Assets/add-user.png");
     const block = require("../../Assets/block.png");
 
+    const navigate = useNavigate()
+
     useEffect(() => {
         setLoading(true)
-        if (group.getId() === "") {
-            groupForm.getGroup("1")
-                .then(async () => {
-                    await groupForm.updateProfessionals()
-                    await groupForm.updateServices()
-                    setGroupForm(new Group(groupForm))
-                })
-        }
+        onAuthStateChanged(auth, async (client) => {
+            if (!client) return //There is no user on the firebase authentication
+            await user.getUser(client.uid)
+            setUser(new User(user))
+        })
+        groupForm.setOwner(user.getId())
         setLoading(false)
     }, []);
-
-    console.log(groupForm)
+    const bannerRef = useRef<HTMLInputElement>(null);
+    const profileRef = useRef<HTMLInputElement>(null);
 
     const tabHandler = () => {
         switch (tab) {
             case 0:
                 return (
                     <div className="group-form">
-                        <div className="gf-banner">
+                        <input
+                            className="hidden"
+                            type="file"
+                            accept="image/*"
+                            onChange={(event) => {
+                                const selectedFile = event.target.files?.[0];
+                                if (selectedFile) {
+                                    groupForm.setBanner(URL.createObjectURL(selectedFile))
+                                    setGroupForm(new Group(groupForm))
+                                }
+                            }}
+                            ref={bannerRef}
+                        />
+                        <input
+                            className="hidden"
+                            type="file"
+                            accept="image/*"
+                            onChange={(event) => {
+                                const selectedFile = event.target.files?.[0];
+                                if (selectedFile) {
+                                    groupForm.setProfile(URL.createObjectURL(selectedFile))
+                                    setGroupForm(new Group(groupForm))
+                                }
+                            }}
+                            ref={profileRef}
+                        />
+                        <div className="gf-banner" onClick={() => { bannerRef.current!.click(); }}>
                             {
                                 groupForm.getBanner() ?
                                     <img className="gf-banner-image" src={groupForm.getBanner()} /> :
                                     <img className="gf-banner-placeholder" src={addImage} />
                             }
                         </div>
-                        <div className="gf-profile">
+                        <div className="gf-profile" onClick={() => { profileRef.current!.click(); }}>
                             {
                                 groupForm.getProfile() ?
                                     <img className="gf-profile-image" src={groupForm.getProfile()} /> :
@@ -83,7 +109,15 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                                 setGroupForm(updatedGroup);
                             }} />
                             <div className="gf-group-type-selector">
-                                <p className="gf-group-type-selector-title">Tipo de estabelecimento</p>
+                                <input
+                                    className="gf-group-type-selector-title"
+                                    placeholder="Tipo de estabelecimento"
+                                    value={groupForm.getType()}
+                                    onChange={(e) => {
+                                        groupForm.setType(e.target.value)
+                                        setGroupForm(new Group(groupForm))
+                                    }}
+                                />
                             </div>
                         </div>
                         <div className="gf-data-block">
@@ -129,6 +163,7 @@ export function GroupForm({ user, group = new Group() }: GroupFormType) {
                                 console.log('Grupos atualizados')
 
                                 setLoading(false)
+                                navigate('/')
                             }}
                             isActive={groupForm.isValid()}
                         />
