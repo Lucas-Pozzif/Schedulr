@@ -1,29 +1,26 @@
 import { DocumentSnapshot, deleteDoc, doc, getDoc, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
 import { Professional } from "./professional";
 import { Service } from "./service";
-import { db } from "../Services/firebase/firebase";
+import { db, storage } from "../Services/firebase/firebase";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 interface GroupInterface {
     title: string;
     type: string;
     pricing: number;
-    ratings: string[];
+    ratings: { userId: string, message: string, rate: number }[];
     location: any;
     startHours: number[];
     hours: boolean[][];
     servicesIds: string[];
     professionalsIds: string[];
-    services: Service[];
-    professionals: Professional[];
-    images: string[];
-    profile: string;
-    banner: string;
+    owner: string;
 }
 export class Group {
     private _id: string;
     private _title: string;
     private _type: string;
     private _pricing: number; //this varies from 0 to 3 to store how expensive the group is
-    private _ratings: string[];
+    private _ratings: { userId: string, message: string, rate: number }[];
     private _location: any;
     private _startHours: number[];
     private _hours: boolean[][];
@@ -34,14 +31,15 @@ export class Group {
     private _images: string[];
     private _profile: string;
     private _banner: string;
+    private _owner: string;
 
     /** Constructs a new Group instance. Accepts as possible inputs, nothing, an ID, a group or everything*/
     constructor(
         arg?: string | Group,
         title: string = "",
         type: string = "",
-        pricing: number = 0,
-        ratings: string[] = [],
+        pricing: number = 1,
+        ratings: { userId: string, message: string, rate: number }[] = [],
         location: any = "",
         startHours: number[] = [-1, -1, -1, -1, -1, -1, -1],
         hours: boolean[][] = [[false], [false], [false], [false], [false], [false], [false]],
@@ -49,7 +47,8 @@ export class Group {
         professionals: string[] = [],
         images: string[] = [],
         profile: string = "",
-        banner: string = ""
+        banner: string = "",
+        owner: string = "",
     ) {
         if (arg instanceof Group) {
             // Case: Another Group object provided
@@ -69,6 +68,7 @@ export class Group {
                 _banner,
                 _services,
                 _professionals,
+                _owner,
             } = arg;
 
             this._id = _id;
@@ -86,6 +86,7 @@ export class Group {
             this._professionalsIds = _professionalsIds;
             this._services = _services;
             this._professionals = _professionals;
+            this._owner = _owner;
         } else {
             // Case: ID or no arguments provided
             this._id = arg || "";
@@ -101,6 +102,7 @@ export class Group {
             this._images = images;
             this._profile = profile;
             this._banner = banner;
+            this._owner = owner;
 
             // Initialize the arrays if they are not provided
             this._services = [];
@@ -118,7 +120,7 @@ export class Group {
         return this._title;
     }
 
-    gettype(): string {
+    getType(): string {
         return this._type;
     }
 
@@ -126,7 +128,7 @@ export class Group {
         return this._pricing;
     }
 
-    getRatings(): any {
+    getRatings(): { userId: string, message: string, rate: number }[] {
         return this._ratings;
     }
 
@@ -169,6 +171,9 @@ export class Group {
     getBanner(): string {
         return this._banner;
     }
+    getOwner(): string {
+        return this._owner;
+    }
 
     // Setters
     setId(id: string) {
@@ -179,7 +184,7 @@ export class Group {
         this._title = title;
     }
 
-    settype(type: string) {
+    setType(type: string) {
         this._type = type;
     }
 
@@ -187,7 +192,7 @@ export class Group {
         this._pricing = pricing;
     }
 
-    setRatings(ratings: any) {
+    setRatings(ratings: { userId: string, message: string, rate: number }[]) {
         this._ratings = ratings;
     }
 
@@ -230,11 +235,14 @@ export class Group {
     setBanner(banner: string) {
         this._banner = banner;
     }
+    setOwner(owner: string) {
+        this._owner = owner;
+    }
 
 
     //Fill professional methods
 
-    private fillFromSnapshot(snap: DocumentSnapshot) {
+    public fillFromSnapshot(snap: DocumentSnapshot) {
         const profData = snap.data();
         this._id = snap.id
         this._title = profData!.title;
@@ -246,9 +254,7 @@ export class Group {
         this._hours = [profData!.hours[0], profData!.hours[1], profData!.hours[2], profData!.hours[3], profData!.hours[4], profData!.hours[5], profData!.hours[6]]
         this._servicesIds = profData!.servicesIds;
         this._professionalsIds = profData!.professionalsIds;
-        this._images = profData!.images;
-        this._profile = profData!.profile;
-        this._banner = profData!.banner;
+        this._owner = profData!.owner;
     }
 
     //Firestore methods
@@ -265,6 +271,7 @@ export class Group {
 
         const docRef = doc(db, "groups", this._id);
         await setDoc(docRef, this.getFirestoreFormat());
+        await this.uploadImages();
         await this.updateTimeStamp();
     }
 
@@ -284,11 +291,7 @@ export class Group {
             "hours",
             "servicesIds",
             "professionalsIds",
-            "services",
-            "professionals",
-            "images",
-            "profile",
-            "banner",
+            "owner",
         ];
 
         propertiesToUpdate.forEach((prop) => {
@@ -297,7 +300,7 @@ export class Group {
             }
         });
 
-        await updateDoc(docRef, { updates });
+        await updateDoc(docRef, updates);
         await this.updateTimeStamp();
     }
 
@@ -307,6 +310,7 @@ export class Group {
         if (!docSnap.data()) return
 
         this.fillFromSnapshot(docSnap);
+        await this.downloadImages()
     }
 
     public async deleteProfessional() {
@@ -335,6 +339,18 @@ export class Group {
         }
     }
 
+    public async downloadImages() {
+        const profileRef = ref(storage, `groups/${this._id}/profile`)
+        const bannerRef = ref(storage, `groups/${this._id}/banner`)
+        try {
+            this._profile = await getDownloadURL(profileRef)
+            this._banner = await getDownloadURL(bannerRef)
+        } catch (error) {
+            this._profile = ""
+            this._banner = ""
+        }
+    }
+
     private getFirestoreFormat() {
         return {
             title: this._title,
@@ -354,10 +370,19 @@ export class Group {
             },
             servicesIds: this._servicesIds,
             professionalsIds: this._professionalsIds,
-            images: this._images,
-            profile: this._profile,
-            banner: this._banner,
+            owner: this._owner,
         };
+    }
+
+    private async uploadImages() {
+        const profileRef = ref(storage, `groups/${this._id}/profile`)
+        const bannerRef = ref(storage, `groups/${this._id}/banner`)
+
+        const bannerResponse = await fetch(this._banner)
+        const profileResponse = await fetch(this._profile)
+
+        await uploadBytes(bannerRef, await bannerResponse.blob())
+        await uploadBytes(profileRef, await profileResponse.blob())
     }
 
     private async updateTimeStamp() {
