@@ -6,9 +6,10 @@ import "./group-button.css"
 
 type groupButtonType = {
     group: Group
+    onClick: () => void
 }
 
-export function GroupButton({ group }: groupButtonType) {
+export function GroupButton({ group, onClick }: groupButtonType) {
     const [selectedDay, setSelectedDay] = useState(0);
     const days = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"]
     const timeArray = [];
@@ -24,9 +25,14 @@ export function GroupButton({ group }: groupButtonType) {
     if (group.getHours()[selectedDay].indexOf(true) !== -1) {
         time = `${timeArray[group.getStartHours()[selectedDay]]} - ${timeArray[group.getStartHours()[selectedDay] + group.getHours()[selectedDay].length]}`
     }
+    var ratingSum = 0
+    group.getRatings().map((rating) => {
+        ratingSum += rating.rate
+    })
+    const averageRating = ratingSum / group.getRatings.length
 
     return (
-        <div className="group-button">
+        <div className="group-button" onClick={onClick}>
             <img className="gb-banner" src={group.getBanner()} />
             <p className="gb-title">{group.getTitle()}</p>
             <Line />
@@ -50,11 +56,11 @@ export function GroupButton({ group }: groupButtonType) {
             <div className="gb-bottom">
                 <p className="gb-time">{time}</p>
                 <div className="gb-rating-block">
-                    <img className="gb-star" src={Math.floor(group.getRatings()) > 0 ? star : starEmpty} />
-                    <img className="gb-star" src={Math.floor(group.getRatings()) > 1 ? star : starEmpty} />
-                    <img className="gb-star" src={Math.floor(group.getRatings()) > 2 ? star : starEmpty} />
-                    <img className="gb-star" src={Math.floor(group.getRatings()) > 3 ? star : starEmpty} />
-                    <img className="gb-star" src={Math.floor(group.getRatings()) > 4 ? star : starEmpty} />
+                    <img className="gb-star" src={Math.floor(averageRating) > 0 ? star : starEmpty} />
+                    <img className="gb-star" src={Math.floor(averageRating) > 1 ? star : starEmpty} />
+                    <img className="gb-star" src={Math.floor(averageRating) > 2 ? star : starEmpty} />
+                    <img className="gb-star" src={Math.floor(averageRating) > 3 ? star : starEmpty} />
+                    <img className="gb-star" src={Math.floor(averageRating) > 4 ? star : starEmpty} />
                 </div>
             </div>
             <img className="gb-profile" src={group.getProfile()} />
