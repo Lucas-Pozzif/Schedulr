@@ -39,6 +39,13 @@
     color: #212529;
 }
 
+.up-name-input {
+    font-size: 18px;
+    width: 140px;
+    color: #212529;
+    opacity: .8;
+}
+
 .up-edit-button {
     height: 15px;
     width: 15px;
@@ -73,7 +80,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 5px;
+    gap: 10px;
     height: 40px;
     margin-top: 20px;
     margin-bottom: 10px;
@@ -81,13 +88,14 @@
 }
 
 .up-login-title {
-    font-size: 18px;
+    font-size: 20px;
     color: #CED4DA;
 }
 
 .up-login-icon {
-    height: 30px;
-    width: 30px;
+    height: 25px;
+    width: 25px;
+    opacity: .8;
 }
 
 .up-item {
@@ -110,6 +118,7 @@
 }
 
 .up-title {
-    font-size: 16px;
+    font-size: 18px;
     color: #212529;
+    text-align: center;
 }
