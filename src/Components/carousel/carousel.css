@@ -3,9 +3,10 @@
   overflow-x: auto;
   text-align: center;
   gap: 5px;
-  padding-bottom: 10px;
-  padding-top: 1px;
+  margin-bottom: 10px;
+  padding-block: 1px;
   padding-inline: 95px;
+  margin-top: 10px;
 }
 
 .carousel::-webkit-scrollbar {
