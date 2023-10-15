@@ -10,8 +10,20 @@ interface ProfessionalInterface {
     startHours: number[];
     images: string[];
 }
+
+interface ScheduleItem {
+    client: string;
+    service: string;
+}
+
+interface Schedule {
+    [date: string]: {
+        [number: number]: ScheduleItem;
+    };
+}
+
 export class Professional {
-    private _id: string
+    private _id: string;
     private _name: string;
     private _occupations: string[];
     private _email: string;
@@ -19,19 +31,10 @@ export class Professional {
     private _services: string[];
     private _shift: boolean[][];
     private _startHours: number[];
-    private _images: string[]
+    private _images: string[];
+    private _schedule: Schedule | any;
 
-    constructor(
-        arg?: string | Professional,
-        name: string = "",
-        occupations: string[] = [],
-        email: string = "",
-        isAdmin: boolean = false,
-        services: string[] = [],
-        shift: boolean[][] = [],
-        startHours: number[] = [],
-        images: string[] = []
-    ) {
+    constructor(arg?: string | Professional, name: string = "", occupations: string[] = [], email: string = "", isAdmin: boolean = false, services: string[] = [], shift: boolean[][] = [], startHours: number[] = [], images: string[] = [], schedule: Schedule = {}) {
         if (typeof arg === "string") {
             // Case: ID provided
             this._id = arg;
@@ -43,19 +46,10 @@ export class Professional {
             this._shift = shift;
             this._startHours = startHours;
             this._images = images;
+            this._schedule = schedule;
         } else if (arg instanceof Professional) {
             // Case: Another Professional object provided
-            const {
-                _id,
-                _name,
-                _occupations,
-                _email,
-                _isAdmin,
-                _services,
-                _shift,
-                _startHours,
-                _images,
-            } = arg;
+            const { _id, _name, _occupations, _email, _isAdmin, _services, _shift, _startHours, _images, _schedule } = arg;
             this._id = _id;
             this._name = _name;
             this._occupations = _occupations;
@@ -65,6 +59,7 @@ export class Professional {
             this._shift = _shift;
             this._startHours = _startHours;
             this._images = _images;
+            this._schedule = _schedule;
         } else {
             // Case: No arguments or invalid argument type
             this._id = "";
@@ -76,6 +71,7 @@ export class Professional {
             this._shift = shift;
             this._startHours = startHours;
             this._images = images;
+            this._schedule = schedule;
         }
     }
     // Getters
@@ -115,6 +111,10 @@ export class Professional {
         return this._images;
     }
 
+    getSchedule(): Schedule {
+        return this._schedule;
+    }
+
     // Setters
     setId(id: string) {
         this._id = id;
@@ -148,31 +148,35 @@ export class Professional {
         this._startHours = startHours;
     }
 
-
     setImages(images: string[]) {
         this._images = images;
+    }
+
+    setSchedule(schedule: Schedule) {
+        this._schedule = schedule;
     }
 
     //Fill professional methods
 
     private fillFromSnapshot(snap: DocumentSnapshot) {
         const profData = snap.data();
-        this._id = snap.id
-        this._name = profData!.name
-        this._occupations = profData!.occupations
-        this._email = profData!.email
-        this._isAdmin = profData!.isAdmin
-        this._services = profData!.services
-        this._shift = [profData!.shift[0], profData!.shift[1], profData!.shift[2], profData!.shift[3], profData!.shift[4], profData!.shift[5], profData!.shift[6]]
-        this._startHours = profData!.startHours
-        this._images = profData!.images
+        this._id = snap.id;
+        this._name = profData!.name;
+        this._occupations = profData!.occupations;
+        this._email = profData!.email;
+        this._isAdmin = profData!.isAdmin;
+        this._services = profData!.services;
+        this._shift = [profData!.shift[0], profData!.shift[1], profData!.shift[2], profData!.shift[3], profData!.shift[4], profData!.shift[5], profData!.shift[6]];
+        this._startHours = profData!.startHours;
+        this._images = profData!.images;
     }
 
     //Firestore methods
 
     public async addProfessional() {
-        this._id = await this.updateProfessionalId()
-        await this.setProfessional()
+        this._id = await this.updateProfessionalId();
+        await this.addSchedule()
+        await this.setProfessional();
     }
 
     public async setProfessional() {
@@ -181,7 +185,7 @@ export class Professional {
         }
 
         const docRef = doc(db, "professionals_dev", this._id);
-        console.log(this.getFirestoreFormat())
+
         await setDoc(docRef, this.getFirestoreFormat());
         await this.updateTimeStamp();
     }
@@ -200,14 +204,14 @@ export class Professional {
             }
         });
 
-        await updateDoc(docRef, { updates });
+        await updateDoc(docRef, updates);
         await this.updateTimeStamp();
     }
 
     public async getProfessional(id: string) {
         const docRef = doc(db, "professionals_dev", id);
         const docSnap = await getDoc(docRef);
-        if (!docSnap.data()) return
+        if (!docSnap.data()) return;
 
         this.fillFromSnapshot(docSnap);
     }
@@ -238,7 +242,7 @@ export class Professional {
                 6: this._shift[6] || [],
             },
             startHours: this._startHours,
-            images: this._images
+            images: this._images,
         };
     }
 
@@ -248,15 +252,74 @@ export class Professional {
     }
 
     private async updateProfessionalId() {
-        const docRef = doc(db, "config", "ids")
-        const configSnap = await getDoc(docRef)
-        if (!configSnap.data()) return
+        const docRef = doc(db, "config", "ids");
+        const configSnap = await getDoc(docRef);
+        if (!configSnap.data()) return;
 
-        var config = configSnap.data()
-        config!.professional++
-        await setDoc(docRef, config)
+        var config = configSnap.data();
+        config!.professional++;
+        await setDoc(docRef, config);
 
-        return configSnap.data()!.professional.toString()
+        return configSnap.data()!.professional.toString();
+    }
+
+    // Schedule methods
+
+    public async updateSchedule(day: string, index: string, value: ScheduleItem) {
+        const [dayPart, monthPart, yearPart] = day.split("/");
+        const date = `${monthPart}-${yearPart.slice(-2)}`;
+        const formattedDay = dayPart;
+
+        const docRef = doc(db, "schedules", this._id, date, formattedDay);
+
+        try {
+            // Check if the document exists
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                // Document exists, check if the field exists
+                const data = docSnap.data();
+
+                if (data && !data[index]) {
+                    // Field doesn't exist, update the document
+                    await updateDoc(docRef, { [index]: value });
+                    console.log("Document updated successfully!");
+                } else {
+                    console.log("Field already exists for the specified day.");
+                }
+            } else {
+                // Document doesn't exist, create it with the field
+                await setDoc(docRef, { [index]: value });
+                console.log("Document created successfully!");
+            }
+        } catch (e) {
+            console.error("Error updating document:", e);
+        }
+    }
+
+    public async getScheduleDay(day: string) {
+        const [dayPart, monthPart, yearPart] = day.split("/");
+        const date = `${monthPart}-${yearPart.slice(-2)}`;
+        const formattedDay = dayPart;
+
+        const nestedField = `${date}/${formattedDay}`;
+
+        const docRef = doc(db, "schedules", this._id, nestedField);
+
+        const docSnap = await getDoc(docRef);
+        this._schedule[day] = docSnap.data();
+    }
+
+    private async addSchedule() {
+        const docRef = doc(db, "schedules", this._id);
+
+        await setDoc(docRef, {});
+        await this.updateScheduleTimeStamp();
+    }
+
+    private async updateScheduleTimeStamp() {
+        const userRef = doc(db, "schedules", this._id);
+        await updateDoc(userRef, { timestamp: serverTimestamp() });
     }
 
     //qol methods
@@ -264,7 +327,6 @@ export class Professional {
     public isValid() {
         const hasName = this._name.length > 0;
 
-        return (hasName)
+        return hasName;
     }
-
 }
