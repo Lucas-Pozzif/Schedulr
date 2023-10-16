@@ -27,6 +27,7 @@ export function GroupPage() {
   const [selectedWeekDay, setSelectedWeekDay] = useState(1);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [selectedProfessional, setSelectedProfessional] = useState<Professional | null>(null);
+  const [availableProfessionals, setAvailableProfessionals] = useState<Professional[]>([]);
   const [tab, setTab] = useState(0);
 
   const { groupId } = useParams();
@@ -182,9 +183,15 @@ export function GroupPage() {
               <p
                 className={"bp-button" + (true ? "" : " inactive")}
                 onClick={async () => {
-                  setLoading(true);
-                  await selectedProfessional?.updateSchedule(days[selectedDay][2], selectedTime?.toString() || "error", schedValue);
-                  setLoading(false);
+                  if (selectedService && selectedProfessional && selectedTime) {
+                    setLoading(true);
+                    for (let i = 0; i < selectedService.getDuration().length; i++) {
+                      if (selectedService.getDuration()[i] === true) {
+                        await selectedProfessional?.updateSchedule(days[selectedDay][2], (selectedTime + i).toString(), schedValue);
+                      }
+                    }
+                    setLoading(false);
+                  }
                 }}
               >
                 Adicionar Agendamento
@@ -240,11 +247,19 @@ export function GroupPage() {
             </div>
             <div className='gp-list'>
               {timeArray.map((time, index) => {
-                var isAvailable = true;
+                var isAvailable = false;
+                const professionals: Professional[] = [];
                 group.getProfessionals().map((prof) => {
+                  var isProfAvailable = true;
                   selectedService?.getDuration().map((time, i) => {
-                    if (prof.getSchedule()?.[days?.[index]?.[2]]?.[index + i + startHour * 6] && time) isAvailable = false; //Eu parei aqui
+                    if (prof.getSchedule()?.[days[selectedDay][2]]?.[index + i + startHour * 6] !== undefined && time) {
+                      isProfAvailable = false;
+                    }
                   });
+                  if (isProfAvailable) {
+                    professionals.push(prof);
+                    isAvailable = true;
+                  }
                 });
 
                 return isAvailable ? (
@@ -253,6 +268,7 @@ export function GroupPage() {
                     onClick={() => {
                       if (selectedTime === null) {
                         setSelectedTime(index + startHour * 6);
+                        setAvailableProfessionals(professionals);
                       } else {
                         setSelectedTime(null);
                       }
@@ -260,11 +276,20 @@ export function GroupPage() {
                     }}
                   >
                     <div className={"gp-time-button" + (index + startHour * 6 === selectedTime ? " selected" : "")}>
-                      <p className='gpt-title'>{days[selectedWeekDay][0]}</p>
+                      <p className='gpt-title'>{days[selectedDay][0]}</p>
                       <p className='gpt-title'>{time}</p>
                     </div>
                     <div className='gpt-row-item'>
-                      <ItemButton title={selectedService?.getName() || "Serviço não selecionado"} subtitle={"Ainda não implementado"} isSelected={index + startHour * 6 === selectedTime} onClick={() => {}} />
+                      <ItemButton
+                        title={selectedService?.getName() || "Serviço não selecionado"}
+                        subtitle={professionals
+                          .map((prof) => {
+                            return prof.getName();
+                          })
+                          .join(", ")}
+                        isSelected={index + startHour * 6 === selectedTime}
+                        onClick={() => {}}
+                      />
                     </div>
                   </div>
                 ) : null;
@@ -303,7 +328,7 @@ export function GroupPage() {
             />
             <div className='gp-list'>
               {group.getProfessionals().map((professional) => {
-                return (
+                return availableProfessionals.includes(professional) ? (
                   <ItemButton
                     title={professional.getName()}
                     subtitle={professional.getOccupations().join(", ")}
@@ -316,7 +341,7 @@ export function GroupPage() {
                       }
                     }}
                   />
-                );
+                ) : null;
               })}
             </div>
             <BottomButton
