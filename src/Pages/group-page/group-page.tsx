@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../Services/firebase/firebase";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Group } from "../../Classes/group";
 import { User } from "../../Classes/user";
 import { Service } from "../../Classes/service";
@@ -15,6 +15,8 @@ import { SubHeader } from "../../Components/sub-header/sub-header";
 import { Carousel } from "../../Components/carousel/carousel";
 import { ItemButton } from "../../Components/buttons/item-button/item-button";
 import { BottomButton } from "../../Components/buttons/bottom-button/bottom-button";
+import { DoubleButton } from "../../Components/buttons/double-button/double-button";
+import { capitalize } from "../../Function/capitalize/capitalize";
 
 import "./group-page.css";
 
@@ -31,6 +33,7 @@ export function GroupPage() {
   const [tab, setTab] = useState(0);
 
   const { groupId } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     setLoading(true);
@@ -52,13 +55,6 @@ export function GroupPage() {
   const star = require("../../Assets/star.png");
 
   const days: any[][] = [];
-
-  function capitalize(word: string): string {
-    return word
-      .split("-")
-      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-      .join("-");
-  }
 
   for (let i = 0; i < 9; i++) {
     const day = new Date();
@@ -106,7 +102,6 @@ export function GroupPage() {
     client: user.getId(),
     service: selectedService?.getId() || "error",
   };
-  //console.log("to save", user.getId(), days[selectedDay][2], selectedTime, selectedService?.getId(), selectedProfessional?.getId());
 
   const tabHandler = () => {
     switch (tab) {
@@ -328,7 +323,7 @@ export function GroupPage() {
             />
             <div className='gp-list'>
               {group.getProfessionals().map((professional) => {
-                return availableProfessionals.includes(professional) ? (
+                return availableProfessionals.includes(professional) || selectedService === null ? (
                   <ItemButton
                     title={professional.getName()}
                     subtitle={professional.getOccupations().join(", ")}
@@ -344,12 +339,17 @@ export function GroupPage() {
                 ) : null;
               })}
             </div>
-            <BottomButton
-              hide={selectedProfessional === null}
-              title={"Concluir"}
-              onClick={() => {
-                setTab(0);
-              }}
+            <DoubleButton
+              title={["Concluir", "Ver Agenda"]}
+              onClick={[
+                () => {
+                  setTab(0);
+                },
+                () => {
+                  navigate(`/schedule/${selectedProfessional?.getId()}`);
+                },
+              ]}
+              hide={[selectedProfessional === null, selectedProfessional === null || !group.getAdmins().includes(user.getId())]}
             />
           </div>
         );
