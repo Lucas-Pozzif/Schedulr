@@ -14,6 +14,7 @@ interface GroupInterface {
     servicesIds: string[];
     professionalsIds: string[];
     owner: string;
+    admins: string[];
 }
 export class Group {
     private _id: string;
@@ -32,6 +33,7 @@ export class Group {
     private _profile: string;
     private _banner: string;
     private _owner: string;
+    private _admins: string[];
 
     /** Constructs a new Group instance. Accepts as possible inputs, nothing, an ID, a group or everything*/
     constructor(
@@ -49,6 +51,7 @@ export class Group {
         profile: string = "",
         banner: string = "",
         owner: string = "",
+        admins: string[] = [],
     ) {
         if (arg instanceof Group) {
             // Case: Another Group object provided
@@ -69,6 +72,7 @@ export class Group {
                 _services,
                 _professionals,
                 _owner,
+                _admins
             } = arg;
 
             this._id = _id;
@@ -87,6 +91,7 @@ export class Group {
             this._services = _services;
             this._professionals = _professionals;
             this._owner = _owner;
+            this._admins = _admins;
         } else {
             // Case: ID or no arguments provided
             this._id = arg || "";
@@ -103,6 +108,7 @@ export class Group {
             this._profile = profile;
             this._banner = banner;
             this._owner = owner;
+            this._admins = admins;
 
             // Initialize the arrays if they are not provided
             this._services = [];
@@ -171,10 +177,14 @@ export class Group {
     getBanner(): string {
         return this._banner;
     }
+
     getOwner(): string {
         return this._owner;
     }
 
+    getAdmins(): string[] {
+        return this._admins;
+    }
     // Setters
     setId(id: string) {
         this._id = id;
@@ -235,8 +245,13 @@ export class Group {
     setBanner(banner: string) {
         this._banner = banner;
     }
+
     setOwner(owner: string) {
         this._owner = owner;
+    }
+
+    setAdmins(admins: string[]) {
+        this._admins = admins;
     }
 
 
@@ -255,6 +270,7 @@ export class Group {
         this._servicesIds = profData!.servicesIds;
         this._professionalsIds = profData!.professionalsIds;
         this._owner = profData!.owner;
+        this._admins = profData!.admins;
     }
 
     //Firestore methods
@@ -292,6 +308,7 @@ export class Group {
             "servicesIds",
             "professionalsIds",
             "owner",
+            "admins",
         ];
 
         propertiesToUpdate.forEach((prop) => {
@@ -371,6 +388,7 @@ export class Group {
             servicesIds: this._servicesIds,
             professionalsIds: this._professionalsIds,
             owner: this._owner,
+            admins: this._admins,
         };
     }
 
