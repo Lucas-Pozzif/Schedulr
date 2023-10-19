@@ -1,14 +1,14 @@
 .bottom-button {
-    font-size: 15px;
-    color: #F8F9FA;
-    background-color: #212529;
-    border-radius: 5px;
-    position: fixed;
-    bottom: 20px;
-    left: 5px;
-    right: 5px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 35px; 
+  font-size: 15px;
+  color: #f8f9fa;
+  background-color: #212529;
+  border-radius: 5px;
+  position: fixed;
+  bottom: 20px;
+  left: 5px;
+  right: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 35px;
 }
