@@ -2,6 +2,7 @@ import { GoogleAuthProvider, UserCredential, signInWithPopup, signOut } from "fi
 import { auth, db } from "../Services/firebase/firebase";
 import { DocumentSnapshot, collection, deleteDoc, doc, getDoc, getDocs, query, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
 import { Group } from "./group";
+import { ScheduleItem } from "./schedule";
 
 interface UserInterface {
     id: string;
@@ -238,6 +239,65 @@ export class User {
 
     private async updateTimeStamp() {
         const userRef = doc(db, "users", this._id);
+        await updateDoc(userRef, { timestamp: serverTimestamp() });
+    }
+
+    // Schedule methods
+
+    public async updateSchedule(day: string, index: string, value: ScheduleItem) {
+        const [dayPart, monthPart, yearPart] = day.split("/");
+        const date = `${monthPart}-${yearPart.slice(-2)}`;
+        const formattedDay = dayPart;
+
+        const docRef = doc(db, "schedules", this._id, date, formattedDay);
+
+        try {
+            // Check if the document exists
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                // Document exists, check if the field exists
+                const data = docSnap.data();
+
+                if (data && !data[index]) {
+                    // Field doesn't exist, update the document
+                    await updateDoc(docRef, { [index]: value });
+                    console.log("Document updated successfully!");
+                } else {
+                    console.log("Field already exists for the specified day.");
+                }
+            } else {
+                // Document doesn't exist, create it with the field
+                await setDoc(docRef, { [index]: value });
+                console.log("Document created successfully!");
+            }
+        } catch (e) {
+            console.error("Error updating document:", e);
+        }
+    }
+
+    public async getScheduleDay(day: string) {
+        const [dayPart, monthPart, yearPart] = day.split("/");
+        const date = `${monthPart}-${yearPart.slice(-2)}`;
+        const formattedDay = dayPart;
+
+        const nestedField = `${date}/${formattedDay}`;
+
+        const docRef = doc(db, "schedules", this._id, nestedField);
+
+        const docSnap = await getDoc(docRef);
+        this._schedule[day] = docSnap.data();
+    }
+
+    private async addSchedule() {
+        const docRef = doc(db, "schedules", this._id);
+
+        await setDoc(docRef, {});
+        await this.updateScheduleTimeStamp();
+    }
+
+    private async updateScheduleTimeStamp() {
+        const userRef = doc(db, "schedules", this._id);
         await updateDoc(userRef, { timestamp: serverTimestamp() });
     }
 
