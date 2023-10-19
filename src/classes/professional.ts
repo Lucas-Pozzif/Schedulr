@@ -1,5 +1,6 @@
 import { DocumentSnapshot, deleteDoc, doc, getDoc, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "../Services/firebase/firebase";
+import { Schedule, ScheduleItem } from "./schedule";
 interface ProfessionalInterface {
     name: string;
     occupations: string[];
@@ -11,16 +12,6 @@ interface ProfessionalInterface {
     images: string[];
 }
 
-interface ScheduleItem {
-    client: string;
-    service: string;
-}
-
-interface Schedule {
-    [date: string]: {
-        [number: number]: ScheduleItem;
-    };
-}
 
 export class Professional {
     private _id: string;
@@ -308,6 +299,14 @@ export class Professional {
 
         const docSnap = await getDoc(docRef);
         this._schedule[day] = docSnap.data();
+    }
+
+    public async getAllSchedule() {
+        const docRef = doc(db, "schedules", this._id);
+
+        const docSnap = await getDoc(docRef);
+        this._schedule = docSnap.data();
+        console.log(docSnap.data())
     }
 
     private async addSchedule() {
