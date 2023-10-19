@@ -1,0 +1,23 @@
+.sp-day-block {
+  display: flex;
+  flex-direction: column;
+}
+.sp-time-row {
+  display: flex;
+  gap: 5px;
+  padding-inline: 10px;
+  padding-bottom: 5px;
+}
+.sp-button {
+  background-color: #212529;
+  color: #f8f9fa;
+  height: 25px;
+  width: 150px;
+  border-radius: 5px;
+  font-size: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+  margin-left: 10px;
+}
