@@ -1,36 +1,42 @@
 import { useEffect, useState } from "react";
-import { User } from "../../Classes/user";
+import { User } from "../../../Classes/user";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../../Services/firebase/firebase";
+import { auth } from "../../../Services/firebase/firebase";
 import { useNavigate, useParams } from "react-router-dom";
-import { LoadingScreen } from "../../Components/loading/loading-screen/loading-screen";
-import { Professional } from "../../Classes/professional";
-import { Header } from "../../Components/header/header";
-import { ItemButton } from "../../Components/buttons/item-button/item-button";
-import { SubHeader } from "../../Components/sub-header/sub-header";
-import { parseDate } from "../../Function/parse-date/parse-date";
-import { capitalize } from "../../Function/capitalize/capitalize";
-import { Service } from "../../Classes/service";
-import { ScheduleItem } from "../../Classes/schedule";
+import { LoadingScreen } from "../../../Components/loading/loading-screen/loading-screen";
+import { Professional } from "../../../Classes/professional";
+import { Header } from "../../../Components/header/header";
+import { ItemButton } from "../../../Components/buttons/item-button/item-button";
+import { SubHeader } from "../../../Components/sub-header/sub-header";
+import { parseDate } from "../../../Function/parse-date/parse-date";
+import { capitalize } from "../../../Function/capitalize/capitalize";
+import { Service } from "../../../Classes/service";
+import { BottomButton } from "../../../Components/buttons/bottom-button/bottom-button";
 
-import "./schedule-page.css";
-import { BottomButton } from "../../Components/buttons/bottom-button/bottom-button";
+import "../schedule-page.css";
+import { findRepetitionBlocks } from "../../../Function/find-repetition-blocks/find-repetition-blocks";
+import { formattedDate } from "../../../Function/formatted-date/formatted-date";
 
 var isEqual = require("lodash.isequal");
 
-export function SchedulePage() {
+export function ProfessionalSchedulePage() {
   const [user, setUser] = useState(new User());
   const [professional, SetProfessional] = useState<Professional>(new Professional());
   const [loading, setLoading] = useState(false);
   const [dayList, setDayList] = useState([new Date()]);
   const [hiddenDayList, setHiddenDayList] = useState<string[]>([]);
-  const [selectedBlock, setSelectedBlock] = useState<{ client: string; service: string; timeRange: number[] } | null>();
+  const [selectedBlock, setSelectedBlock] = useState<{ client: string; service: string; timeRange: number[] } | null>(null);
+  const [selectedTimeList, setSelectedTimeList] = useState<{day:Date; index:number}[]>([]);
   const [tab, setTab] = useState(0);
 
   const [serviceCache, setServiceCache] = useState<{ [serviceId: string]: Service }>({});
-  const [userCache, setUserCache] = useState<{ [userId: string]: User }>({});
+  const [clientCache, setClientCache] = useState<{ [clientId: string]: User }>({});
 
-  const { userId } = useParams();
+  const { professionalId } = useParams();
+  const navigate = useNavigate();
+
+  const save = require("../../../Assets/save.png");
+  const edit = require("../../../Assets/edit.png");
 
   useEffect(() => {
     setLoading(true);
@@ -52,7 +58,7 @@ export function SchedulePage() {
       });
       setDayList(scheduleDays);
 
-      await professional.getProfessional(userId || "");
+      await professional.getProfessional(professionalId || "");
       await Promise.all(
         scheduleDays.map(async (scheduleDay) => {
           const formattedDay = scheduleDay.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "2-digit" });
@@ -72,8 +78,11 @@ export function SchedulePage() {
 
     fetchUserAndProfessional();
   }, []);
+  const timeList: string[] = [];
 
-  const navigate = useNavigate();
+  for (let i = 0; i < 24; i++) {
+    timeList.push(`${i}:00`, `${i}:10`, `${i}:20`, `${i}:30`, `${i}:40`, `${i}:50`);
+  }
 
   const tabHandler = () => {
     switch (tab) {
@@ -82,51 +91,16 @@ export function SchedulePage() {
           <div className='schedule-page'>
             <Header
               title={"Minha agenda"}
-              icon={""}
+              icon={edit}
               onClickReturn={() => {
-                navigate("/");
+                navigate(-1);
               }}
-              onClickIcon={() => {}}
+              onClickIcon={() => {
+                setTab(1);
+              }}
             />
             {Object.entries(professional.getSchedule()).map(([date, schedule]) => {
               const formattedDay = capitalize(parseDate(date).toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "2-digit" }).replace(/,/g, " -"));
-              const tempTime: string[] = [];
-
-              for (let i = 0; i < 24; i++) {
-                tempTime.push(`${i}:00`, `${i}:10`, `${i}:20`, `${i}:30`, `${i}:40`, `${i}:50`);
-              }
-              function findRepetitionBlocks(schedule: any) {
-                const blocks = [];
-                let currentScheduleItem = null;
-                let firstIndex = null;
-
-                const scheduleKeys = Object.keys(schedule).sort((a, b) => parseInt(a) - parseInt(b));
-
-                for (let i = 0; i < scheduleKeys.length; i++) {
-                  const currentKey = scheduleKeys[i];
-                  const { service, client } = schedule[currentKey];
-
-                  if (firstIndex === null || (service === currentScheduleItem?.service && client === currentScheduleItem?.client)) {
-                    // Start or continue the current block
-                    if (firstIndex === null) {
-                      firstIndex = parseInt(currentKey, 10);
-                    }
-                    currentScheduleItem = { service, client };
-                  } else {
-                    // End of the current block, store first and last indexes
-                    blocks.push([firstIndex, parseInt(scheduleKeys[i - 1], 10)]);
-                    firstIndex = parseInt(currentKey, 10);
-                    currentScheduleItem = { service, client };
-                  }
-                }
-
-                if (firstIndex !== null) {
-                  // Store the last block if there is one
-                  blocks.push([firstIndex, parseInt(scheduleKeys[scheduleKeys.length - 1], 10)]);
-                }
-
-                return blocks;
-              }
               return (
                 <div className='sp-day-block'>
                   <SubHeader
@@ -134,11 +108,9 @@ export function SchedulePage() {
                     buttonTitle={hiddenDayList.includes(formattedDay) ? "Exibir" : "Ocultar"}
                     onClick={() => {
                       if (hiddenDayList.includes(formattedDay)) {
-                        // Day is already hidden, so remove it
                         const updatedHidden = hiddenDayList.filter((day) => day !== formattedDay);
                         setHiddenDayList(updatedHidden);
                       } else {
-                        // Day is not hidden, so add it
                         const updatedHidden = [...hiddenDayList, formattedDay];
                         setHiddenDayList(updatedHidden);
                       }
@@ -160,17 +132,17 @@ export function SchedulePage() {
                         setLoading(false);
                       });
                     }
-                    if (userCache[scheduleDate.client] === undefined) {
+                    if (clientCache[scheduleDate.client] === undefined) {
                       setLoading(true);
                       const user = new User();
                       user.getUser(scheduleDate.client).then(() => {
-                        const userList = userCache;
-                        userList[user.getId()] = user;
-                        setUserCache(userList);
+                        const clientList = clientCache;
+                        clientList[user.getId()] = user;
+                        setClientCache(clientList);
                         setLoading(false);
                       });
                     }
-                    return serviceCache[scheduleDate.service] !== undefined && userCache[scheduleDate.client] !== undefined ? (
+                    return serviceCache[scheduleDate.service] !== undefined && clientCache[scheduleDate.client] !== undefined ? (
                       <div
                         className='sp-time-row'
                         onClick={() => {
@@ -188,11 +160,11 @@ export function SchedulePage() {
                         <div className={"gp-time-button" + (selectedBlock?.timeRange[0] === timeIndex ? " selected" : "")}>
                           <p className='gpt-title'>{capitalize(parseDate(date).toLocaleDateString("pt-BR", { weekday: "long" }))}</p>
                           <p className='gpt-title'>
-                            {tempTime[timeIndex]} - {tempTime[timeEnd]}
+                            {timeList[timeIndex]} - {timeList[timeEnd]}
                           </p>
                         </div>
                         <div className='gpt-row-item'>
-                          <ItemButton title={serviceCache[scheduleDate.service].getName()} subtitle={userCache[scheduleDate.client].getName()} isSelected={selectedBlock?.timeRange[0] === timeIndex} onClick={() => {}} />
+                          <ItemButton title={serviceCache[scheduleDate.service].getName()} subtitle={clientCache[scheduleDate.client].getName()} isSelected={selectedBlock?.timeRange[0] === timeIndex} onClick={() => {}} />
                         </div>
                       </div>
                     ) : (
@@ -203,8 +175,8 @@ export function SchedulePage() {
               );
             })}
             <SubHeader
-              title={capitalize(dayList[dayList.length - 1].toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "2-digit" }).replace(/,/g, " -"))}
-              buttonTitle={"Carregar mais 7 dias"}
+              title={formattedDate(dayList[dayList.length - 1])}
+              buttonTitle={"Carregar próxima semana"}
               onClick={async () => {
                 setLoading(true);
 
@@ -238,9 +210,70 @@ export function SchedulePage() {
               hide={selectedBlock === null}
               title={"Editar"}
               onClick={() => {
-                alert("pendente");
+                setTab(2);
               }}
             />
+          </div>
+        );
+      case 1:
+        return (
+          <div className='schedule-edit-tab'>
+            <Header
+              title={"Minha Agenda"}
+              icon={save}
+              onClickReturn={() => {
+                setTab(0);
+              }}
+              onClickIcon={() => {}}
+            />
+            {dayList.map((day) => {
+              return (
+                <div className='sp-day-block'>
+                  <SubHeader
+                    title={formattedDate(day)}
+                    buttonTitle={hiddenDayList.includes(formattedDate(day)) ? "Exibir" : "Ocultar"}
+                    onClick={() => {
+                      if (hiddenDayList.includes(formattedDate(day))) {
+                        const updatedHidden = hiddenDayList.filter((day1) => day1 !== formattedDate(day));
+                        setHiddenDayList(updatedHidden);
+                      } else {
+                        const updatedHidden = [...hiddenDayList, formattedDate(day)];
+                        setHiddenDayList(updatedHidden);
+                      }
+                    }}
+                  />
+                  <div className='sp-day-list'>
+                    {timeList.map((time, index) => {
+                      if (hiddenDayList.includes(formattedDate(day))) return null;
+                      if (professional.getShift()[day.getDay()][0] === false) return null;
+                      const startTime = Math.floor(professional.getStartHours()[day.getDay()] / 2) * 6;
+                      const endTime = Math.floor((professional.getShift()[day.getDay()].length - 1) / 2) * 6 + startTime;
+                      if (startTime > index) return null;
+                      if (endTime < index) return null;
+
+                      const scheduleDay = day.toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", year: "2-digit" });
+                      const available = professional.getSchedule()?.[scheduleDay]?.[index] === undefined;
+                      const serviceName = serviceCache[professional.getSchedule()?.[scheduleDay]?.[index]?.service]?.getName();
+                      const clientName = clientCache[professional.getSchedule()?.[scheduleDay]?.[index]?.client]?.getName();
+
+                      return (
+                        <div className='sp-time-row' onClick={() => {
+                          //Fazer amanhã
+                        }}>
+                          <div className={"gp-time-button" + (false ? " selected" : "")}>
+                            <p className='gpt-title'>{capitalize(day.toLocaleString("pt-BR", { weekday: "long" }))}</p>
+                            <p className='gpt-title'>{time}</p>
+                          </div>
+                          <div className='gpt-row-item'>
+                            <ItemButton title={available ? "Disponível" : serviceName} subtitle={available ? "" : clientName} isSelected={false} onClick={() => {}} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         );
       default:

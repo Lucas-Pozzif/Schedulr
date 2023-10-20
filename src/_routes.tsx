@@ -1,7 +1,8 @@
 import { GroupForm } from "./Forms/group-form/group-form";
+import { ProfessionalForm } from "./Forms/professional-form/professional-form";
 import { GroupPage } from "./Pages/group-page/group-page";
 import { Home } from "./Pages/home/home";
-import { SchedulePage } from "./Pages/schedule-page/schedule-page";
+import { ProfessionalSchedulePage } from "./Pages/schedule-page/professional-schedule/professional-schedule-page";
 import { UserPage } from "./Pages/user-page/user-page";
 
 export const routes = [
@@ -9,5 +10,5 @@ export const routes = [
   { path: "/user", element: <UserPage /> },
   { path: "/group/:groupId", element: <GroupPage /> },
   { path: "/group/add", element: <GroupForm /> },
-  { path: "/schedule/:userId", element: <SchedulePage /> },
+  { path: "/professional/schedule/:professionalId", element: <ProfessionalSchedulePage /> },
 ];
