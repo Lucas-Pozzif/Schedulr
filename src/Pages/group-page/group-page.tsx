@@ -346,7 +346,7 @@ export function GroupPage() {
                   setTab(0);
                 },
                 () => {
-                  navigate(`/schedule/${selectedProfessional?.getId()}`);
+                  navigate(`/professional/schedule/${selectedProfessional?.getId()}`);
                 },
               ]}
               hide={[selectedProfessional === null, selectedProfessional === null || !group.getAdmins().includes(user.getId())]}
