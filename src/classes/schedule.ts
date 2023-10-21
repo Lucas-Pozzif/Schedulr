@@ -2,6 +2,7 @@
 export interface ScheduleItem {
     client: string;
     service: string;
+    edited?: boolean
 }
 
 export interface Schedule {

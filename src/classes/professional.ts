@@ -268,21 +268,28 @@ export class Professional {
             const docSnap = await getDoc(docRef);
 
             if (docSnap.exists()) {
-                // Document exists, check if the field exists
-                const data = docSnap.data();
+                await updateDoc(docRef, { [index]: value });
+                console.log("Document updated successfully!");
 
-                if (data && !data[index]) {
-                    // Field doesn't exist, update the document
-                    await updateDoc(docRef, { [index]: value });
-                    console.log("Document updated successfully!");
-                } else {
-                    console.log("Field already exists for the specified day.");
-                }
             } else {
                 // Document doesn't exist, create it with the field
                 await setDoc(docRef, { [index]: value });
                 console.log("Document created successfully!");
             }
+        } catch (e) {
+            console.error("Error updating document:", e);
+        }
+    }
+
+    public async deleteScheduleIndex(day: string, index: string) {
+        const [dayPart, monthPart, yearPart] = day.split("/");
+        const date = `${monthPart}-${yearPart.slice(-2)}`;
+        const formattedDay = dayPart;
+
+        const docRef = doc(db, "schedules", this._id, date, formattedDay);
+
+        try {
+            await setDoc(docRef,{[index]:undefined})
         } catch (e) {
             console.error("Error updating document:", e);
         }
