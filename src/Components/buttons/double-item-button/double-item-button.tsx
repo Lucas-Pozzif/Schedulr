@@ -1,4 +1,5 @@
 import { ItemButton } from "../item-button/item-button";
+import "./double-item-button.css"
 
 type DoubleButtonType = {
   leftButtonTitle: {
