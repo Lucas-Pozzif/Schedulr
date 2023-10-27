@@ -262,7 +262,6 @@ export class Professional {
         const formattedDay = dayPart;
 
         const docRef = doc(db, "schedules", this._id, date, formattedDay);
-
         try {
             // Check if the document exists
             const docSnap = await getDoc(docRef);
@@ -286,13 +285,10 @@ export class Professional {
         const date = `${monthPart}-${yearPart.slice(-2)}`;
         const formattedDay = dayPart;
 
-        const docRef = doc(db, "schedules", this._id, date, formattedDay);
+        delete this._schedule[day][index]
 
-        try {
-            await setDoc(docRef,{[index]:undefined})
-        } catch (e) {
-            console.error("Error updating document:", e);
-        }
+        const docRef = doc(db, "schedules", this._id, date, formattedDay);
+        await setDoc(docRef, this._schedule[day])
     }
 
     public async getScheduleDay(day: string) {
