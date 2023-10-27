@@ -155,7 +155,6 @@ export function ProfessionalSchedulePage() {
     timeList.push(`${i}:00`, `${i}:10`, `${i}:20`, `${i}:30`, `${i}:40`, `${i}:50`);
   }
 
-  console.log(changedValues);
   const tabHandler = () => {
     switch (tab) {
       case 0: //Home page
@@ -795,6 +794,7 @@ export function ProfessionalSchedulePage() {
                     edited: true,
                     service: "",
                   }));
+                  setTab(1);
                   setLoading(false);
                 },
                 () => {
