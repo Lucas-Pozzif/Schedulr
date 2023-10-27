@@ -6,19 +6,18 @@ import { useNavigate, useParams } from "react-router-dom";
 import { LoadingScreen } from "../../../Components/loading/loading-screen/loading-screen";
 import { Professional } from "../../../Classes/professional";
 import { Header } from "../../../Components/header/header";
-import { ItemButton } from "../../../Components/buttons/item-button/item-button";
 import { SubHeader } from "../../../Components/sub-header/sub-header";
 import { parseDate } from "../../../Function/parse-date/parse-date";
 import { capitalize } from "../../../Function/capitalize/capitalize";
 import { Service } from "../../../Classes/service";
 import { BottomButton } from "../../../Components/buttons/bottom-button/bottom-button";
-
-import "../schedule-page.css";
 import { findRepetitionBlocks } from "../../../Function/find-repetition-blocks/find-repetition-blocks";
 import { formattedDate } from "../../../Function/formatted-date/formatted-date";
 import { DoubleButton } from "../../../Components/buttons/double-button/double-button";
 import { DoubleItemButton } from "../../../Components/buttons/double-item-button/double-item-button";
 import { Carousel } from "../../../Components/carousel/carousel";
+
+import "../schedule-page.css";
 
 var isEqual = require("lodash.isequal");
 
@@ -449,6 +448,15 @@ export function ProfessionalSchedulePage() {
           return blockTime;
         });
 
+        const hideSaveButton = () => {
+          const hide = serviceList.map((_, index) => {
+            const schedule = professional.getSchedule()[day];
+            const scheduleItem = schedule?.[index + startIndex];
+            return scheduleItem.service === "" && scheduleItem.edited !== false;
+          });
+          return hide.includes(true);
+        };
+
         return (
           <div className='edit-schedule-block-tab'>
             <Header
@@ -478,7 +486,7 @@ export function ProfessionalSchedulePage() {
             </div>
 
             {serviceList.map((_, index) => {
-              const currentTime = { day: day, index: index };
+              const currentTime = { day: day, index: index + startIndex };
               const isSelected = selectedTimeList.find((time) => currentTime.day === time.day && currentTime.index === time.index) !== undefined;
 
               const weekDay = week[parseDate(day).getDay()];
@@ -488,18 +496,21 @@ export function ProfessionalSchedulePage() {
 
               if (isSelected) {
                 scheduleItem.service = editedTime.service;
-                scheduleItem.edited = true;
+                scheduleItem.edited = editedTime.edited;
                 scheduleItem.client = user.getId();
               }
 
               const serviceName = isSelected
-                ? editedTime.service || (available ? "Disponível" : scheduleItem?.edited ? scheduleItem.service : serviceCache[scheduleItem?.service]?.getName())
-                : available
-                ? "Disponível"
+                ? editedTime.edited
+                  ? editedTime.service
+                  : "Disponível"
                 : scheduleItem?.edited
-                ? scheduleItem.service
-                : serviceCache[scheduleItem?.service]?.getName();
-
+                ? scheduleItem.service !== ""
+                  ? scheduleItem.service
+                  : "Disponível"
+                : scheduleItem.service !== ""
+                ? serviceCache[scheduleItem?.service]?.getName()
+                : "Disponível";
               const clientName = editedTime.service === "" ? clientCache[scheduleItem?.client]?.getName() : user.getName();
 
               return (
@@ -515,23 +526,72 @@ export function ProfessionalSchedulePage() {
                     if (selectedTimeList.some((time) => time.day === currentTime.day && time.index === currentTime.index)) {
                       setSelectedTimeList(selectedTimeList.filter((time) => time.day !== currentTime.day || time.index !== currentTime.index));
                     } else {
+                      if (editedTime.service !== "" || !editedTime.edited) {
+                        setSelectedTimeList([currentTime]);
+                      } else {
+                        setSelectedTimeList([...selectedTimeList, currentTime]);
+                      }
                       setEditedTime((time) => ({
                         ...time,
                         edited: true,
                         service: "",
                       }));
-                      if (editedTime.service !== "") {
-                        setSelectedTimeList([currentTime]);
-                      } else {
-                        setSelectedTimeList([...selectedTimeList, currentTime]);
-                      }
                     }
                   }}
                 />
               );
             })}
-            {/* 26/10 - Tomorrow ill do the functions on this one, after this it will be just some debug and its done */}
-            <DoubleButton title={["Salvar Alterações", "Desbloquear Horários"]} onClick={[async () => {}, () => {}]} hide={[false, selectedTimeList.length == 0]} />
+            <DoubleButton
+              title={["Salvar Alterações", "Desbloquear Horários"]}
+              onClick={[
+                async () => {
+                  setLoading(true);
+                  var updatePromises: any[] = [];
+
+                  updatePromises = serviceList.map(async (_, index) => {
+                    const realIndex = index + startIndex;
+                    const schedule = professional.getSchedule()[day];
+                    const scheduleItem = schedule?.[realIndex];
+
+                    if (scheduleItem.edited === true) {
+                      return await professional.updateSchedule(day, realIndex.toString(), scheduleItem);
+                    } else if (scheduleItem.edited === false) {
+                      return await professional.deleteScheduleIndex(day, realIndex.toString());
+                    }
+                  });
+
+                  await Promise.all(updatePromises);
+                  setSelectedTimeList([]);
+                  setEditedTime((time) => ({
+                    ...time,
+                    edited: true,
+                    service: "",
+                  }));
+                  setTab(0);
+                  setLoading(false);
+                },
+                () => {
+                  selectedTimeList.forEach(({ day, index }) => {
+                    const schedule = professional.getSchedule()[day];
+                    const scheduleItem = schedule?.[index];
+
+                    scheduleItem.service = "";
+                    scheduleItem.edited = false;
+                    scheduleItem.client = "";
+
+                    setEditedTime({
+                      edited: false,
+                      service: "",
+                      client: "",
+                    });
+
+                    setChangedValues([...changedValues, { day: day, index: index }]);
+                    console.log(scheduleItem, index);
+                  });
+                },
+              ]}
+              hide={[hideSaveButton(), selectedTimeList.length == 0]}
+            />
           </div>
         );
       case 3: //Edit time tab
@@ -667,350 +727,6 @@ export function ProfessionalSchedulePage() {
         return <div />;
     }
   };
-  /*
-  const oldtabHandler = () => {
-    switch (tab) {
-      case 0:
-        return (
-          <div className='schedule-page'>
-            <Header
-              title={"Minha agenda"}
-              icon={edit}
-              onClickReturn={() => {
-                navigate(-1);
-              }}
-              onClickIcon={() => {
-                setTab(1);
-              }}
-            />
-            {Object.entries(professional.getSchedule()).map(([date, schedule]) => {
-              const formattedDay = capitalize(parseDate(date).toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "2-digit" }).replace(/,/g, " -"));
-              return (
-                <div className='sp-day-block'>
-                  <SubHeader
-                    title={formattedDay}
-                    buttonTitle={hiddenDayList.includes(formattedDay) ? "Exibir" : "Ocultar"}
-                    onClick={() => {
-                      if (hiddenDayList.includes(formattedDay)) {
-                        const updatedHidden = hiddenDayList.filter((day) => day !== formattedDay);
-                        setHiddenDayList(updatedHidden);
-                      } else {
-                        const updatedHidden = [...hiddenDayList, formattedDay];
-                        setHiddenDayList(updatedHidden);
-                      }
-                    }}
-                  />
-                  {findRepetitionBlocks(schedule).map((block) => {
-                    console.log(block);
-                    if (hiddenDayList.includes(formattedDay)) return null;
-                    const timeIndex = block[0];
-                    const timeEnd = block[1];
-                    const scheduleDate = schedule[block[0]];
-
-                    if (serviceCache[scheduleDate.service] === undefined && !scheduleDate.edited) {
-                      setLoading(true);
-                      const service = new Service();
-                      service.getService(scheduleDate.service).then(() => {
-                        const serviceList = serviceCache;
-                        serviceList[service.getId()] = service;
-                        setServiceCache(serviceList);
-                        setLoading(false);
-                      });
-                    }
-                    if (clientCache[scheduleDate.client] === undefined) {
-                      setLoading(true);
-                      const user = new User();
-                      user.getUser(scheduleDate.client).then(() => {
-                        const clientList = clientCache;
-                        clientList[user.getId()] = user;
-                        setClientCache(clientList);
-                        setLoading(false);
-                      });
-                    }
-                    return (serviceCache[scheduleDate.service] !== undefined || scheduleDate.edited) && clientCache[scheduleDate.client] !== undefined ? (
-                      <div
-                        className='sp-time-row'
-                        onClick={() => {
-                          const currentBlock = {
-                            client: scheduleDate.client,
-                            service: scheduleDate.service,
-                            timeRange: block,
-                          };
-                          if (isEqual(selectedBlock, currentBlock)) setSelectedBlock(null);
-                          else {
-                            setSelectedBlock(currentBlock);
-                          }
-                        }}
-                      >
-                        <div className={"gp-time-button" + (selectedBlock?.timeRange[0] === timeIndex ? " selected" : "")}>
-                          <p className='gpt-title'>{capitalize(parseDate(date).toLocaleDateString("pt-BR", { weekday: "long" }))}</p>
-                          <p className='gpt-title'>
-                            {timeList[timeIndex]} - {timeList[timeEnd]}
-                          </p>
-                        </div>
-                        <div className='gpt-row-item'>
-                          <ItemButton title={scheduleDate.edited ? scheduleDate.service : serviceCache[scheduleDate.service].getName()} subtitle={clientCache[scheduleDate.client].getName()} isSelected={selectedBlock?.timeRange[0] === timeIndex} onClick={() => {}} />
-                        </div>
-                      </div>
-                    ) : (
-                      <LoadingScreen />
-                    );
-                  })}
-                </div>
-              );
-            })}
-            <SubHeader
-              title={formattedDate(dayList[dayList.length - 1])}
-              buttonTitle={"Carregar próxima semana"}
-              onClick={async () => {
-                setLoading(true);
-
-                const scheduleDays = Array.from({ length: 8 }, (_, index) => {
-                  const currentDate = new Date(dayList[dayList.length - 1]);
-                  currentDate.setDate(currentDate.getDate() + index);
-                  return currentDate;
-                });
-
-                setDayList([...dayList, ...scheduleDays]);
-
-                await Promise.all(
-                  scheduleDays.map(async (scheduleDay) => {
-                    const formattedDay = scheduleDay.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "2-digit" });
-                    await professional.getScheduleDay(formattedDay);
-
-                    if (professional.getSchedule()[formattedDay] === undefined) {
-                      //remove the scheduleDay from professional
-                      const updatedSchedule = professional.getSchedule();
-                      delete updatedSchedule[formattedDay];
-
-                      professional.setSchedule(updatedSchedule);
-                    }
-                  })
-                );
-
-                setLoading(false);
-              }}
-            />
-            <BottomButton
-              hide={selectedBlock === null}
-              title={"Editar"}
-              onClick={() => {
-                setTab(2);
-              }}
-            />
-          </div>
-        );
-      case 1:
-        return (
-          <div className='schedule-edit-tab'>
-            <Header
-              title={"Minha Agenda"}
-              icon={save}
-              onClickReturn={() => {
-                setTab(0);
-              }}
-              onClickIcon={async () => {
-                setLoading(true);
-                const updatePromises = selectedTimeList.map(async ({ day, index }) => {
-                  return await professional.updateSchedule(day, index.toString(), professional.getSchedule()[day][index]);
-                });
-                await Promise.all(updatePromises);
-                setLoading(false);
-                setSelectedTimeList([]);
-              }}
-            />
-            {dayList.map((day) => {
-              return (
-                <div className='sp-day-block'>
-                  <SubHeader
-                    title={formattedDate(day)}
-                    buttonTitle={hiddenDayList.includes(formattedDate(day)) ? "Exibir" : "Ocultar"}
-                    onClick={() => {
-                      if (hiddenDayList.includes(formattedDate(day))) {
-                        const updatedHidden = hiddenDayList.filter((day1) => day1 !== formattedDate(day));
-                        setHiddenDayList(updatedHidden);
-                      } else {
-                        const updatedHidden = [...hiddenDayList, formattedDate(day)];
-                        setHiddenDayList(updatedHidden);
-                      }
-                    }}
-                  />
-                  <div className='sp-day-list'>
-                    {timeList.map((time, index) => {
-                      if (hiddenDayList.includes(formattedDate(day))) return null;
-                      if (professional.getShift()[day.getDay()][0] === false) return null;
-                      const startTime = Math.floor(professional.getStartHours()[day.getDay()] / 2) * 6;
-                      const endTime = Math.floor((professional.getShift()[day.getDay()].length - 1) / 2) * 6 + startTime;
-                      if (startTime > index) return null;
-                      if (endTime < index) return null;
-
-                      const scheduleDay = day.toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", year: "2-digit" });
-                      const schedData = professional.getSchedule()?.[scheduleDay]?.[index];
-
-                      const available = schedData === undefined;
-                      const serviceName = schedData?.edited ? schedData?.service : serviceCache[schedData?.service]?.getName();
-                      const clientName = clientCache[schedData?.client]?.getName();
-
-                      const existingIndex = selectedTimeList.findIndex((item) => item.day === scheduleDay && item.index === index);
-                      console.log(selectedTimeList.length);
-                      return (
-                        <div
-                          className='sp-time-row'
-                          onClick={() => {
-                            const timeValue = {
-                              day: scheduleDay,
-                              index: index,
-                            };
-
-                            if (existingIndex !== -1) {
-                              const updatedList = [...selectedTimeList];
-                              updatedList.splice(existingIndex, 1);
-                              setSelectedTimeList(updatedList);
-                            } else {
-                              setSelectedTimeList([...selectedTimeList, timeValue]);
-                            }
-                          }}
-                        >
-                          <div className={"gp-time-button" + (existingIndex !== -1 ? " selected" : "")}>
-                            <p className='gpt-title'>{capitalize(day.toLocaleString("pt-BR", { weekday: "long" }))}</p>
-                            <p className='gpt-title'>{time}</p>
-                          </div>
-                          <div className='gpt-row-item'>
-                            <ItemButton title={available ? "Disponível" : serviceName} subtitle={available ? "" : clientName} isSelected={existingIndex !== -1} onClick={() => {}} />
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })}
-            <DoubleButton
-              title={["Bloquear", "Editar"]}
-              onClick={[
-                () => {
-                  const blockedValue = {
-                    service: "Bloqueado",
-                    client: user.getId(),
-                    edited: true,
-                  };
-                  selectedTimeList.forEach((time) => {
-                    if (professional.getSchedule()?.[time.day]?.[time.index] === undefined) {
-                      const blockedSchedule = professional.getSchedule();
-
-                      if (!blockedSchedule[time.day]) {
-                        blockedSchedule[time.day] = {};
-                      }
-
-                      blockedSchedule[time.day][time.index] = blockedValue;
-
-                      professional.setSchedule(blockedSchedule);
-                      SetProfessional(new Professional(professional));
-                    }
-                  });
-
-                  setSelectedTimeList([]);
-                },
-                () => {
-                  setTab(2);
-                },
-              ]}
-              hide={[selectedTimeList.length <= 0, selectedTimeList.length <= 0]}
-            />
-          </div>
-        );
-      case 2:
-        const firstDay = selectedTimeList[0]?.day;
-        const firstIndex = selectedTimeList[0]?.index;
-        return (
-          <div className='schedule-edit'>
-            <Header
-              title={"Editar Horários"}
-              icon={""}
-              onClickReturn={() => {
-                setTab(1);
-                setSelectedTimeList([]);
-              }}
-              onClickIcon={() => {}}
-            />
-            <div className='sf-value-block'>
-              <img className='sf-value-icon' src={clock} />
-              <input
-                className='sf-value-input'
-                placeholder='Digitar Serviço'
-                //value={professional.getSchedule()?.[firstDay]?.[firstIndex]?.service}
-                onChange={(e) => {
-                  const editedValue = {
-                    service: e.target.value,
-                    client: user.getId(),
-                    edited: true,
-                  };
-                  selectedTimeList.map(({ day, index }) => {
-                    const scheduleValue = professional.getSchedule();
-                    if (!scheduleValue[day]) {
-                      scheduleValue[day] = {};
-                    }
-                    scheduleValue[day][index] = editedValue;
-
-                    professional.setSchedule(scheduleValue);
-                    SetProfessional(new Professional(professional));
-                  });
-                }}
-              />
-            </div>
-            {selectedTimeList.map(({ day, index }) => {
-              console.log(professional.getSchedule()?.[day]?.[index]?.service);
-              return (
-                <div className='sp-time-row' onClick={() => {}}>
-                  <div className={"gp-time-button" + (false ? " selected" : "")}>
-                    <p className='gpt-title'>{day}</p>
-                    <p className='gpt-title'>{timeList[index]}</p>
-                  </div>
-                  <div className='gpt-row-item'>
-                    <ItemButton
-                      title={professional.getSchedule()?.[day]?.[index]?.edited ? professional.getSchedule()?.[day]?.[index]?.service : serviceCache[professional.getSchedule()?.[day]?.[index]?.service]?.getName() || "Disponível"}
-                      subtitle={clientCache[professional.getSchedule()?.[day]?.[index]?.client]?.getName()}
-                      isSelected={false}
-                      onClick={() => {}}
-                    />
-                  </div>
-                </div>
-              );
-            })}
-            <DoubleButton
-              title={["Salvar Alterações", "Desbloquear Horários"]}
-              onClick={[
-                async () => {
-                  setLoading(true);
-                  const updatePromises = selectedTimeList.map(async ({ day, index }) => {
-                    return await professional.updateSchedule(day, index.toString(), professional.getSchedule()[day][index]);
-                  });
-                  await Promise.all(updatePromises);
-                  setLoading(false);
-                  setSelectedTimeList([]);
-                },
-                async () => {
-                  setLoading(true);
-                  const updatePromises = selectedTimeList.map(async ({ day, index }) => {
-                    const scheduleValue = professional.getSchedule();
-                    delete scheduleValue[day][index];
-                    professional.setSchedule(scheduleValue);
-                    SetProfessional(new Professional(professional));
-
-                    return await professional.deleteScheduleIndex(day, index.toString());
-                  });
-                  await Promise.all(updatePromises);
-                  setLoading(false);
-                },
-              ]}
-              hide={[professional.getSchedule()?.[firstDay]?.[firstIndex]?.service === "", false]}
-            />
-          </div>
-        );
-      default:
-        return <div />;
-    }
-  };*/
 
   return loading ? <LoadingScreen /> : tabHandler();
 }
