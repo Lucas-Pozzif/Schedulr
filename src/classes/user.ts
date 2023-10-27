@@ -2,7 +2,7 @@ import { GoogleAuthProvider, UserCredential, signInWithPopup, signOut } from "fi
 import { auth, db } from "../Services/firebase/firebase";
 import { DocumentSnapshot, collection, deleteDoc, doc, getDoc, getDocs, query, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
 import { Group } from "./group";
-import { ScheduleItem } from "./schedule";
+import { Schedule, ScheduleItem } from "./schedule";
 
 interface UserInterface {
     id: string;
@@ -10,16 +10,6 @@ interface UserInterface {
     email: string;
     number: string[];
     photo: string;
-    schedule: any;
-}
-const sched = {
-    "23.07.2023": {
-        "40": true,
-        "41": true,
-        "42": true,
-        "43": true,
-        "44": true,
-    }
 }
 
 export class User {
@@ -28,7 +18,7 @@ export class User {
     private _email: string;
     private _number: string;
     private _photo: string;
-    private _schedule: any;
+    private _schedule: Schedule | any;
 
     constructor(
         arg?: string | User,
@@ -36,7 +26,7 @@ export class User {
         email: string = "",
         number: string = "",
         photo: string = "",
-        schedule: any = {}
+        schedule: Schedule = {}
     ) {
         if (typeof arg === "string") {
             // Case: Id provided, assuming default values for other properties
@@ -87,7 +77,7 @@ export class User {
         return this._photo;
     }
 
-    getSchedule(): any {
+    getSchedule(): Schedule {
         return this._schedule;
     }
 
@@ -112,7 +102,7 @@ export class User {
         this._photo = photo;
     }
 
-    setSchedule(schedule: any) {
+    setSchedule(schedule: Schedule) {
         this._schedule = schedule;
     }
 
@@ -148,11 +138,15 @@ export class User {
         this._name = servData!.name;
         this._email = servData!.email;
         this._number = servData!.number;
-        this._photo = servData!.photo;
-        this._schedule = servData!.schedule;
+        this._photo = servData!.photo
     }
 
     //Firestore methods
+
+    public async addUser() {
+        await this.addSchedule()
+        await this.setUser();
+    }
 
     public async setUser() {
         if (this._id == "") {
@@ -170,7 +164,7 @@ export class User {
         }
 
         const docRef = doc(db, "users", this._id);
-        const propertiesToUpdate: (keyof UserInterface)[] = ["id", "name", "email", "number", "photo", "schedule"];
+        const propertiesToUpdate: (keyof UserInterface)[] = ["id", "name", "email", "number", "photo"];
 
         propertiesToUpdate.map((prop) => {
             if (updates[prop] !== undefined) {
@@ -232,8 +226,7 @@ export class User {
             name: this._name,
             email: this._email,
             number: this._number,
-            photo: this._photo,
-            schedule: this._schedule
+            photo: this._photo
         };
     }
 
@@ -250,22 +243,14 @@ export class User {
         const formattedDay = dayPart;
 
         const docRef = doc(db, "schedules", this._id, date, formattedDay);
-
         try {
             // Check if the document exists
             const docSnap = await getDoc(docRef);
 
             if (docSnap.exists()) {
-                // Document exists, check if the field exists
-                const data = docSnap.data();
+                await updateDoc(docRef, { [index]: value });
+                console.log("Document updated successfully!");
 
-                if (data && !data[index]) {
-                    // Field doesn't exist, update the document
-                    await updateDoc(docRef, { [index]: value });
-                    console.log("Document updated successfully!");
-                } else {
-                    console.log("Field already exists for the specified day.");
-                }
             } else {
                 // Document doesn't exist, create it with the field
                 await setDoc(docRef, { [index]: value });
@@ -274,6 +259,17 @@ export class User {
         } catch (e) {
             console.error("Error updating document:", e);
         }
+    }
+
+    public async deleteScheduleIndex(day: string, index: string) {
+        const [dayPart, monthPart, yearPart] = day.split("/");
+        const date = `${monthPart}-${yearPart.slice(-2)}`;
+        const formattedDay = dayPart;
+
+        delete this._schedule[day][index]
+
+        const docRef = doc(db, "schedules", this._id, date, formattedDay);
+        await setDoc(docRef, this._schedule[day])
     }
 
     public async getScheduleDay(day: string) {
@@ -289,6 +285,14 @@ export class User {
         this._schedule[day] = docSnap.data();
     }
 
+    public async getAllSchedule() {
+        const docRef = doc(db, "schedules", this._id);
+
+        const docSnap = await getDoc(docRef);
+        this._schedule = docSnap.data();
+        console.log(docSnap.data())
+    }
+
     private async addSchedule() {
         const docRef = doc(db, "schedules", this._id);
 
@@ -300,6 +304,5 @@ export class User {
         const userRef = doc(db, "schedules", this._id);
         await updateDoc(userRef, { timestamp: serverTimestamp() });
     }
-
 
 }
