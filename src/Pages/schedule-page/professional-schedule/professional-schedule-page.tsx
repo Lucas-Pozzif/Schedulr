@@ -135,6 +135,10 @@ export function ProfessionalSchedulePage() {
       await fetchScheduleForDays(scheduleDays);
       await fetchServicesAndClients();
       SetProfessional(new Professional(professional));
+      Object.entries(professional.getSchedule()).map(([date, _]) => {
+        const formattedDay = formattedDate(parseDate(date));
+        setDisplayList([...displayList, formattedDay]);
+      });
 
       setEditedTime((time) => ({
         ...time,
@@ -150,6 +154,8 @@ export function ProfessionalSchedulePage() {
   for (let i = 0; i < 24; i++) {
     timeList.push(`${i}:00`, `${i}:10`, `${i}:20`, `${i}:30`, `${i}:40`, `${i}:50`);
   }
+
+  console.log(changedValues);
   const tabHandler = () => {
     switch (tab) {
       case 0: //Home page
@@ -316,10 +322,11 @@ export function ProfessionalSchedulePage() {
                 const updatePromises = changedValues.map(async ({ day, index }) => {
                   return await professional.updateSchedule(day, index.toString(), professional.getSchedule()[day][index]);
                 });
+
                 await Promise.all(updatePromises);
                 setChangedValues([]);
-                setLoading(false);
                 setSelectedTimeList([]);
+                setLoading(false);
               }}
             />
             <Carousel
@@ -334,7 +341,44 @@ export function ProfessionalSchedulePage() {
                 };
               })}
             />
-            <SubHeader title={formattedDate(selectedDay)} buttonTitle={"Bloquear Tudo"} onClick={() => {}} />
+            <SubHeader
+              title={formattedDate(selectedDay)}
+              buttonTitle={"Selecionar Tudo"}
+              onClick={() => {
+                const allTimes = timeList
+                  .map((time, index) => {
+                    const dayShift = professional.getShift()[selectedDay.getDay()];
+                    const startHours = professional.getStartHours()[selectedDay.getDay()];
+
+                    const startTime = Math.floor(startHours / 2) * 6;
+                    const endTime = Math.floor((dayShift.length - 1) / 2) * 6 + startTime;
+                    const schedule =
+                      professional.getSchedule()[
+                        selectedDay.toLocaleString("pt-BR", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "2-digit",
+                        })
+                      ];
+                    const scheduleItem = schedule?.[index];
+
+                    if (!dayShift[0] || startTime > index || endTime < index) return;
+
+                    return {
+                      index: index,
+                      day: selectedDay.toLocaleString("pt-BR", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "2-digit",
+                      }),
+                    };
+                  })
+                  .filter((value): value is { day: string; index: number } => value !== undefined);
+                console.log(selectedTimeList, allTimes);
+
+                setSelectedTimeList([...allTimes]);
+              }}
+            />
             {timeList.map((time, index) => {
               const dayShift = professional.getShift()[selectedDay.getDay()];
               const startHours = professional.getStartHours()[selectedDay.getDay()];
@@ -416,7 +460,18 @@ export function ProfessionalSchedulePage() {
 
                       professional.setSchedule(blockedSchedule);
                       SetProfessional(new Professional(professional));
-                      setChangedValues([...changedValues, { day: time.day, index: time.index }]);
+
+                      const newValues = selectedTimeList.map((time) => {
+                        const updatedChangedValues = changedValues.find((value) => isEqual(time, value));
+                        if (!updatedChangedValues) {
+                          return time;
+                        }
+                        return undefined;
+                      });
+
+                      const filteredNewValues = newValues.filter((value): value is { day: string; index: number } => value !== undefined);
+
+                      setChangedValues([...changedValues, ...filteredNewValues]);
                     }
                   });
                   setSelectedTimeList([]);
@@ -478,9 +533,17 @@ export function ProfessionalSchedulePage() {
                     ...time,
                     service: e.target.value,
                   }));
-                  selectedTimeList.forEach(({ day, index }) => {
-                    setChangedValues([...changedValues, { day: day, index: index }]);
+                  const newValues = selectedTimeList.map((time) => {
+                    const updatedChangedValues = changedValues.find((value) => isEqual(time, value));
+                    if (!updatedChangedValues) {
+                      return time;
+                    }
+                    return undefined;
                   });
+
+                  const filteredNewValues = newValues.filter((value): value is { day: string; index: number } => value !== undefined);
+
+                  setChangedValues([...changedValues, ...filteredNewValues]);
                 }}
               />
             </div>
@@ -559,8 +622,12 @@ export function ProfessionalSchedulePage() {
                       return await professional.deleteScheduleIndex(day, realIndex.toString());
                     }
                   });
+                  const updatedChangedValues = changedValues.filter((value) => {
+                    return !serviceList.some((_, index) => isEqual(value, { index: index + startIndex, day: day }));
+                  });
 
                   await Promise.all(updatePromises);
+                  setChangedValues(updatedChangedValues);
                   setSelectedTimeList([]);
                   setEditedTime((time) => ({
                     ...time,
@@ -571,9 +638,9 @@ export function ProfessionalSchedulePage() {
                   setLoading(false);
                 },
                 () => {
-                  selectedTimeList.forEach(({ day, index }) => {
-                    const schedule = professional.getSchedule()[day];
-                    const scheduleItem = schedule?.[index];
+                  selectedTimeList.forEach((time) => {
+                    const schedule = professional.getSchedule()[time.day];
+                    const scheduleItem = schedule?.[time.index];
 
                     scheduleItem.service = "";
                     scheduleItem.edited = false;
@@ -584,10 +651,18 @@ export function ProfessionalSchedulePage() {
                       service: "",
                       client: "",
                     });
-
-                    setChangedValues([...changedValues, { day: day, index: index }]);
-                    console.log(scheduleItem, index);
                   });
+                  const newValues = selectedTimeList.map((time) => {
+                    const updatedChangedValues = changedValues.find((value) => isEqual(time, value));
+                    if (!updatedChangedValues) {
+                      return time;
+                    }
+                    return undefined;
+                  });
+
+                  const filteredNewValues = newValues.filter((value): value is { day: string; index: number } => value !== undefined);
+
+                  setChangedValues([...changedValues, ...filteredNewValues]);
                 },
               ]}
               hide={[hideSaveButton(), selectedTimeList.length == 0]}
@@ -606,7 +681,6 @@ export function ProfessionalSchedulePage() {
             ];
           const scheduleItem = schedule?.[index];
           const available = scheduleItem === undefined || editedTime.edited === false;
-
           return !available; // Check if the item is not available
         });
         return (
@@ -619,6 +693,12 @@ export function ProfessionalSchedulePage() {
               icon={""}
               onClickReturn={() => {
                 setTab(1);
+                const filteredArray = changedValues.filter((item) => {
+                  return !selectedTimeList.some((selectedItem) => {
+                    return item.day === selectedItem.day && item.index === selectedItem.index;
+                  });
+                });
+                setChangedValues(filteredArray);
                 setSelectedTimeList([]);
                 setEditedTime((time) => ({
                   ...time,
@@ -638,9 +718,18 @@ export function ProfessionalSchedulePage() {
                     ...time,
                     service: e.target.value,
                   }));
-                  selectedTimeList.forEach(({ day, index }) => {
-                    setChangedValues([...changedValues, { day: day, index: index }]);
+
+                  const newValues = selectedTimeList.map((time) => {
+                    const updatedChangedValues = changedValues.find((value) => isEqual(time, value));
+                    if (!updatedChangedValues) {
+                      return time;
+                    }
+                    return undefined;
                   });
+
+                  const filteredNewValues = newValues.filter((value): value is { day: string; index: number } => value !== undefined);
+
+                  setChangedValues([...changedValues, ...filteredNewValues]);
                 }}
               />
             </div>
@@ -709,9 +798,17 @@ export function ProfessionalSchedulePage() {
                   setLoading(false);
                 },
                 () => {
-                  selectedTimeList.forEach(({ day, index }) => {
-                    setChangedValues([...changedValues, { day: day, index: index }]);
+                  const newValues = selectedTimeList.map((time) => {
+                    const updatedChangedValues = changedValues.find((value) => isEqual(time, value));
+                    if (!updatedChangedValues) {
+                      return time;
+                    }
+                    return undefined;
                   });
+
+                  const filteredNewValues = newValues.filter((value): value is { day: string; index: number } => value !== undefined);
+
+                  setChangedValues([...changedValues, ...filteredNewValues]);
                   setEditedTime((time) => ({
                     ...time,
                     edited: false,
@@ -719,7 +816,7 @@ export function ProfessionalSchedulePage() {
                   }));
                 },
               ]}
-              hide={[editedTime.service === "" || editedTime.edited, !isUnblockable]}
+              hide={[editedTime.service === "" || (editedTime.edited && editedTime.service === ""), !isUnblockable]}
             />
           </div>
         );
