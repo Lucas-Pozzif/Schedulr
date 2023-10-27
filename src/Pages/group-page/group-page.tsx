@@ -98,8 +98,12 @@ export function GroupPage() {
   });
   const averageRating = (ratingSum / (group.getRatings.length + 1)).toFixed(2);
 
-  const schedValue = {
+  const profSchedValue = {
     client: user.getId(),
+    service: selectedService?.getId() || "error",
+  };
+  const clientSchedValue = {
+    client: selectedProfessional?.getId() || "error",
     service: selectedService?.getId() || "error",
   };
 
@@ -182,7 +186,8 @@ export function GroupPage() {
                     setLoading(true);
                     for (let i = 0; i < selectedService.getDuration().length; i++) {
                       if (selectedService.getDuration()[i] === true) {
-                        await selectedProfessional?.updateSchedule(days[selectedDay][2], (selectedTime + i).toString(), schedValue);
+                        await selectedProfessional?.updateSchedule(days[selectedDay][2], (selectedTime + i).toString(), profSchedValue);
+                        await user?.updateSchedule(days[selectedDay][2], (selectedTime + i).toString(), clientSchedValue);
                       }
                     }
                     setLoading(false);
