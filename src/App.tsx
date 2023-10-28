@@ -4,6 +4,8 @@ import { routes } from "./_routes";
 import './Styles/reset.css'
 import './Styles/style.css'
 
+import './Fonts/Roboto-Regular.ttf'
+
 export function App() {
   return (
     <BrowserRouter>
