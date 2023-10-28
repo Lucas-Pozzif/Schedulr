@@ -1,12 +1,12 @@
 import "./header.css";
 type headerType = {
   title: string;
-  icon: string;
+  icon?: string;
   onClickReturn: () => void;
-  onClickIcon: () => void;
+  onClickIcon?: () => void;
 };
 
-export function Header({ title, icon, onClickReturn, onClickIcon }: headerType) {
+export function Header({ title, icon = "", onClickReturn, onClickIcon }: headerType) {
   const arrow = require("../../Assets/arrow.png");
   const rectangle = require("../../Assets/rectangle.png");
 
