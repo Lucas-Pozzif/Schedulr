@@ -136,8 +136,7 @@ export function ProfessionalSchedulePage() {
       await fetchServicesAndClients();
       SetProfessional(new Professional(professional));
       Object.entries(professional.getSchedule()).map(([date, _]) => {
-        const formattedDay = formattedDate(parseDate(date));
-        setDisplayList([...displayList, formattedDay]);
+        setDisplayList((prevDisplayList) => [...prevDisplayList, date]);
       });
 
       setEditedTime((time) => ({
@@ -172,22 +171,22 @@ export function ProfessionalSchedulePage() {
             />
             {Object.entries(professional.getSchedule()).map(([date, schedule]) => {
               const formattedDay = formattedDate(parseDate(date));
-              const hideMessage = displayList.includes(formattedDay) ? "Ocultar" : "Exibir";
+              const hideMessage = displayList.includes(date) ? "Ocultar" : "Exibir";
 
               const weekDay = capitalize(parseDate(date).toLocaleDateString("pt-BR", { weekday: "long" }));
-
+              const weekIndex = parseDate(date).getDay();
               return (
                 <div className='sp-day-block'>
                   <SubHeader
                     title={formattedDay}
                     buttonTitle={hideMessage}
                     onClick={() => {
-                      const updatedList = displayList.includes(formattedDay) ? displayList.filter((day) => day !== formattedDay) : [...displayList, formattedDay];
+                      const updatedList = displayList.includes(date) ? displayList.filter((day) => day !== date) : [...displayList, formattedDay];
                       setDisplayList(updatedList);
                     }}
                   />
                   {findRepetitionBlocks(schedule).map((block) => {
-                    if (!displayList.includes(formattedDay)) return null;
+                    if (!displayList.includes(date)) return null;
 
                     const firstIndex = block[0];
                     const lastIndex = block[1];
@@ -206,7 +205,7 @@ export function ProfessionalSchedulePage() {
                     return (
                       <DoubleItemButton
                         leftButtonTitle={{
-                          title1: weekDay,
+                          title1: week[weekIndex],
                           title2: `${timeList[firstIndex]} - ${timeList[lastIndex]}`,
                         }}
                         title={serviceName}
@@ -223,7 +222,7 @@ export function ProfessionalSchedulePage() {
             })}
             <SubHeader
               title={formattedDate(dayList[dayList.length - 1])}
-              buttonTitle={"Carregar próxima semana"}
+              buttonTitle={"Carregar semana"}
               onClick={async () => {
                 setLoading(true);
 
@@ -329,16 +328,93 @@ export function ProfessionalSchedulePage() {
               }}
             />
             <Carousel
-              items={dayList.map((day) => {
-                return {
-                  title: formattedDate(day),
-                  isSelected: selectedDay == day,
-                  onClick: () => {
-                    setSelectedTimeList([]);
-                    setSelectedDay(day);
+              items={[
+                ...dayList.map((day) => {
+                  return {
+                    title: formattedDate(day),
+                    isSelected: selectedDay == day,
+                    onClick: () => {
+                      setSelectedTimeList([]);
+                      setSelectedDay(day);
+                    },
+                  };
+                }),
+                {
+                  title: "Carregar semana",
+                  isSelected: false,
+                  onClick: async () => {
+                    setLoading(true);
+
+                    const fetchScheduleForDays = async (days: Date[]) => {
+                      const schedulePromises = days.map(async (scheduleDay) => {
+                        const formattedDay = scheduleDay.toLocaleDateString("pt-BR", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "2-digit",
+                        });
+                        await professional.getScheduleDay(formattedDay);
+                        if (professional.getSchedule()[formattedDay] === undefined) {
+                          const updatedSchedule = professional.getSchedule();
+                          delete updatedSchedule[formattedDay];
+                          professional.setSchedule(updatedSchedule);
+                        }
+                      });
+                      await Promise.all(schedulePromises);
+                    };
+
+                    const fetchServicesAndClients = async () => {
+                      const scheduleEntries = Object.entries(professional.getSchedule());
+                      const servicePromises: Promise<void>[] = [];
+                      const clientPromises: Promise<void>[] = [];
+
+                      scheduleEntries.forEach(([day, schedule]) => {
+                        const scheduleItemEntries = Object.entries(schedule);
+                        scheduleItemEntries.forEach(([index, scheduleItem]) => {
+                          if (!scheduleItem.edited) {
+                            if (!serviceCache[scheduleItem.service]) {
+                              servicePromises.push(fetchServiceAndCache(scheduleItem.service));
+                            }
+                            if (!clientCache[scheduleItem.client]) {
+                              clientPromises.push(fetchClientAndCache(scheduleItem.client));
+                            }
+                          }
+                        });
+                      });
+
+                      await Promise.all([...servicePromises, ...clientPromises]);
+                    };
+
+                    const fetchServiceAndCache = async (serviceId: string) => {
+                      const service = new Service();
+                      await service.getService(serviceId);
+                      setServiceCache((prevServiceCache) => ({
+                        ...prevServiceCache,
+                        [service.getId()]: service,
+                      }));
+                    };
+
+                    const fetchClientAndCache = async (clientId: string) => {
+                      const client = new User();
+                      await client.getUser(clientId);
+                      setClientCache((prevClientCache) => ({
+                        ...prevClientCache,
+                        [client.getId()]: client,
+                      }));
+                    };
+
+                    const scheduleDays: Date[] = Array.from({ length: 8 }, (_, index) => {
+                      const currentDate = new Date(dayList[dayList.length - 1]);
+                      currentDate.setDate(currentDate.getDate() + index);
+                      return currentDate;
+                    });
+                    setDayList([...dayList, ...scheduleDays]);
+
+                    await fetchScheduleForDays(scheduleDays);
+                    await fetchServicesAndClients();
+                    setLoading(false);
                   },
-                };
-              })}
+                },
+              ]}
             />
             <SubHeader
               title={formattedDate(selectedDay)}
@@ -373,7 +449,6 @@ export function ProfessionalSchedulePage() {
                     };
                   })
                   .filter((value): value is { day: string; index: number } => value !== undefined);
-                console.log(selectedTimeList, allTimes);
 
                 setSelectedTimeList([...allTimes]);
               }}
@@ -546,6 +621,20 @@ export function ProfessionalSchedulePage() {
                 }}
               />
             </div>
+            <SubHeader
+              title={formattedDate(selectedDay)}
+              buttonTitle={"Selecionar Tudo"}
+              onClick={() => {
+                const allTimes = serviceList.map((_, index) => {
+                  const realIndex = index + startIndex;
+                  return {
+                    index: realIndex,
+                    day: day,
+                  };
+                });
+                setSelectedTimeList([...allTimes]);
+              }}
+            />
 
             {serviceList.map((_, index) => {
               const currentTime = { day: day, index: index + startIndex };
@@ -742,12 +831,34 @@ export function ProfessionalSchedulePage() {
                     month: "2-digit",
                     year: "2-digit",
                   })
-                ];
-              const scheduleItem = schedule?.[index];
+                ] || {};
+
+              const scheduleItem = schedule[index] || {
+                service: "",
+                edited: false,
+                client: user.getId(),
+              };
+
               const available = scheduleItem === undefined || editedTime.edited === false;
 
               const serviceName = editedTime.service === "" ? (available ? "Disponível" : scheduleItem?.edited ? scheduleItem?.service : serviceCache[scheduleItem?.service]?.getName()) : editedTime.service;
               const clientName = editedTime.service === "" ? clientCache[scheduleItem?.client]?.getName() : user.getName();
+              if (!schedule[index]) {
+                schedule[index] = scheduleItem;
+                professional.getSchedule()[
+                  selectedDay.toLocaleString("pt-BR", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "2-digit",
+                  })
+                ] = schedule;
+              }
+
+              if (scheduleItem) {
+                scheduleItem.service = editedTime.service;
+                scheduleItem.edited = editedTime.edited;
+                scheduleItem.client = user.getId();
+              }
 
               return (
                 <DoubleItemButton
@@ -816,7 +927,7 @@ export function ProfessionalSchedulePage() {
                   }));
                 },
               ]}
-              hide={[editedTime.service === "" || (editedTime.edited && editedTime.service === ""), !isUnblockable]}
+              hide={[(editedTime.edited === true && editedTime.service === "") || (editedTime.edited === false && editedTime.service !== ""), !isUnblockable]}
             />
           </div>
         );
