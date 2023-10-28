@@ -19,6 +19,7 @@ import { DoubleButton } from "../../Components/buttons/double-button/double-butt
 import { capitalize } from "../../Function/capitalize/capitalize";
 
 import "./group-page.css";
+import { RatingPage } from "../rating-page/rating-page";
 
 export function GroupPage() {
   const [user, setUser] = useState(new User());
@@ -121,7 +122,13 @@ export function GroupPage() {
               </p>
             </div>
             <div className='gp-header'>
-              <div className='gp-block'>
+              <div
+                className='gp-block'
+                onClick={() => {
+                  console.log("asfwae");
+                  setTab(4);
+                }}
+              >
                 <div className='gp-rating-block'>
                   <img className='gp-rating-icon' src={star} />
                   <p className='gp-rating'>
@@ -177,6 +184,10 @@ export function GroupPage() {
                         await user?.updateSchedule(days[selectedDay][2], (selectedTime + i).toString(), clientSchedValue);
                       }
                     }
+                    setSelectedDay(-1);
+                    setSelectedService(null);
+                    setSelectedTime(null);
+                    setSelectedProfessional(null);
                     setLoading(false);
                   }
                 }}
@@ -390,6 +401,9 @@ export function GroupPage() {
             />
           </div>
         );
+      case 4: //rating page
+        console.log(group.getRatings());
+        return <RatingPage group={group} />;
       default:
         return <div />;
     }

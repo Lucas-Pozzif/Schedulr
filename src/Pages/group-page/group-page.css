@@ -5,6 +5,7 @@
 .gp-banner {
   height: 180px;
   width: 100%;
+  object-fit: cover;
 }
 
 .gp-title-block {
