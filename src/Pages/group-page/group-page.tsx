@@ -24,7 +24,7 @@ export function GroupPage() {
   const [user, setUser] = useState(new User());
   const [group, setGroup] = useState(new Group());
   const [loading, setLoading] = useState(false);
-  const [selectedDay, setSelectedDay] = useState(0);
+  const [selectedDay, setSelectedDay] = useState(-1);
   const [selectedTime, setSelectedTime] = useState<number | null>(null);
   const [selectedWeekDay, setSelectedWeekDay] = useState(1);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
@@ -53,6 +53,7 @@ export function GroupPage() {
   }, []);
 
   const star = require("../../Assets/star.png");
+  const arrow = require("../../Assets/arrow.png");
 
   const days: any[][] = [];
 
@@ -133,20 +134,6 @@ export function GroupPage() {
               <Line />
             </div>
             <div className='gp-bottom-columns'>
-              <div className='gp-left-column'>
-                <DropdownButton
-                  title={days[selectedDay][0]}
-                  dropDownItems={days.map((day, index) => {
-                    return [
-                      day[0],
-                      () => {
-                        setSelectedDay(index);
-                        setSelectedWeekDay(day[3]);
-                      },
-                    ];
-                  })}
-                />
-              </div>
               <div className='gp-right-column'>
                 <LinkButton
                   title='Horário e Serviço'
@@ -171,10 +158,10 @@ export function GroupPage() {
                 </div>
               </div>
             </div>
-            <div className={"bottom-popup"}>
+            <div className={"bottom-popup " + (selectedService && selectedProfessional && selectedTime ? "" : "hidden")}>
               <div className='bp-text-block'>
                 <p className='bp-title'>
-                  {days[selectedDay][1]} - {tempTime[selectedTime || 0]}
+                  {selectedDay > 0 ? days[selectedDay][1] : ""} - {tempTime[selectedTime || 0]}
                 </p>
                 <p className='bp-title'>{selectedService?.getName()}</p>
                 <p className='bp-subtitle'>{selectedProfessional?.getName()}</p>
@@ -194,9 +181,10 @@ export function GroupPage() {
                   }
                 }}
               >
-                Adicionar Agendamento
+                Confirmar Agendamento
               </p>
             </div>
+            <img className='return-button gp-return-button' src={arrow} onClick={() => navigate(-1)} />
           </div>
         );
       case 1:
@@ -252,7 +240,7 @@ export function GroupPage() {
                 group.getProfessionals().map((prof) => {
                   var isProfAvailable = true;
                   selectedService?.getDuration().map((time, i) => {
-                    if (prof.getSchedule()?.[days[selectedDay][2]]?.[index + i + startHour * 6] !== undefined && time) {
+                    if (prof.getSchedule()?.[days[selectedDay]?.[2]]?.[index + i + startHour * 6] !== undefined && time) {
                       isProfAvailable = false;
                     }
                   });
@@ -262,7 +250,7 @@ export function GroupPage() {
                   }
                 });
 
-                return isAvailable ? (
+                return isAvailable && selectedDay > 0 ? (
                   <div
                     className='gp-time-row'
                     onClick={() => {
@@ -276,7 +264,7 @@ export function GroupPage() {
                     }}
                   >
                     <div className={"gp-time-button" + (index + startHour * 6 === selectedTime ? " selected" : "")}>
-                      <p className='gpt-title'>{days[selectedDay][0]}</p>
+                      <p className='gpt-title'>{days[selectedDay]?.[0]}</p>
                       <p className='gpt-title'>{time}</p>
                     </div>
                     <div className='gpt-row-item'>
@@ -299,6 +287,7 @@ export function GroupPage() {
               hide={selectedTime === null}
               title={"Escolher Profissional"}
               onClick={() => {
+                setSelectedProfessional(null);
                 setTab(2);
               }}
             />
@@ -308,7 +297,7 @@ export function GroupPage() {
         return (
           <div className='gp-professional-tab'>
             <Header
-              title={"Escolha o serviço"}
+              title={"Escolha o Profissional"}
               icon={""}
               onClickReturn={() => {
                 if (selectedService !== null) {
@@ -320,7 +309,7 @@ export function GroupPage() {
               onClickIcon={() => {}}
             />
             <SubHeader
-              title={`${days[selectedDay][1]} - ${tempTime[selectedTime || 0]}`}
+              title={`${selectedDay > 0 ? days[selectedDay][1] : "Selecionar Dia"} - ${tempTime[selectedTime || 0]}`}
               buttonTitle={selectedService?.getName() || "Selecionar Serviço"}
               onClick={() => {
                 setTab(3);
@@ -345,7 +334,7 @@ export function GroupPage() {
               })}
             </div>
             <DoubleButton
-              title={["Concluir", "Ver Agenda"]}
+              title={["Próximo", "Ver Agenda"]}
               onClick={[
                 () => {
                   setTab(0);
@@ -374,22 +363,6 @@ export function GroupPage() {
               }}
               onClickIcon={() => {}}
             />
-            <div className='carousel'>
-              {days.map((day, index) => {
-                return (
-                  <div
-                    className={"carousel-item" + (index === selectedDay ? " selected" : "")}
-                    onClick={() => {
-                      setSelectedDay(index);
-                      setSelectedWeekDay(day[3]);
-                    }}
-                  >
-                    <p className='carousel-item-text'>{day[0]}</p>
-                    <p className='carousel-item-text'>{day[1]}</p>
-                  </div>
-                );
-              })}
-            </div>
             <div className='gp-list'>
               {group.getServices().map((service) => {
                 return (
