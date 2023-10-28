@@ -1,38 +1,45 @@
 .sched-arrow {
-    height: 15px;
-    width: 15px;
+  height: 15px;
+  width: 15px;
 }
 
 .up {
-    rotate: 90deg;
+  rotate: 90deg;
 }
 
 .down {
-    rotate: -90deg;
+  rotate: -90deg;
 }
 
 .right {
-    rotate: 180deg;
+  rotate: 180deg;
 }
 
 .left {
-    rotate: 0deg;
+  rotate: 0deg;
 }
 
 .return-button {
-    height: 40px;
-    right: 40px;
-    opacity: .8;
+  height: 40px;
+  right: 40px;
+  opacity: 0.8;
 }
 
 input {
-    all: unset;
+  all: unset;
 }
 
 .hidden {
-    display: none !important;
+  display: none !important;
 }
 
 ::placeholder {
-    color: #212529;
+  color: #212529;
+}
+@font-face {
+  font-family: "Regular";
+  src: local("Roboto-Regular"), url(../Fonts/Roboto-Regular.ttf) format("truetype");
+}
+p {
+  font-family: "Regular";
 }
