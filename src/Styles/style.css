@@ -29,6 +29,9 @@ input {
   all: unset;
 }
 
+textarea {
+  all: unset;
+}
 .hidden {
   display: none !important;
 }
