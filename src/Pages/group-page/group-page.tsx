@@ -122,10 +122,10 @@ export function GroupPage() {
               </p>
             </div>
             <div className='gp-header'>
-              <div
+              {/* //Futuro, aba de comentários
+                <div
                 className='gp-block'
                 onClick={() => {
-                  console.log("asfwae");
                   setTab(4);
                 }}
               >
@@ -137,6 +137,7 @@ export function GroupPage() {
                 </div>
                 <p className='gp-comment'>Comentários ({group.getRatings().length})</p>
               </div>
+               */}
               <p className='gp-distance'>{group.getLocation()}</p>
               <Line />
             </div>
@@ -196,6 +197,7 @@ export function GroupPage() {
               </p>
             </div>
             <img className='return-button gp-return-button' src={arrow} onClick={() => navigate(-1)} />
+            <img className='gp-profile' src={group.getProfile()} onClick={() => {}} />
           </div>
         );
       case 1:

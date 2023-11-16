@@ -96,7 +96,7 @@ export function SubServiceForm({ user, serviceForm, setServiceForm, subService =
                                     return (
                                         <ItemButton
                                             title={timeValue}
-                                            subtitle={"Pendente"}
+                                            subtitle={""}
                                             isSelected={sServiceForm.getDuration()?.[index]}
                                             onClick={() => {
                                                 if (index >= duration.length) {

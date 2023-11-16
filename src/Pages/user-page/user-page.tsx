@@ -22,6 +22,8 @@ export function UserPage() {
   const exit = require("../../Assets/exit.png");
   const confirm = require("../../Assets/confirm.png");
   const mail = require("../../Assets/mail.png");
+  const userProfile = require("../../Assets/user.png");
+  const store = require("../../Assets/store.png");
 
   useEffect(() => {
     onAuthStateChanged(auth, async (client) => {
@@ -46,7 +48,7 @@ export function UserPage() {
           }}
         />
 
-        <img className='up-profile' src={user.getPhoto()} />
+        <img className='up-profile' src={user.getPhoto() || userProfile} />
         <div className='up-name-block'>
           {editing ? (
             <input
@@ -107,8 +109,8 @@ export function UserPage() {
             navigate(`/group/add`);
           }}
         >
-          <img className='up-icon' src={mail} />
-          <p className='up-title'>Solicitar uma Agenda</p>
+          <img className='up-icon' src={store} />
+          <p className='up-title'>Criar Agenda</p>
         </div>
         <div
           className='up-item'
@@ -131,7 +133,7 @@ export function UserPage() {
           }}
         >
           <img className='up-icon' src={exit} />
-          <p className='up-title'>Sair</p>
+          <p className='up-title'>Sair da Conta</p>
         </div>
       </div>
     </div>

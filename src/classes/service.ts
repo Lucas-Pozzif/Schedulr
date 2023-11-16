@@ -320,6 +320,16 @@ export class Service {
         return configSnap.data()!.service.toString()
     }
 
+    public getDurationValue() {
+        const durationMin = this._duration.length * 10; 
+        const durationHours = Math.floor(durationMin / 60);
+        const remainingMinutes = durationMin % 60; 
+
+        const formattedDuration = `${durationHours}h ${remainingMinutes}m`;
+        return formattedDuration;
+    }
+
+
     //qol methods
 
     public isValid() {
@@ -329,5 +339,5 @@ export class Service {
         const subservicesValid = this._subServices.map((subservice) => subservice.isValid())
 
         return (hasName && hasValue && hasDuration && !subservicesValid.includes(false))
-    } 
+    }
 }
