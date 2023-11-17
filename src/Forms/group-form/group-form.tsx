@@ -222,22 +222,25 @@ export function GroupForm() {
               }}
             />
             <div className='gf-list'>
-              {groupForm.getServices().map((service: Service, index: number) => {
-                return (
-                  <ItemButton
-                    title={service.getName()}
-                    subtitle={service.getDurationValue()}
-                    isSelected={selectedService === service.getId()}
-                    onClick={() => {
-                      if (selectedService == service.getId()) {
-                        setSelectedService(null);
-                      } else {
-                        setSelectedService(service.getId());
-                      }
-                    }}
-                  />
-                );
-              })}
+              {groupForm
+                .getServices()
+                .sort((a, b) => a.getName().localeCompare(b.getName()))
+                .map((service: Service, index: number) => {
+                  return (
+                    <ItemButton
+                      title={service.getName()}
+                      subtitle={service.getDurationValue()}
+                      isSelected={selectedService === service.getId()}
+                      onClick={() => {
+                        if (selectedService == service.getId()) {
+                          setSelectedService(null);
+                        } else {
+                          setSelectedService(service.getId());
+                        }
+                      }}
+                    />
+                  );
+                })}
             </div>
             <BottomButton
               hide={selectedService == null}
@@ -374,18 +377,21 @@ export function GroupForm() {
               }}
             />
             <div className='gf-professional-list'>
-              {groupForm.getProfessionals().map((professional: Professional, index: number) => {
-                return (
-                  <ItemButton
-                    title={professional.getName()}
-                    subtitle={professional.getOccupations().join(", ")}
-                    isSelected={selectedProfessional === professional.getId()}
-                    onClick={() => {
-                      setSelectedProfessional(professional.getId());
-                    }}
-                  />
-                );
-              })}
+              {groupForm
+                .getProfessionals()
+                .sort((a, b) => a.getName().localeCompare(b.getName()))
+                .map((professional: Professional, index: number) => {
+                  return (
+                    <ItemButton
+                      title={professional.getName()}
+                      subtitle={professional.getOccupations().join(", ")}
+                      isSelected={selectedProfessional === professional.getId()}
+                      onClick={() => {
+                        setSelectedProfessional(professional.getId());
+                      }}
+                    />
+                  );
+                })}
             </div>
             <BottomButton
               hide={selectedProfessional == null}

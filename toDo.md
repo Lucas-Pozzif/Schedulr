@@ -48,7 +48,7 @@
 - ~~No botão de subserviços na aba de editar serviço está cortando, tente aumentar o botão pois o texto já está demasiadamente pequeno~~
 - ~~Não tem espaço entre o cabecalho da aba de serviços na aba de profissional e os serviços~~
 - ~~Remover botão de adicionar imagem de serviço temporariamente e tentar implementar~~
-- Os menus não estão em ordem alfabética
+- ~~Os menus não estão em ordem alfabética~~
 - Tem um "s" no subtítulo do botão de serviço na aba de criar profissional
 - Não existe indicação se o serviço é ou não "a partir de"
 - Sons são muito importantes para a experiência do usuário (UX)

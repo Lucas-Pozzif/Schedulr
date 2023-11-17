@@ -180,26 +180,29 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
               }}
             />
             <div className='gf-list'>
-              {groupForm.getServices().map((service: Service, index: number) => {
-                return (
-                  <ItemButton
-                    title={service.getName()}
-                    subtitle={service.getDurationValue()}
-                    isSelected={professionalForm.getServices().includes(service.getId())}
-                    onClick={() => {
-                      const services = [...professionalForm.getServices()];
-                      if (professionalForm.getServices().includes(service.getId())) {
-                        const index = services.indexOf(service.getId());
-                        services.splice(index, 1);
-                      } else {
-                        services.push(service.getId());
-                      }
-                      professionalForm.setServices(services);
-                      setProfessionalForm(new Professional(professionalForm));
-                    }}
-                  />
-                );
-              })}
+              {groupForm
+                .getServices()
+                .sort((a, b) => a.getName().localeCompare(b.getName()))
+                .map((service: Service, index: number) => {
+                  return (
+                    <ItemButton
+                      title={service.getName()}
+                      subtitle={service.getDurationValue()}
+                      isSelected={professionalForm.getServices().includes(service.getId())}
+                      onClick={() => {
+                        const services = [...professionalForm.getServices()];
+                        if (professionalForm.getServices().includes(service.getId())) {
+                          const index = services.indexOf(service.getId());
+                          services.splice(index, 1);
+                        } else {
+                          services.push(service.getId());
+                        }
+                        professionalForm.setServices(services);
+                        setProfessionalForm(new Professional(professionalForm));
+                      }}
+                    />
+                  );
+                })}
             </div>
           </div>
         );
@@ -252,8 +255,7 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
               })}
             />
             <div className='gf-list'>
-              {
-              timeArray.map((timeValue, index) => {
+              {timeArray.map((timeValue, index) => {
                 const startHour = [...professionalForm.getStartHours()];
                 const hours = [...professionalForm.getShift()];
                 const selected = professionalForm.getShift()[selectedDay]?.[index - professionalForm.getStartHours()[selectedDay]];
@@ -358,22 +360,25 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
             <SubHeader title={selectedOcupation !== null ? professionalForm.getOccupations()[selectedOcupation] : `${professionalForm.getOccupations().length} ocupações`} buttonTitle={"Nova Ocupação"} onClick={() => setSelectedOcupation(null)} />
 
             <div className='sf-item-list'>
-              {professionalForm.getOccupations().map((occupation, index) => {
-                return (
-                  <ItemButton
-                    title={occupation}
-                    subtitle={""}
-                    isSelected={index == selectedOcupation}
-                    onClick={() => {
-                      if (index == selectedOcupation) {
-                        setSelectedOcupation(null);
-                      } else {
-                        setSelectedOcupation(index);
-                      }
-                    }}
-                  />
-                );
-              })}
+              {professionalForm
+                .getOccupations()
+                .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
+                .map((occupation, index) => {
+                  return (
+                    <ItemButton
+                      title={occupation}
+                      subtitle={""}
+                      isSelected={index == selectedOcupation}
+                      onClick={() => {
+                        if (index == selectedOcupation) {
+                          setSelectedOcupation(null);
+                        } else {
+                          setSelectedOcupation(index);
+                        }
+                      }}
+                    />
+                  );
+                })}
             </div>
             <BottomButton
               hide={

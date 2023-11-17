@@ -242,29 +242,32 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
               }}
             />
             <div className='gf-professional-list'>
-              {groupForm.getProfessionals().map((professional: Professional, index: number) => {
-                var profServices = professional.getServices();
+              {groupForm
+                .getProfessionals()
+                .sort((a, b) => a.getName().localeCompare(b.getName()))
+                .map((professional: Professional, index: number) => {
+                  var profServices = professional.getServices();
 
-                return (
-                  <ItemButton
-                    title={professional.getName()}
-                    subtitle={professional.getOccupations().join(", ")}
-                    isSelected={profServices.includes(serviceForm.getId())}
-                    onClick={() => {
-                      if (profServices.includes(serviceForm.getId())) {
-                        profServices = profServices.filter((id) => id !== serviceForm.getId());
-                      } else {
-                        profServices.push(serviceForm.getId());
-                      }
-                      const professionals = groupForm.getProfessionals();
-                      professionals[index].setServices(profServices);
-                      groupForm.setProfessionals(professionals);
-                      const updatedGroup = new Group(groupForm);
-                      setGroupForm(updatedGroup);
-                    }}
-                  />
-                );
-              })}
+                  return (
+                    <ItemButton
+                      title={professional.getName()}
+                      subtitle={professional.getOccupations().join(", ")}
+                      isSelected={profServices.includes(serviceForm.getId())}
+                      onClick={() => {
+                        if (profServices.includes(serviceForm.getId())) {
+                          profServices = profServices.filter((id) => id !== serviceForm.getId());
+                        } else {
+                          profServices.push(serviceForm.getId());
+                        }
+                        const professionals = groupForm.getProfessionals();
+                        professionals[index].setServices(profServices);
+                        groupForm.setProfessionals(professionals);
+                        const updatedGroup = new Group(groupForm);
+                        setGroupForm(updatedGroup);
+                      }}
+                    />
+                  );
+                })}
             </div>
           </div>
         );

@@ -229,11 +229,14 @@ export function GroupPage() {
                       setSelectedWeekDay(day[3]);
                       setSelectedTime(null);
                       await Promise.all(
-                        group.getProfessionals().map(async (prof: Professional) => {
-                          if (prof.getServices().includes(selectedService!.getId())) {
-                            await prof?.getScheduleDay(days[index][2]);
-                          }
-                        })
+                        group
+                          .getProfessionals()
+                          .sort((a, b) => a.getName().localeCompare(b.getName()))
+                          .map(async (prof: Professional) => {
+                            if (prof.getServices().includes(selectedService!.getId())) {
+                              await prof?.getScheduleDay(days[index][2]);
+                            }
+                          })
                       );
                       console.log(group.getProfessionals());
 
@@ -250,18 +253,21 @@ export function GroupPage() {
               {timeArray.map((time, index) => {
                 var isAvailable = false;
                 const professionals: Professional[] = [];
-                group.getProfessionals().map((prof) => {
-                  var isProfAvailable = true;
-                  selectedService?.getDuration().map((time, i) => {
-                    if (prof.getSchedule()?.[days[selectedDay]?.[2]]?.[index + i + startHour * 6] !== undefined && time) {
-                      isProfAvailable = false;
+                group
+                  .getProfessionals()
+                  .sort((a, b) => a.getName().localeCompare(b.getName()))
+                  .map((prof) => {
+                    var isProfAvailable = true;
+                    selectedService?.getDuration().map((time, i) => {
+                      if (prof.getSchedule()?.[days[selectedDay]?.[2]]?.[index + i + startHour * 6] !== undefined && time) {
+                        isProfAvailable = false;
+                      }
+                    });
+                    if (isProfAvailable) {
+                      professionals.push(prof);
+                      isAvailable = true;
                     }
                   });
-                  if (isProfAvailable) {
-                    professionals.push(prof);
-                    isAvailable = true;
-                  }
-                });
 
                 return isAvailable && selectedDay > 0 ? (
                   <div
@@ -329,22 +335,25 @@ export function GroupPage() {
               }}
             />
             <div className='gp-list'>
-              {group.getProfessionals().map((professional) => {
-                return availableProfessionals.includes(professional) || selectedService === null ? (
-                  <ItemButton
-                    title={professional.getName()}
-                    subtitle={professional.getOccupations().join(", ")}
-                    isSelected={professional.getId() === selectedProfessional?.getId()}
-                    onClick={() => {
-                      if (selectedProfessional?.getId() === professional.getId()) {
-                        setSelectedProfessional(null);
-                      } else {
-                        setSelectedProfessional(professional);
-                      }
-                    }}
-                  />
-                ) : null;
-              })}
+              {group
+                .getProfessionals()
+                .sort((a, b) => a.getName().localeCompare(b.getName()))
+                .map((professional) => {
+                  return availableProfessionals.includes(professional) || selectedService === null ? (
+                    <ItemButton
+                      title={professional.getName()}
+                      subtitle={professional.getOccupations().join(", ")}
+                      isSelected={professional.getId() === selectedProfessional?.getId()}
+                      onClick={() => {
+                        if (selectedProfessional?.getId() === professional.getId()) {
+                          setSelectedProfessional(null);
+                        } else {
+                          setSelectedProfessional(professional);
+                        }
+                      }}
+                    />
+                  ) : null;
+                })}
             </div>
             <DoubleButton
               title={["Próximo", "Ver Agenda"]}
@@ -377,22 +386,25 @@ export function GroupPage() {
               onClickIcon={() => {}}
             />
             <div className='gp-list'>
-              {group.getServices().map((service) => {
-                return (
-                  <ItemButton
-                    title={service.getName()}
-                    subtitle={"Ainda não implementado"}
-                    isSelected={service.getId() === selectedService?.getId()}
-                    onClick={() => {
-                      if (selectedService?.getId() === service.getId()) {
-                        setSelectedService(null);
-                      } else {
-                        setSelectedService(service);
-                      }
-                    }}
-                  />
-                );
-              })}
+              {group
+                .getServices()
+                .sort((a, b) => a.getName().localeCompare(b.getName()))
+                .map((service) => {
+                  return (
+                    <ItemButton
+                      title={service.getName()}
+                      subtitle={"Ainda não implementado"}
+                      isSelected={service.getId() === selectedService?.getId()}
+                      onClick={() => {
+                        if (selectedService?.getId() === service.getId()) {
+                          setSelectedService(null);
+                        } else {
+                          setSelectedService(service);
+                        }
+                      }}
+                    />
+                  );
+                })}
             </div>
             <BottomButton
               hide={selectedService == null}
