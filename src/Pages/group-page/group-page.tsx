@@ -196,6 +196,13 @@ export function GroupPage() {
                 Confirmar Agendamento
               </p>
             </div>
+            <BottomButton
+              hide={selectedService != null || selectedProfessional != null || selectedTime != null}
+              onClick={() => {
+                navigate(`/user/schedule/${user.getId()}`);
+              }}
+              title={"Ver Minha Agenda"}
+            />
             <img className='return-button gp-return-button' src={arrow} onClick={() => navigate(-1)} />
             <img className='gp-profile' src={group.getProfile()} onClick={() => {}} />
           </div>
@@ -273,16 +280,21 @@ export function GroupPage() {
                   <div
                     className='gp-time-row'
                     onClick={() => {
+                      console.log(selectedService?.getDuration().length);
                       if (selectedTime === null) {
                         setSelectedTime(index + startHour * 6);
                         setAvailableProfessionals(professionals);
                       } else {
-                        setSelectedTime(null);
+                        if (selectedTime == index + startHour * 6) {
+                          setSelectedTime(null);
+                        } else {
+                          setSelectedTime(index + startHour * 6);
+                          setAvailableProfessionals(professionals);
+                        }
                       }
-                      console.log(selectedService?.getDuration());
                     }}
                   >
-                    <div className={"gp-time-button" + (index + startHour * 6 === selectedTime ? " selected" : "")}>
+                    <div className={"gp-time-button" + (selectedTime !== null && index + startHour * 6 >= selectedTime && index + startHour * 6 < selectedTime + (selectedService?.getDuration().length || 0) ? " selected" : "")}>
                       <p className='gpt-title'>{days[selectedDay]?.[0]}</p>
                       <p className='gpt-title'>{time}</p>
                     </div>
@@ -294,7 +306,7 @@ export function GroupPage() {
                             return prof.getName();
                           })
                           .join(", ")}
-                        isSelected={index + startHour * 6 === selectedTime}
+                        isSelected={selectedTime !== null && index + startHour * 6 >= selectedTime && index + startHour * 6 < selectedTime + (selectedService?.getDuration().length || 0)}
                         onClick={() => {}}
                       />
                     </div>
@@ -328,7 +340,7 @@ export function GroupPage() {
               onClickIcon={() => {}}
             />
             <SubHeader
-              title={`${selectedDay > 0 ? days[selectedDay][1] : "Selecionar Dia"} - ${tempTime[selectedTime || 0]}`}
+              title={`${selectedDay > 0 ? days[selectedDay][0] + " - " + days[selectedDay][1] : "Selecionar Dia"} - ${tempTime[selectedTime || 0]}`}
               buttonTitle={selectedService?.getName() || "Selecionar Serviço"}
               onClick={() => {
                 setTab(3);

@@ -395,7 +395,7 @@ export function GroupForm() {
             </div>
             <BottomButton
               hide={selectedProfessional == null}
-              title={"Editar Serviço"}
+              title={"Editar Profissional"}
               onClick={() => {
                 setTab(5);
               }}

@@ -66,7 +66,7 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
                     setServiceForm(updatedService);
                   }}
                 />
-                <p className='sf-header-subtitle'>aasdfas</p>
+                <p className='sf-header-subtitle'></p>
               </div>
               <img
                 className='sf-delete-button'

@@ -49,17 +49,17 @@
 - ~~Não tem espaço entre o cabecalho da aba de serviços na aba de profissional e os serviços~~
 - ~~Remover botão de adicionar imagem de serviço temporariamente e tentar implementar~~
 - ~~Os menus não estão em ordem alfabética~~
-- Tem um "s" no subtítulo do botão de serviço na aba de criar profissional
+- ~~Tem um "s" no subtítulo do botão de serviço na aba de criar profissional~~
 - Não existe indicação se o serviço é ou não "a partir de"
 - Sons são muito importantes para a experiência do usuário (UX)
-- Na aba de editar profissionais na aba de criar loja, o botão de editar profissional apresenta o título "editar serviço"
+- ~~Na aba de editar profissionais na aba de criar loja, o botão de editar profissional apresenta o título "editar serviço"~~
 - Mudar os horários da aba de horários para o formato 12h (está no 24h)
-- Criar botão para ocultar os horários não comerciais nas abas de horários
+- ~~Criar botão para ocultar os horários não comerciais nas abas de horários~~ Ocultei horários antes das 6... (resolve)
 - Os botões carecem de animações 
-- "Tipo de estabelecime..." na aba de criar estabelecimento
-- Barra de pesquisar não funciona
-- Os comentários e avaliações não funcionam
-- Selecionar os horários que serão bloqueados na aba de agendar serviços (horários)
-- Na aba de selecionar profissional na aba de agendamento, é importante o dia da semana (manter o q já tem)
-- Após agendar o serviço, mostrar um botão ver minha agenda
-- A logo de confirmar mudança de nome é praticamente invisível
+- ~~"Tipo de estabelecime..." na aba de criar estabelecimento~~
+- ~~Barra de pesquisar não funciona~~
+- ~~Os comentários e avaliações não funcionam~~ ocultado temporariamente
+- ~~Selecionar os horários que serão bloqueados na aba de agendar serviços (horários)~~
+- ~~Na aba de selecionar profissional na aba de agendamento, é importante o dia da semana (manter o q já tem)~~
+- ~~Após agendar o serviço, mostrar um botão ver minha agenda~~
+- ~~A logo de confirmar mudança de nome é praticamente invisível~~

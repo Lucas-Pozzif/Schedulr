@@ -14,6 +14,15 @@ export function Home() {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(new User());
   const [groups, setGroups] = useState<any[]>([]);
+  const [searchText, setSearch] = useState("");
+
+  const filteredGroups = groups.filter((group: Group) => {
+    if (!searchText) {
+      return true;
+    }
+
+    return group.getTitle().toLowerCase().includes(searchText.toLowerCase());
+  });
 
   const navigate = useNavigate();
 
@@ -47,10 +56,16 @@ export function Home() {
     <div className='home'>
       <div className='h-header'>
         <p className='h-title'>Boa Tarde {user.getName()}</p>
-        <p className='h-subtitle'>Você não tem agendamentos</p>
+        <p className='h-subtitle'>Verifique sua agenda para ver seus agendamentos</p>
         <div className='h-searchbar-block'>
           <img className='h-search-icon' src={search} />
-          <input className='h-search-input' placeholder='Pesquisar' />
+          <input
+            className='h-search-input'
+            placeholder='Pesquisar'
+            onChange={(e) => {
+              setSearch(e.target.value);
+            }}
+          />
           <VerticalLine />
           <img className='h-filter-icon' src={filter} />
         </div>
@@ -63,13 +78,22 @@ export function Home() {
         />
       </div>
       <div className='h-banner-block'>
-        <div className='h-banner'></div>
+        <div className='h-banner'>
+          <p
+            className='h-banner-schedule-button'
+            onClick={() => {
+              navigate(`/user/schedule/${user.getId()}`);
+            }}
+          >
+            Ver Agenda
+          </p>
+        </div>
         <div className='hb-bottom'>
           <p className='hb-list-title'>Estabelecimentos Próximos</p>
           <img className='hb-sort-icon' src={sort} />
         </div>
       </div>
-      <GroupList groupList={groups} />
+      <GroupList groupList={filteredGroups} />
     </div>
   );
 }
