@@ -68,6 +68,33 @@
   border-radius: 10px;
   position: relative;
 }
+.development-message {
+  font-size: 16px;
+  color: #e9ecef;
+  padding: 15px;
+  border-radius: 5px;
+  position: absolute;
+  top: 10px;
+  left: 15px;
+  right: 30px;
+}
+.dm-signature {
+  font-size: 12px;
+  opacity: 0.8;
+}
+.development-message p {
+  margin: 0;
+}
+.h-banner-feedback-button {
+  font-size: 16px;
+  padding-inline: 15px;
+  padding-block: 5px;
+  border-radius: 10px;
+  background-color: #e9ecef;
+  position: absolute;
+  bottom: 18px;
+  right: 137px;
+}
 .h-banner-schedule-button {
   font-size: 16px;
   padding-inline: 15px;

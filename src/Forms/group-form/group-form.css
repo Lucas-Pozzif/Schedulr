@@ -309,7 +309,7 @@
 
 /* Selected Button */
 .gf-button.selected {
-    outline: #212529 .5px solid;
+    outline: #212529 1px solid;
 }
 
 /* Button Title */
@@ -400,7 +400,7 @@
 
 /* Selected Day Carrousel Item */
 .gf-day-carrousel-item.selected {
-    outline: #212529 .5px solid;
+    outline: #212529 1px solid;
 }
 
 /* Professional List */

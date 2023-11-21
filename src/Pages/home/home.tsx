@@ -79,6 +79,18 @@ export function Home() {
       </div>
       <div className='h-banner-block'>
         <div className='h-banner'>
+          <div className='development-message'>
+            <p>Obrigado por participar da fase inicial de S-Agenda, Toda opinião é valiosa!</p>
+            <p className='dm-signature'>- O desenvolvedor</p>
+          </div>
+          <p
+            className='h-banner-feedback-button'
+            onClick={() => {
+              window.location.href = "mailto:lucaspozzif20@gmail.com";
+            }}
+          >
+            Enviar Feedback
+          </p>
           <p
             className='h-banner-schedule-button'
             onClick={() => {
