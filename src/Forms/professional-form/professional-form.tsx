@@ -259,7 +259,9 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
                 const startHour = [...professionalForm.getStartHours()];
                 const hours = [...professionalForm.getShift()];
                 const selected = professionalForm.getShift()[selectedDay]?.[index - professionalForm.getStartHours()[selectedDay]];
-
+                if (index < 12) {
+                  return;
+                }
                 return (
                   <ItemButton
                     title={timeValue}
@@ -390,7 +392,7 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
               }
               title={"Salvar Ocupações"}
               onClick={() => {
-                setTab(1);
+                setTab(0);
               }}
             />
           </div>
