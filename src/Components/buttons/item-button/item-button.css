@@ -11,7 +11,7 @@
 }
 
 .item-button.selected {
-  outline: #212529 0.5px solid;
+  outline: #212529 1px solid;
 }
 
 .ib-title {

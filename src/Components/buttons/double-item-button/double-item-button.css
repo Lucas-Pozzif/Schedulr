@@ -11,7 +11,7 @@
   padding-left: 5px;
 }
 .di-left-button.selected {
-  outline: #212529 0.5px solid;
+  outline: #212529 1px solid;
 }
 .di-left-button {
   height: 40px;

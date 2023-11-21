@@ -11,6 +11,6 @@
 }
 
 .small-button.selected {
-    outline: #212529 solid .5px;
+    outline: #212529 solid 1px;
     opacity: 1;
 }
