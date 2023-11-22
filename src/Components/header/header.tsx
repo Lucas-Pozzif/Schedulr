@@ -2,7 +2,7 @@ import "./header.css";
 type headerType = {
   title: string;
   icon?: string;
-  onClickReturn: () => void;
+  onClickReturn?: () => void;
   onClickIcon?: () => void;
 };
 
