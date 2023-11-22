@@ -1,13 +1,15 @@
-import './bottom-button.css'
+import "./bottom-button.css";
 
 type bottomButtonType = {
-    hide: boolean;
-    title: string;
-    onClick?: () => void
-}
+  title: string;
+  onClick?: () => void;
+  hidden: boolean;
+};
 
-export function BottomButton({ hide, title, onClick }: bottomButtonType) {
-    return (
-        <p className={"bottom-button" + (hide ? " hidden" : "")} onClick={onClick}>{title}</p>
-    )
+export function BottomButton({ hidden, title, onClick }: bottomButtonType) {
+  return (
+    <p className={"bottom-button" + (hidden ? " hidden" : "")} onClick={onClick}>
+      {title}
+    </p>
+  );
 }
