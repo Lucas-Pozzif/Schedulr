@@ -162,7 +162,7 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
                 setLoading(false);
                 onClickReturn();
               }}
-              isActive={professionalForm.isValid()}
+              activated={professionalForm.isValid()}
             />
           </div>
         );
@@ -310,7 +310,7 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
               })}
             </div>
             <BottomButton
-              hide={false}
+              hidden={false}
               title={"Confirmar"}
               onClick={() => {
                 setTab(0);
@@ -383,7 +383,7 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
                 })}
             </div>
             <BottomButton
-              hide={
+              hidden={
                 !occupations
                   .map((occupation) => {
                     return occupation.length > 0;

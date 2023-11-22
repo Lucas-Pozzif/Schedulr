@@ -122,7 +122,7 @@ export function SubServiceForm({ user, serviceForm, setServiceForm, subService =
                     </div>
                 </div>
             </div>
-            <BottomButton hide={!sServiceForm.isValid()} title={"Salvar Subserviço"} onClick={() => {
+            <BottomButton hidden={!sServiceForm.isValid()} title={"Salvar Subserviço"} onClick={() => {
                 const subServices = [...serviceForm.getSubServices(), sServiceForm]
                 serviceForm.setSubServices(subServices)
                 const updatedService = new Service(serviceForm)

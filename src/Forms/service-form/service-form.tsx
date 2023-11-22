@@ -150,7 +150,7 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
                 setLoading(false);
                 onClickReturn();
               }}
-              isActive={serviceForm.isValid()}
+              activated={serviceForm.isValid()}
             />
           </div>
         );
