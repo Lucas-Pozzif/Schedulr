@@ -197,7 +197,7 @@ export function GroupPage() {
               </p>
             </div>
             <BottomButton
-              hide={selectedService != null || selectedProfessional != null || selectedTime != null}
+              hidden={selectedService != null || selectedProfessional != null || selectedTime != null}
               onClick={() => {
                 navigate(`/user/schedule/${user.getId()}`);
               }}
@@ -315,7 +315,7 @@ export function GroupPage() {
               })}
             </div>
             <BottomButton
-              hide={selectedTime === null}
+              hidden={selectedTime === null}
               title={"Escolher Profissional"}
               onClick={() => {
                 setSelectedProfessional(null);
@@ -377,7 +377,7 @@ export function GroupPage() {
                   navigate(`/professional/schedule/${selectedProfessional?.getId()}`);
                 },
               ]}
-              hide={[selectedProfessional === null, selectedProfessional === null || !group.getAdmins().includes(user.getId())]}
+              hidden={[selectedProfessional === null, selectedProfessional === null || !group.getAdmins().includes(user.getId())]}
             />
           </div>
         );
@@ -419,7 +419,7 @@ export function GroupPage() {
                 })}
             </div>
             <BottomButton
-              hide={selectedService == null}
+              hidden={selectedService == null}
               title={"Escolher Horário"}
               onClick={() => {
                 setTab(1);

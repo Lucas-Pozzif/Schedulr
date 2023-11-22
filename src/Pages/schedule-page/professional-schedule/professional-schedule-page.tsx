@@ -171,7 +171,7 @@ export function ProfessionalSchedulePage() {
             />
             {Object.entries(professional.getSchedule()).map(([date, schedule]) => {
               const formattedDay = formattedDate(parseDate(date));
-              const hideMessage = displayList.includes(date) ? "Ocultar" : "Exibir";
+              const hiddenMessage = displayList.includes(date) ? "Ocultar" : "Exibir";
 
               const weekDay = capitalize(parseDate(date).toLocaleDateString("pt-BR", { weekday: "long" }));
               const weekIndex = parseDate(date).getDay();
@@ -179,7 +179,7 @@ export function ProfessionalSchedulePage() {
                 <div className='sp-day-block'>
                   <SubHeader
                     title={formattedDay}
-                    buttonTitle={hideMessage}
+                    buttonTitle={hiddenMessage}
                     onClick={() => {
                       const updatedList = displayList.includes(date) ? displayList.filter((day) => day !== date) : [...displayList, formattedDay];
                       setDisplayList(updatedList);
@@ -296,7 +296,7 @@ export function ProfessionalSchedulePage() {
               }}
             />
             <BottomButton
-              hide={selectedBlock === null}
+              hidden={selectedBlock === null}
               title={"Editar"}
               onClick={() => {
                 setTab(2); //Edit block tab
@@ -554,7 +554,7 @@ export function ProfessionalSchedulePage() {
                   setTab(3); //Edit time tab
                 },
               ]}
-              hide={[selectedTimeList.length <= 0, selectedTimeList.length <= 0]}
+              hidden={[selectedTimeList.length <= 0, selectedTimeList.length <= 0]}
             />
           </div>
         );
@@ -577,13 +577,13 @@ export function ProfessionalSchedulePage() {
           return blockTime;
         });
 
-        const hideSaveButton = () => {
-          const hide = serviceList.map((_, index) => {
+        const hiddenSaveButton = () => {
+          const hidden = serviceList.map((_, index) => {
             const schedule = professional.getSchedule()[day];
             const scheduleItem = schedule?.[index + startIndex];
             return scheduleItem.service === "" && scheduleItem.edited !== false;
           });
-          return hide.includes(true);
+          return hidden.includes(true);
         };
 
         return (
@@ -753,7 +753,7 @@ export function ProfessionalSchedulePage() {
                   setChangedValues([...changedValues, ...filteredNewValues]);
                 },
               ]}
-              hide={[hideSaveButton(), selectedTimeList.length == 0]}
+              hidden={[hiddenSaveButton(), selectedTimeList.length == 0]}
             />
           </div>
         );
@@ -927,7 +927,7 @@ export function ProfessionalSchedulePage() {
                   }));
                 },
               ]}
-              hide={[(editedTime.edited === true && editedTime.service === "") || (editedTime.edited === false && editedTime.service !== ""), !isUnblockable]}
+              hidden={[(editedTime.edited === true && editedTime.service === "") || (editedTime.edited === false && editedTime.service !== ""), !isUnblockable]}
             />
           </div>
         );

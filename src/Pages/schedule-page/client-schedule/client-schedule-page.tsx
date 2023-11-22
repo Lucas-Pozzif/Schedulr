@@ -164,7 +164,7 @@ export function ClientSchedulePage() {
       />
       {Object.entries(user.getSchedule()).map(([date, schedule]) => {
         const formattedDay = formattedDate(parseDate(date));
-        const hideMessage = displayList.includes(formattedDay) ? "Ocultar" : "Exibir";
+        const hiddenMessage = displayList.includes(formattedDay) ? "Ocultar" : "Exibir";
 
         const weekDay = capitalize(parseDate(date).toLocaleDateString("pt-BR", { weekday: "long" }));
 
@@ -172,7 +172,7 @@ export function ClientSchedulePage() {
           <div className='sp-day-block'>
             <SubHeader
               title={formattedDay}
-              buttonTitle={hideMessage}
+              buttonTitle={hiddenMessage}
               onClick={() => {
                 const updatedList = displayList.includes(formattedDay) ? displayList.filter((day) => day !== formattedDay) : [...displayList, formattedDay];
                 setDisplayList(updatedList);
@@ -287,7 +287,7 @@ export function ClientSchedulePage() {
         }}
       />
       <BottomButton
-        hide={selectedBlock === null}
+        hidden={selectedBlock === null}
         title={"Desmarcar"}
         onClick={async () => {
           {
