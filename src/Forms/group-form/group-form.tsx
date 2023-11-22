@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+
 import { Group } from "../../Classes/group";
 import { User } from "../../Classes/user";
 import { LoadingScreen } from "../../Components/loading/loading-screen/loading-screen";
@@ -8,18 +9,21 @@ import { Professional } from "../../Classes/professional";
 import { Header } from "../../Components/header/header";
 import { LinkButton } from "../../Components/buttons/link-button/link-button";
 import { BottomPopup } from "../../Components/buttons/bottom-popup/bottom-popup";
-import { DropdownButton } from "../../Components/buttons/dropdown-button/dropdown-button";
 import { BottomButton } from "../../Components/buttons/bottom-button/bottom-button";
 import { SubHeader } from "../../Components/sub-header/sub-header";
 import { ItemButton } from "../../Components/buttons/item-button/item-button";
-
-import "./group-form.css";
 import { ServiceForm } from "../service-form/service-form";
 import { Carousel } from "../../Components/carousel/carousel";
 import { ProfessionalForm } from "../professional-form/professional-form";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../Services/firebase/firebase";
 import { useNavigate } from "react-router-dom";
+
+import "./group-form.css";
+import { GroupBanner } from "../../Components/banner/group-banner/group-banner";
+import { DoubleInput } from "../../Components/inputs/double-input/double-input";
+import { IconInput } from "../../Components/inputs/icon-input/icon-input";
+import ErrorPage from "../../Pages/error-page/error-page";
 
 export function GroupForm() {
   const [user, setUser] = useState(new User());
@@ -59,9 +63,84 @@ export function GroupForm() {
 
   const tabHandler = () => {
     switch (tab) {
-      case 0:
+      case 0: // Home tab
         return (
           <div className='group-form'>
+            <GroupBanner onClick={() => bannerRef.current!.click()} banner={groupForm.getBanner()} />
+            <div className='gf-profile' onClick={() => profileRef.current!.click()}>
+              <img className={`gf-profile-${groupForm.getProfile() ? "image" : "placeholder"}`} src={groupForm.getProfile() ? groupForm.getProfile() : addImage} />
+            </div>
+            <DoubleInput
+              input1={{
+                placeholder: "Editar nome",
+                value: groupForm.getTitle(),
+                onChange: (e) => {
+                  groupForm.setTitle(e.target.value);
+                  const updatedGroup = new Group(groupForm);
+                  setGroupForm(updatedGroup);
+                },
+              }}
+              input2={{
+                placeholder: "Editar tipo de negócio",
+                value: groupForm.getType(),
+                onChange: (e) => {
+                  groupForm.setType(e.target.value);
+                  setGroupForm(new Group(groupForm));
+                },
+              }}
+            />
+            <div className='gf-data-block'>
+              <IconInput
+                icon={locationPin}
+                value={groupForm.getLocation()}
+                placeholder='Digite o Endereço'
+                onChange={(e) => {
+                  groupForm.setLocation(e.target.value);
+                  const updatedGroup = new Group(groupForm);
+                  setGroupForm(updatedGroup);
+                }}
+              />
+              <Line />
+              <div className='gf-links'>
+                <LinkButton
+                  title='Editar Serviços'
+                  onClick={() => {
+                    setTab(1);
+                  }}
+                />
+                <LinkButton
+                  title='Editar Horários'
+                  onClick={() => {
+                    setTab(2);
+                  }}
+                />
+                <LinkButton
+                  title='Editar Profissionais'
+                  onClick={() => {
+                    setTab(3);
+                  }}
+                />
+              </div>
+            </div>
+            <BottomPopup
+              title='Editando...'
+              subtitle='Possui Alterações'
+              buttonTitle='Salvar Alterações'
+              onClick={async () => {
+                setLoading(true);
+                if (groupForm.getId()) {
+                  await groupForm.setGroup();
+                } else {
+                  await groupForm.addGroup();
+                }
+                console.log("Grupos atualizados");
+
+                setLoading(false);
+                navigate("/");
+              }}
+              activated={groupForm.isValid()}
+            />
+            {/* Hidden inputs that are refferencied */}
             <input
               className='hidden'
               type='file'
@@ -88,118 +167,9 @@ export function GroupForm() {
               }}
               ref={profileRef}
             />
-            <div
-              className='gf-banner'
-              onClick={() => {
-                bannerRef.current!.click();
-              }}
-            >
-              {groupForm.getBanner() ? <img className='gf-banner-image' src={groupForm.getBanner()} /> : <img className='gf-banner-placeholder' src={addImage} />}
-            </div>
-            <div
-              className='gf-profile'
-              onClick={() => {
-                profileRef.current!.click();
-              }}
-            >
-              {groupForm.getProfile() ? <img className='gf-profile-image' src={groupForm.getProfile()} /> : <img className='gf-profile-placeholder' src={addImage} />}
-            </div>
-            <div className='gf-title-block'>
-              <input
-                className='gf-title-input'
-                placeholder='Editar nome'
-                value={groupForm.getTitle()}
-                onChange={(e) => {
-                  groupForm.setTitle(e.target.value);
-                  const updatedGroup = new Group(groupForm);
-                  setGroupForm(updatedGroup);
-                }}
-              />
-              <div className='gf-group-type-selector'>
-                <input
-                  className='gf-group-type-selector-title'
-                  placeholder='Tipo de estabelecimento'
-                  value={groupForm.getType()}
-                  onChange={(e) => {
-                    groupForm.setType(e.target.value);
-                    setGroupForm(new Group(groupForm));
-                  }}
-                />
-              </div>
-            </div>
-            <div className='gf-data-block'>
-              <div className='gf-location-block'>
-                <img className='gf-location-icon' src={locationPin} />
-                <input
-                  className='gf-location-input'
-                  placeholder='Digitar o endereço'
-                  value={groupForm.getLocation()}
-                  onChange={(e) => {
-                    groupForm.setLocation(e.target.value);
-                    const updatedGroup = new Group(groupForm);
-                    setGroupForm(updatedGroup);
-                  }}
-                />
-              </div>
-              <Line />
-              <div className='gf-bottom-columns'>
-                {/*                      
-                <div className='gf-left-column'>
-                  <DropdownButton
-                    title={days[selectedDay]}
-                    dropDownItems={days.map((day, index) => {
-                      return [day, () => setSelectedDay(index)];
-                    })}
-                  />
-                </div>
-                */}
-                <div className='gf-right-column'>
-                  <LinkButton
-                    title='Editar Serviços e Horários'
-                    onClick={() => {
-                      setTab(1);
-                    }}
-                  />
-                  <LinkButton
-                    title='Editar Profissionais'
-                    onClick={() => {
-                      setTab(3);
-                    }}
-                  />
-                  {/*
-                  <div className='gf-image-group'>
-                    <div className='gf-image-add'>
-                      <img className='gf-image-add-icon' src={addImage} />
-                    </div>
-                    {groupForm.getImages().map((image) => {
-                      return <img className='gf-image' src={image} />;
-                    })}
-                  </div>
-                    */}
-                </div>
-              </div>
-            </div>
-            <BottomPopup
-              title='Editando...'
-              subtitle='Possui Alterações'
-              buttonTitle='Salvar Alterações'
-              onClick={async () => {
-                setLoading(true);
-                if (groupForm.getId()) {
-                  await groupForm.setGroup();
-                } else {
-                  await groupForm.addGroup();
-                }
-                console.log("Grupos atualizados");
-
-                setLoading(false);
-                navigate("/");
-              }}
-              isActive={groupForm.isValid()}
-            />
           </div>
         );
-      case 1:
+      case 1: // Service Tab
         return (
           <div className='gf-tab'>
             <Header
@@ -214,7 +184,7 @@ export function GroupForm() {
               }}
             />
             <SubHeader
-              title=''
+              title={`${groupForm.getServices().length} serviços criados`}
               buttonTitle='Alterar Horários'
               onClick={() => {
                 setTab(2);
@@ -225,7 +195,7 @@ export function GroupForm() {
               {groupForm
                 .getServices()
                 .sort((a, b) => a.getName().localeCompare(b.getName()))
-                .map((service: Service, index: number) => {
+                .map((service: Service) => {
                   return (
                     <ItemButton
                       title={service.getName()}
@@ -243,7 +213,7 @@ export function GroupForm() {
                 })}
             </div>
             <BottomButton
-              hide={selectedService == null}
+              hidden={selectedService == null}
               title='Editar Serviço'
               onClick={() => {
                 setTab(4);
@@ -251,7 +221,7 @@ export function GroupForm() {
             />
           </div>
         );
-      case 2:
+      case 2: // Time Tab
         const timeArray = [];
 
         for (let i = 0; i <= 24; i++) {
@@ -354,7 +324,7 @@ export function GroupForm() {
               })}
             </div>
             <BottomButton
-              hide={false}
+              hidden={false}
               title={"Confirmar"}
               onClick={() => {
                 setTab(1);
@@ -362,7 +332,7 @@ export function GroupForm() {
             />
           </div>
         );
-      case 3:
+      case 3: // Professional Tab
         return (
           <div className='gf-tab'>
             <Header
@@ -394,7 +364,7 @@ export function GroupForm() {
                 })}
             </div>
             <BottomButton
-              hide={selectedProfessional == null}
+              hidden={selectedProfessional == null}
               title={"Editar Profissional"}
               onClick={() => {
                 setTab(5);
@@ -402,7 +372,7 @@ export function GroupForm() {
             />
           </div>
         );
-      case 4:
+      case 4: // ServiceForm Tab
         const services = groupForm.getServices();
         const service = services.find((service) => {
           return service.getId() == selectedService;
@@ -418,14 +388,14 @@ export function GroupForm() {
             }}
           />
         );
-      case 5:
+      case 5: // ProfessionalForm Tab
         const professionals = groupForm.getProfessionals();
         const professional = professionals.find((professional) => {
           return professional.getId() == selectedProfessional;
         });
         return <ProfessionalForm groupForm={groupForm} setGroupForm={setGroupForm} user={user} onClickReturn={() => setTab(3)} professional={professional} />;
       default:
-        return <div />;
+        return <ErrorPage />;
     }
   };
 
