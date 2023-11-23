@@ -10,7 +10,7 @@ import { DropdownButton } from "../../Components/buttons/dropdown-button/dropdow
 import { Line } from "../../Components/line/line";
 import { LinkButton } from "../../Components/buttons/link-button/link-button";
 import { LoadingScreen } from "../../Components/loading/loading-screen/loading-screen";
-import { Header } from "../../Components/header/header";
+import { Header } from "../../Components/header/header/header";
 import { SubHeader } from "../../Components/sub-header/sub-header";
 import { Carousel } from "../../Components/carousel/carousel";
 import { ItemButton } from "../../Components/buttons/item-button/item-button";

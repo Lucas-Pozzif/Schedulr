@@ -6,7 +6,7 @@ import { Line } from "../../Components/line/line";
 import { SmallButton } from "../../Components/buttons/small-button/small-button";
 import { DropdownButton } from "../../Components/buttons/dropdown-button/dropdown-button";
 import { LinkButton } from "../../Components/buttons/link-button/link-button";
-import { Header } from "../../Components/header/header";
+import { Header } from "../../Components/header/header/header";
 import { SubHeader } from "../../Components/sub-header/sub-header";
 import { ItemButton } from "../../Components/buttons/item-button/item-button";
 import { Group } from "../../Classes/group";

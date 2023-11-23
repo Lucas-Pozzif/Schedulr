@@ -6,7 +6,7 @@ import { LoadingScreen } from "../../Components/loading/loading-screen/loading-s
 import { Line } from "../../Components/line/line";
 import { Service } from "../../Classes/service";
 import { Professional } from "../../Classes/professional";
-import { Header } from "../../Components/header/header";
+import { Header } from "../../Components/header/header/header";
 import { LinkButton } from "../../Components/buttons/link-button/link-button";
 import { BottomPopup } from "../../Components/buttons/bottom-popup/bottom-popup";
 import { BottomButton } from "../../Components/buttons/bottom-button/bottom-button";
