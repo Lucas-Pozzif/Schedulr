@@ -23,7 +23,7 @@ import { RatingPage } from "../rating-page/rating-page";
 import { GroupBanner } from "../../Components/banner/group-banner/group-banner";
 import { DoubleTextBlock } from "../../Components/blocks/double-text-block/double-text-block";
 import { BottomPopup } from "../../Components/buttons/bottom-popup/bottom-popup";
-import ErrorPage from "../error-page/error-page";
+import {ErrorPage} from "../error-page/error-page";
 import { DoubleItemButton } from "../../Components/buttons/double-item-button/double-item-button";
 
 export function GroupPage() {

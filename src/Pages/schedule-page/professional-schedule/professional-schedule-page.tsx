@@ -19,7 +19,7 @@ import { Carousel } from "../../../Components/carousel/carousel";
 import "../schedule-page.css";
 import { IconInput } from "../../../Components/inputs/icon-input/icon-input";
 import { Line } from "../../../Components/line/line";
-import ErrorPage from "../../error-page/error-page";
+import {ErrorPage} from "../../error-page/error-page";
 import { Header } from "../../../Components/header/header/header";
 
 var isEqual = require("lodash.isequal");

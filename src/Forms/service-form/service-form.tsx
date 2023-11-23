@@ -19,7 +19,7 @@ import { ProfessionalForm } from "../professional-form/professional-form";
 import "./service-form.css";
 import { HeaderInput } from "../../Components/inputs/header-input/header-input";
 import { IconInput } from "../../Components/inputs/icon-input/icon-input";
-import ErrorPage from "../../Pages/error-page/error-page";
+import {ErrorPage} from "../../Pages/error-page/error-page";
 
 type ServiceFormType = {
   user?: User;

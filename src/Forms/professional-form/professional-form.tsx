@@ -16,7 +16,7 @@ import { SubHeader } from "../../Components/sub-header/sub-header";
 import { Carousel } from "../../Components/carousel/carousel";
 import { HeaderInput } from "../../Components/inputs/header-input/header-input";
 import { IconInput } from "../../Components/inputs/icon-input/icon-input";
-import ErrorPage from "../../Pages/error-page/error-page";
+import {ErrorPage} from "../../Pages/error-page/error-page";
 
 type professionalFormType = {
   user?: User;

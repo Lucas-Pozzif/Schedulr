@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./error-page.css";
 
-const ErrorPage = () => {
+export const ErrorPage = () => {
   const navigate = useNavigate();
 
   return (
@@ -27,5 +27,3 @@ const ErrorPage = () => {
     </div>
   );
 };
-
-export default ErrorPage;
