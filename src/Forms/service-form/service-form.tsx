@@ -11,12 +11,15 @@ import { SubHeader } from "../../Components/sub-header/sub-header";
 import { ItemButton } from "../../Components/buttons/item-button/item-button";
 import { Group } from "../../Classes/group";
 import { Professional } from "../../Classes/professional";
-
-import "./service-form.css";
 import { Carousel } from "../../Components/carousel/carousel";
 import { SubServiceForm } from "../sub-service-form/sub-service-form";
 import { BottomPopup } from "../../Components/buttons/bottom-popup/bottom-popup";
 import { ProfessionalForm } from "../professional-form/professional-form";
+
+import "./service-form.css";
+import { HeaderInput } from "../../Components/inputs/header-input/header-input";
+import { IconInput } from "../../Components/inputs/icon-input/icon-input";
+import ErrorPage from "../../Pages/error-page/error-page";
 
 type ServiceFormType = {
   user?: User;
@@ -50,52 +53,40 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
 
   const tabHandler = () => {
     switch (tab) {
-      case 0:
+      case 0: // Home Tab
         return (
           <div className='service-form'>
-            <div className='sf-header'>
-              <img className='return-button' src={arrow} onClick={onClickReturn} />
-              <div className='sf-header-text-block'>
-                <input
-                  className='sf-header-title'
-                  placeholder='Nome do Serviço'
-                  value={serviceForm.getName()}
-                  onChange={(e) => {
-                    serviceForm.setName(e.target.value);
-                    const updatedService = new Service(serviceForm);
-                    setServiceForm(updatedService);
-                  }}
-                />
-                <p className='sf-header-subtitle'></p>
-              </div>
-              <img
-                className='sf-delete-button'
-                src={bin}
-                onClick={() => {
-                  alert("ainda não implementado");
-                }}
-              />
-            </div>
+            <HeaderInput
+              placeholder={"Digite o nome do Serviço"}
+              value={serviceForm.getName()}
+              icon={bin}
+              onChange={(e) => {
+                serviceForm.setName(e.target.value);
+                const updatedService = new Service(serviceForm);
+                setServiceForm(updatedService);
+              }}
+              onClickReturn={onClickReturn}
+              onClickIcon={() => {
+                alert("ainda não implementado");
+              }}
+            />
             <div className='sf-data-block'>
-              <div className='sf-value-block'>
-                <img className='sf-value-icon' src={money} />
-                <input
-                  className='sf-value-input'
-                  placeholder='Digitar valor'
-                  value={serviceForm.getValue()}
-                  onChange={(e) => {
-                    serviceForm.setValue(e.target.value);
-                    const updatedService = new Service(serviceForm);
-                    setServiceForm(updatedService);
-                  }}
-                />
-              </div>
+              <IconInput
+                placeholder={"Digite o valor"}
+                value={serviceForm.getValue()}
+                onChange={(e) => {
+                  serviceForm.setValue(e.target.value);
+                  const updatedService = new Service(serviceForm);
+                  setServiceForm(updatedService);
+                }}
+                icon={money}
+              />
               <Line />
               <div className='sf-bottom-columns'>
                 <div className='sf-left-column'>
                   <SmallButton
                     title={"A partir de"}
-                    isSelected={serviceForm.getInicial()}
+                    selected={serviceForm.getInicial()}
                     onClick={() => {
                       serviceForm.setInicial(!serviceForm.getInicial());
                       const updatedService = new Service(serviceForm);
@@ -117,20 +108,12 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
                       setTab(2);
                     }}
                   />
-                  {/*
-                                    <div className="sf-image-group">
-                                        <div className="sf-image-add">
-                                            <img className="sf-image-add-icon" src={addImage} />
-                                        </div>
-                                        {serviceForm.getPhotos().map((image) => { return (<img className="gf-image" src={image} />) })}
-                                    </div>
-                                        */}
                 </div>
               </div>
             </div>
             <BottomPopup
               title={"Editando..."}
-              subtitle={`Serviço para ${groupForm.getTitle()}`}
+              subtitle={`Os campos ### não foram preenchidos!`}
               buttonTitle={"Salvar"}
               onClick={async () => {
                 setLoading(true);
@@ -154,7 +137,7 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
             />
           </div>
         );
-      case 1:
+      case 1: // Time Tab
         const timeArray = [];
 
         timeArray.push(`0:10`, `0:20`, `0:30`, `0:40`, `0:50`);
@@ -192,7 +175,7 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
               items={serviceForm.getSubServices().map((sserv, index) => {
                 return {
                   title: sserv.getName(),
-                  isSelected: index == selectedSService,
+                  selected: index == selectedSService,
                   onClick: () => setSelectedSService(index),
                 };
               })}
@@ -203,7 +186,7 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
                   <ItemButton
                     title={timeValue}
                     subtitle={""}
-                    isSelected={duration?.[index]}
+                    selected={duration?.[index]}
                     onClick={() => {
                       if (index >= duration.length) {
                         const diff = index - duration.length + 1;
@@ -228,7 +211,7 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
             </div>
           </div>
         );
-      case 2:
+      case 2: // Professional Tab
         return (
           <div className='service-form'>
             <Header
@@ -252,7 +235,7 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
                     <ItemButton
                       title={professional.getName()}
                       subtitle={professional.getOccupations().join(", ")}
-                      isSelected={profServices.includes(serviceForm.getId())}
+                      selected={profServices.includes(serviceForm.getId())}
                       onClick={() => {
                         if (profServices.includes(serviceForm.getId())) {
                           profServices = profServices.filter((id) => id !== serviceForm.getId());
@@ -271,7 +254,7 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
             </div>
           </div>
         );
-      case 3: //Subservice list
+      case 3: // Subservice Tab
         return (
           <div className='service-form'>
             <Header
@@ -290,7 +273,7 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
                   <ItemButton
                     title={sserivce.getName()}
                     subtitle={"Detalhes"}
-                    isSelected={selectedSService === index}
+                    selected={selectedSService === index}
                     onClick={() => {
                       if (selectedSService == index) {
                         setSelectedSService(null);
@@ -304,9 +287,9 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
             </div>
           </div>
         );
-      case 4: //Professional Form
+      case 4: // Professional Form Tab
         return <ProfessionalForm user={user} groupForm={groupForm} setGroupForm={setGroupForm} professional={new Professional()} onClickReturn={() => setTab(2)} />;
-      case 5:
+      case 5: // SubService Form Tab
         return (
           <SubServiceForm
             onClickReturn={() => {
@@ -319,7 +302,7 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
           />
         );
       default:
-        return <div />;
+        return <ErrorPage />;
     }
   };
   return loading ? <LoadingScreen /> : tabHandler();
