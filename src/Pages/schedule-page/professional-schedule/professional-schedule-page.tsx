@@ -5,7 +5,6 @@ import { auth } from "../../../Services/firebase/firebase";
 import { useNavigate, useParams } from "react-router-dom";
 import { LoadingScreen } from "../../../Components/loading/loading-screen/loading-screen";
 import { Professional } from "../../../Classes/professional";
-import { Header } from "../../../Components/header/header";
 import { SubHeader } from "../../../Components/sub-header/sub-header";
 import { parseDate } from "../../../Function/parse-date/parse-date";
 import { capitalize } from "../../../Function/capitalize/capitalize";
@@ -18,6 +17,10 @@ import { DoubleItemButton } from "../../../Components/buttons/double-item-button
 import { Carousel } from "../../../Components/carousel/carousel";
 
 import "../schedule-page.css";
+import { IconInput } from "../../../Components/inputs/icon-input/icon-input";
+import { Line } from "../../../Components/line/line";
+import ErrorPage from "../../error-page/error-page";
+import { Header } from "../../../Components/header/header/header";
 
 var isEqual = require("lodash.isequal");
 
@@ -185,38 +188,40 @@ export function ProfessionalSchedulePage() {
                       setDisplayList(updatedList);
                     }}
                   />
-                  {findRepetitionBlocks(schedule).map((block) => {
-                    if (!displayList.includes(date)) return null;
+                  <div className='sp-list'>
+                    {findRepetitionBlocks(schedule).map((block) => {
+                      if (!displayList.includes(date)) return null;
 
-                    const firstIndex = block[0];
-                    const lastIndex = block[1];
-                    const scheduleItem = schedule[firstIndex]; //the block content is all the same regardless of the index so i'll take the first one
+                      const firstIndex = block[0];
+                      const lastIndex = block[1];
+                      const scheduleItem = schedule[firstIndex]; //the block content is all the same regardless of the index so i'll take the first one
 
-                    const serviceName = scheduleItem.edited ? scheduleItem.service : serviceCache[scheduleItem.service].getName();
-                    const clientName = clientCache[scheduleItem.client]?.getName();
+                      const serviceName = scheduleItem.edited ? scheduleItem.service : serviceCache[scheduleItem.service].getName();
+                      const clientName = clientCache[scheduleItem.client]?.getName();
 
-                    const currentBlock = {
-                      client: scheduleItem.client,
-                      service: scheduleItem.service,
-                      timeRange: block,
-                      day: date,
-                    };
+                      const currentBlock = {
+                        client: scheduleItem.client,
+                        service: scheduleItem.service,
+                        timeRange: block,
+                        day: date,
+                      };
 
-                    return (
-                      <DoubleItemButton
-                        leftButtonTitle={{
-                          title1: week[weekIndex],
-                          title2: `${timeList[firstIndex]} - ${timeList[lastIndex]}`,
-                        }}
-                        title={serviceName}
-                        subtitle={clientName}
-                        selected={isEqual(selectedBlock, currentBlock)}
-                        onClick={() => {
-                          isEqual(selectedBlock, currentBlock) ? setSelectedBlock(null) : setSelectedBlock(currentBlock);
-                        }}
-                      />
-                    );
-                  })}
+                      return (
+                        <DoubleItemButton
+                          leftButtonTitle={{
+                            title1: week[weekIndex],
+                            title2: `${timeList[firstIndex]} - ${timeList[lastIndex]}`,
+                          }}
+                          title={serviceName}
+                          subtitle={clientName}
+                          selected={isEqual(selectedBlock, currentBlock)}
+                          onClick={() => {
+                            isEqual(selectedBlock, currentBlock) ? setSelectedBlock(null) : setSelectedBlock(currentBlock);
+                          }}
+                        />
+                      );
+                    })}
+                  </div>
                 </div>
               );
             })}
@@ -453,65 +458,67 @@ export function ProfessionalSchedulePage() {
                 setSelectedTimeList([...allTimes]);
               }}
             />
-            {timeList.map((time, index) => {
-              const dayShift = professional.getShift()[selectedDay.getDay()];
-              const startHours = professional.getStartHours()[selectedDay.getDay()];
+            <div className='sp-list'>
+              {timeList.map((time, index) => {
+                const dayShift = professional.getShift()[selectedDay.getDay()];
+                const startHours = professional.getStartHours()[selectedDay.getDay()];
 
-              const startTime = Math.floor(startHours / 2) * 6;
-              const endTime = Math.floor((dayShift.length - 1) / 2) * 6 + startTime;
+                const startTime = Math.floor(startHours / 2) * 6;
+                const endTime = Math.floor((dayShift.length - 1) / 2) * 6 + startTime;
 
-              if (
-                !dayShift[0] || // Check if the first element in dayShift is false
-                startTime > index || // Check if startHours is less than index
-                endTime < index
-              ) {
-                return null;
-              }
+                if (
+                  !dayShift[0] || // Check if the first element in dayShift is false
+                  startTime > index || // Check if startHours is less than index
+                  endTime < index
+                ) {
+                  return null;
+                }
 
-              const weekDay = capitalize(week[selectedDay.getDay()]);
-              const schedule =
-                professional.getSchedule()[
-                  selectedDay.toLocaleString("pt-BR", {
+                const weekDay = capitalize(week[selectedDay.getDay()]);
+                const schedule =
+                  professional.getSchedule()[
+                    selectedDay.toLocaleString("pt-BR", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "2-digit",
+                    })
+                  ];
+                const scheduleItem = schedule?.[index];
+                const available = scheduleItem === undefined;
+
+                const serviceName = available ? "Disponível" : scheduleItem?.edited ? scheduleItem?.service : serviceCache[scheduleItem?.service]?.getName();
+                const clientName = clientCache[scheduleItem?.client]?.getName();
+
+                const currentTime = {
+                  day: selectedDay.toLocaleString("pt-BR", {
                     day: "2-digit",
                     month: "2-digit",
                     year: "2-digit",
-                  })
-                ];
-              const scheduleItem = schedule?.[index];
-              const available = scheduleItem === undefined;
+                  }),
+                  index: index,
+                };
+                const selected = selectedTimeList.find((time) => currentTime.day === time.day && currentTime.index === time.index) !== undefined;
 
-              const serviceName = available ? "Disponível" : scheduleItem?.edited ? scheduleItem?.service : serviceCache[scheduleItem?.service]?.getName();
-              const clientName = clientCache[scheduleItem?.client]?.getName();
-
-              const currentTime = {
-                day: selectedDay.toLocaleString("pt-BR", {
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "2-digit",
-                }),
-                index: index,
-              };
-              const selected = selectedTimeList.find((time) => currentTime.day === time.day && currentTime.index === time.index) !== undefined;
-
-              return (
-                <DoubleItemButton
-                  leftButtonTitle={{
-                    title1: weekDay,
-                    title2: time,
-                  }}
-                  title={serviceName}
-                  subtitle={clientName}
-                  selected={selected}
-                  onClick={() => {
-                    if (selectedTimeList.some((time) => time.day === currentTime.day && time.index === currentTime.index)) {
-                      setSelectedTimeList(selectedTimeList.filter((time) => time.day !== currentTime.day || time.index !== currentTime.index));
-                    } else {
-                      setSelectedTimeList([...selectedTimeList, currentTime]);
-                    }
-                  }}
-                />
-              );
-            })}
+                return (
+                  <DoubleItemButton
+                    leftButtonTitle={{
+                      title1: weekDay,
+                      title2: time,
+                    }}
+                    title={serviceName}
+                    subtitle={clientName}
+                    selected={selected}
+                    onClick={() => {
+                      if (selectedTimeList.some((time) => time.day === currentTime.day && time.index === currentTime.index)) {
+                        setSelectedTimeList(selectedTimeList.filter((time) => time.day !== currentTime.day || time.index !== currentTime.index));
+                      } else {
+                        setSelectedTimeList([...selectedTimeList, currentTime]);
+                      }
+                    }}
+                  />
+                );
+              })}
+            </div>
             <DoubleButton
               title={["Bloquear", "Editar"]}
               onClick={[
@@ -596,11 +603,10 @@ export function ProfessionalSchedulePage() {
               }}
               onClickIcon={() => {}}
             />
-            <div className='sf-value-block'>
-              <img className='sf-value-icon' src={clock} />
-              <input
-                className='sf-value-input'
-                placeholder='Digitar Serviço'
+            <div className='sp-input'>
+              <IconInput
+                icon={clock}
+                placeholder={"Digitar Serviço"}
                 value={editedTime.service}
                 onChange={(e) => {
                   setEditedTime((time) => ({
@@ -620,6 +626,7 @@ export function ProfessionalSchedulePage() {
                   setChangedValues([...changedValues, ...filteredNewValues]);
                 }}
               />
+              <Line />
             </div>
             <SubHeader
               title={formattedDate(selectedDay)}
@@ -796,11 +803,9 @@ export function ProfessionalSchedulePage() {
               }}
               onClickIcon={() => {}}
             />
-            <div className='sf-value-block'>
-              <img className='sf-value-icon' src={clock} />
-              <input
-                className='sf-value-input'
-                placeholder='Digitar Serviço'
+            <div className='sp-input'>
+              <IconInput
+                placeholder={"Digitar Serviço"}
                 onChange={(e) => {
                   setEditedTime((time) => ({
                     ...time,
@@ -819,60 +824,63 @@ export function ProfessionalSchedulePage() {
 
                   setChangedValues([...changedValues, ...filteredNewValues]);
                 }}
+                icon={clock}
               />
             </div>
-            {selectedTimeList.map(({ day, index }) => {
-              const weekDay = capitalize(week[selectedDay.getDay()]);
+            <div className='sp-list'>
+              {selectedTimeList.map(({ day, index }) => {
+                const weekDay = capitalize(week[selectedDay.getDay()]);
 
-              const schedule =
-                professional.getSchedule()[
-                  selectedDay.toLocaleString("pt-BR", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "2-digit",
-                  })
-                ] || {};
+                const schedule =
+                  professional.getSchedule()[
+                    selectedDay.toLocaleString("pt-BR", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "2-digit",
+                    })
+                  ] || {};
 
-              const scheduleItem = schedule[index] || {
-                service: "",
-                edited: false,
-                client: user.getId(),
-              };
+                const scheduleItem = schedule[index] || {
+                  service: "",
+                  edited: false,
+                  client: user.getId(),
+                };
 
-              const available = scheduleItem === undefined || editedTime.edited === false;
+                const available = scheduleItem === undefined || editedTime.edited === false;
 
-              const serviceName = editedTime.service === "" ? (available ? "Disponível" : scheduleItem?.edited ? scheduleItem?.service : serviceCache[scheduleItem?.service]?.getName()) : editedTime.service;
-              const clientName = editedTime.service === "" ? clientCache[scheduleItem?.client]?.getName() : user.getName();
-              if (!schedule[index]) {
-                schedule[index] = scheduleItem;
-                professional.getSchedule()[
-                  selectedDay.toLocaleString("pt-BR", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "2-digit",
-                  })
-                ] = schedule;
-              }
+                const serviceName = editedTime.service === "" ? (available ? "Disponível" : scheduleItem?.edited ? scheduleItem?.service : serviceCache[scheduleItem?.service]?.getName()) : editedTime.service;
+                const clientName = editedTime.service === "" ? clientCache[scheduleItem?.client]?.getName() : user.getName();
+                if (!schedule[index]) {
+                  schedule[index] = scheduleItem;
+                  professional.getSchedule()[
+                    selectedDay.toLocaleString("pt-BR", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "2-digit",
+                    })
+                  ] = schedule;
+                }
 
-              if (scheduleItem) {
-                scheduleItem.service = editedTime.service;
-                scheduleItem.edited = editedTime.edited;
-                scheduleItem.client = user.getId();
-              }
+                if (scheduleItem) {
+                  scheduleItem.service = editedTime.service;
+                  scheduleItem.edited = editedTime.edited;
+                  scheduleItem.client = user.getId();
+                }
 
-              return (
-                <DoubleItemButton
-                  leftButtonTitle={{
-                    title1: weekDay,
-                    title2: timeList[index],
-                  }}
-                  title={serviceName}
-                  subtitle={clientName}
-                  selected={false}
-                  onClick={() => {}}
-                />
-              );
-            })}
+                return (
+                  <DoubleItemButton
+                    leftButtonTitle={{
+                      title1: weekDay,
+                      title2: timeList[index],
+                    }}
+                    title={serviceName}
+                    subtitle={clientName}
+                    selected={false}
+                    onClick={() => {}}
+                  />
+                );
+              })}
+            </div>
             <DoubleButton
               title={["Salvar Alterações", "Desbloquear Horários"]}
               onClick={[
@@ -932,7 +940,7 @@ export function ProfessionalSchedulePage() {
           </div>
         );
       default:
-        return <div />;
+        return <ErrorPage />;
     }
   };
 
