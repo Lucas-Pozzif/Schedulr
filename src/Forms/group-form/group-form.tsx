@@ -56,6 +56,7 @@ export function GroupForm() {
       setUser(new User(user));
     });
     groupForm.setOwner(user.getId());
+    groupForm.setAdmins([...groupForm.getAdmins(), user.getId()]);
     setLoading(false);
   }, []);
   const bannerRef = useRef<HTMLInputElement>(null);
@@ -327,7 +328,7 @@ export function GroupForm() {
               hidden={false}
               title={"Confirmar"}
               onClick={() => {
-                setTab(1);
+                setTab(0);
               }}
             />
           </div>
