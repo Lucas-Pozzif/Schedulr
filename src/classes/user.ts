@@ -1,4 +1,4 @@
-import { GoogleAuthProvider, UserCredential, signInWithPopup, signOut } from "firebase/auth";
+import { GoogleAuthProvider, UserCredential, signInWithPopup, signInWithRedirect, signOut } from "firebase/auth";
 import { auth, db } from "../Services/firebase/firebase";
 import { DocumentSnapshot, collection, deleteDoc, doc, getDoc, getDocs, query, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
 import { Group } from "./group";
@@ -110,7 +110,7 @@ export class User {
 
     public async loginWithGoogle() {
         const provider = new GoogleAuthProvider();
-        const userCredential = await signInWithPopup(auth, provider)
+        const userCredential = await signInWithRedirect(auth, provider)
         this.fillFromGoogle(userCredential)
 
 
