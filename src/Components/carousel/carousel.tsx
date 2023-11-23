@@ -3,7 +3,7 @@ import "./carousel.css";
 type carouselType = {
   items: {
     title?: string;
-    isSelected?: boolean;
+    selected?: boolean;
     onClick?: () => void;
   }[];
 };
@@ -13,7 +13,7 @@ export function Carousel({ items }: carouselType) {
     <div className='carousel'>
       {items.map((item) => {
         return (
-          <p className={"carousel-item" + (item.isSelected ? " selected" : "")} onClick={item.onClick}>
+          <p className={"carousel-item" + (item.selected ? " selected" : "")} onClick={item.onClick}>
             {item.title}
           </p>
         );

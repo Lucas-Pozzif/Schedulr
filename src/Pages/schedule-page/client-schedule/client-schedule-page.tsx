@@ -203,7 +203,7 @@ export function ClientSchedulePage() {
                   }}
                   title={serviceName}
                   subtitle={profName}
-                  isSelected={isEqual(selectedBlock, currentBlock)}
+                  selected={isEqual(selectedBlock, currentBlock)}
                   onClick={() => {
                     isEqual(selectedBlock, currentBlock) ? setSelectedBlock(null) : setSelectedBlock(currentBlock);
                   }}

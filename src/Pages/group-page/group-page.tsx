@@ -306,7 +306,7 @@ export function GroupPage() {
                             return prof.getName();
                           })
                           .join(", ")}
-                        isSelected={selectedTime !== null && index + startHour * 6 >= selectedTime && index + startHour * 6 < selectedTime + (selectedService?.getDuration().length || 0)}
+                        selected={selectedTime !== null && index + startHour * 6 >= selectedTime && index + startHour * 6 < selectedTime + (selectedService?.getDuration().length || 0)}
                         onClick={() => {}}
                       />
                     </div>
@@ -355,7 +355,7 @@ export function GroupPage() {
                     <ItemButton
                       title={professional.getName()}
                       subtitle={professional.getOccupations().join(", ")}
-                      isSelected={professional.getId() === selectedProfessional?.getId()}
+                      selected={professional.getId() === selectedProfessional?.getId()}
                       onClick={() => {
                         if (selectedProfessional?.getId() === professional.getId()) {
                           setSelectedProfessional(null);
@@ -406,7 +406,7 @@ export function GroupPage() {
                     <ItemButton
                       title={service.getName()}
                       subtitle={"Ainda não implementado"}
-                      isSelected={service.getId() === selectedService?.getId()}
+                      selected={service.getId() === selectedService?.getId()}
                       onClick={() => {
                         if (selectedService?.getId() === service.getId()) {
                           setSelectedService(null);

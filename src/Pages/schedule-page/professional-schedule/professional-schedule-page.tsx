@@ -210,7 +210,7 @@ export function ProfessionalSchedulePage() {
                         }}
                         title={serviceName}
                         subtitle={clientName}
-                        isSelected={isEqual(selectedBlock, currentBlock)}
+                        selected={isEqual(selectedBlock, currentBlock)}
                         onClick={() => {
                           isEqual(selectedBlock, currentBlock) ? setSelectedBlock(null) : setSelectedBlock(currentBlock);
                         }}
@@ -332,7 +332,7 @@ export function ProfessionalSchedulePage() {
                 ...dayList.map((day) => {
                   return {
                     title: formattedDate(day),
-                    isSelected: selectedDay == day,
+                    selected: selectedDay == day,
                     onClick: () => {
                       setSelectedTimeList([]);
                       setSelectedDay(day);
@@ -341,7 +341,7 @@ export function ProfessionalSchedulePage() {
                 }),
                 {
                   title: "Carregar semana",
-                  isSelected: false,
+                  selected: false,
                   onClick: async () => {
                     setLoading(true);
 
@@ -491,7 +491,7 @@ export function ProfessionalSchedulePage() {
                 }),
                 index: index,
               };
-              const isSelected = selectedTimeList.find((time) => currentTime.day === time.day && currentTime.index === time.index) !== undefined;
+              const selected = selectedTimeList.find((time) => currentTime.day === time.day && currentTime.index === time.index) !== undefined;
 
               return (
                 <DoubleItemButton
@@ -501,7 +501,7 @@ export function ProfessionalSchedulePage() {
                   }}
                   title={serviceName}
                   subtitle={clientName}
-                  isSelected={isSelected}
+                  selected={selected}
                   onClick={() => {
                     if (selectedTimeList.some((time) => time.day === currentTime.day && time.index === currentTime.index)) {
                       setSelectedTimeList(selectedTimeList.filter((time) => time.day !== currentTime.day || time.index !== currentTime.index));
@@ -638,20 +638,20 @@ export function ProfessionalSchedulePage() {
 
             {serviceList.map((_, index) => {
               const currentTime = { day: day, index: index + startIndex };
-              const isSelected = selectedTimeList.find((time) => currentTime.day === time.day && currentTime.index === time.index) !== undefined;
+              const selected = selectedTimeList.find((time) => currentTime.day === time.day && currentTime.index === time.index) !== undefined;
 
               const weekDay = week[parseDate(day).getDay()];
               const schedule = professional.getSchedule()[day];
               const scheduleItem = schedule?.[index + startIndex];
               const available = scheduleItem === undefined || editedTime.edited === false;
 
-              if (isSelected) {
+              if (selected) {
                 scheduleItem.service = editedTime.service;
                 scheduleItem.edited = editedTime.edited;
                 scheduleItem.client = user.getId();
               }
 
-              const serviceName = isSelected
+              const serviceName = selected
                 ? editedTime.edited
                   ? editedTime.service
                   : "Disponível"
@@ -672,7 +672,7 @@ export function ProfessionalSchedulePage() {
                   }}
                   title={serviceName}
                   subtitle={clientName}
-                  isSelected={isSelected}
+                  selected={selected}
                   onClick={() => {
                     if (selectedTimeList.some((time) => time.day === currentTime.day && time.index === currentTime.index)) {
                       setSelectedTimeList(selectedTimeList.filter((time) => time.day !== currentTime.day || time.index !== currentTime.index));
@@ -868,7 +868,7 @@ export function ProfessionalSchedulePage() {
                   }}
                   title={serviceName}
                   subtitle={clientName}
-                  isSelected={false}
+                  selected={false}
                   onClick={() => {}}
                 />
               );

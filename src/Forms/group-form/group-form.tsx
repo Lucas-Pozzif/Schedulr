@@ -200,7 +200,7 @@ export function GroupForm() {
                     <ItemButton
                       title={service.getName()}
                       subtitle={service.getDurationValue()}
-                      isSelected={selectedService === service.getId()}
+                      selected={selectedService === service.getId()}
                       onClick={() => {
                         if (selectedService == service.getId()) {
                           setSelectedService(null);
@@ -261,7 +261,7 @@ export function GroupForm() {
               items={fullDays.map((day, index) => {
                 return {
                   title: day,
-                  isSelected: selectedDay == index,
+                  selected: selectedDay == index,
                   onClick: () => {
                     setSelectedDay(index);
                   },
@@ -280,7 +280,7 @@ export function GroupForm() {
                   <ItemButton
                     title={timeValue}
                     subtitle={""}
-                    isSelected={selected}
+                    selected={selected}
                     onClick={() => {
                       if (!startHour[selectedDay]) {
                         startHour[selectedDay] = 0;
@@ -355,7 +355,7 @@ export function GroupForm() {
                     <ItemButton
                       title={professional.getName()}
                       subtitle={professional.getOccupations().join(", ")}
-                      isSelected={selectedProfessional === professional.getId()}
+                      selected={selectedProfessional === professional.getId()}
                       onClick={() => {
                         setSelectedProfessional(professional.getId());
                       }}
