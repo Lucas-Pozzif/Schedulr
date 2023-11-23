@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Group } from "../../Classes/group";
-import { Header } from "../../Components/header/header";
+import { Header } from "../../Components/header/header/header";
 import { RatingItem } from "../../Components/rating-item/rating-item";
 import { SubHeader } from "../../Components/sub-header/sub-header";
 import { LoadingScreen } from "../../Components/loading/loading-screen/loading-screen";

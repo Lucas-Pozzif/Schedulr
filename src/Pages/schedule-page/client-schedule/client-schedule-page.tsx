@@ -5,7 +5,7 @@ import { auth } from "../../../Services/firebase/firebase";
 import { useNavigate, useParams } from "react-router-dom";
 import { LoadingScreen } from "../../../Components/loading/loading-screen/loading-screen";
 import { Professional } from "../../../Classes/professional";
-import { Header } from "../../../Components/header/header";
+import { Header } from "../../../Components/header/header/header";
 import { SubHeader } from "../../../Components/sub-header/sub-header";
 import { parseDate } from "../../../Function/parse-date/parse-date";
 import { capitalize } from "../../../Function/capitalize/capitalize";
@@ -164,7 +164,7 @@ export function ClientSchedulePage() {
       />
       {Object.entries(user.getSchedule()).map(([date, schedule]) => {
         const formattedDay = formattedDate(parseDate(date));
-        const hideMessage = displayList.includes(formattedDay) ? "Ocultar" : "Exibir";
+        const hiddenMessage = displayList.includes(formattedDay) ? "Ocultar" : "Exibir";
 
         const weekDay = capitalize(parseDate(date).toLocaleDateString("pt-BR", { weekday: "long" }));
 
@@ -172,44 +172,46 @@ export function ClientSchedulePage() {
           <div className='sp-day-block'>
             <SubHeader
               title={formattedDay}
-              buttonTitle={hideMessage}
+              buttonTitle={hiddenMessage}
               onClick={() => {
                 const updatedList = displayList.includes(formattedDay) ? displayList.filter((day) => day !== formattedDay) : [...displayList, formattedDay];
                 setDisplayList(updatedList);
               }}
             />
-            {findRepetitionBlocks(schedule).map((block) => {
-              if (!displayList.includes(formattedDay)) return null;
+            <div className='sp-list'>
+              {findRepetitionBlocks(schedule).map((block) => {
+                if (!displayList.includes(formattedDay)) return null;
 
-              const firstIndex = block[0];
-              const lastIndex = block[1];
-              const scheduleItem = schedule[firstIndex]; //the block content is all the same regardless of the index so i'll take the first one
+                const firstIndex = block[0];
+                const lastIndex = block[1];
+                const scheduleItem = schedule[firstIndex]; //the block content is all the same regardless of the index so i'll take the first one
 
-              const serviceName = serviceCache[scheduleItem.service].getName();
-              const profName = professionalCache[scheduleItem.client].getName();
+                const serviceName = serviceCache[scheduleItem.service].getName();
+                const profName = professionalCache[scheduleItem.client].getName();
 
-              const currentBlock = {
-                client: scheduleItem.client,
-                service: scheduleItem.service,
-                timeRange: block,
-                day: date,
-              };
+                const currentBlock = {
+                  client: scheduleItem.client,
+                  service: scheduleItem.service,
+                  timeRange: block,
+                  day: date,
+                };
 
-              return (
-                <DoubleItemButton
-                  leftButtonTitle={{
-                    title1: weekDay,
-                    title2: `${timeList[firstIndex]} - ${timeList[lastIndex]}`,
-                  }}
-                  title={serviceName}
-                  subtitle={profName}
-                  isSelected={isEqual(selectedBlock, currentBlock)}
-                  onClick={() => {
-                    isEqual(selectedBlock, currentBlock) ? setSelectedBlock(null) : setSelectedBlock(currentBlock);
-                  }}
-                />
-              );
-            })}
+                return (
+                  <DoubleItemButton
+                    leftButtonTitle={{
+                      title1: weekDay,
+                      title2: `${timeList[firstIndex]} - ${timeList[lastIndex]}`,
+                    }}
+                    title={serviceName}
+                    subtitle={profName}
+                    selected={isEqual(selectedBlock, currentBlock)}
+                    onClick={() => {
+                      isEqual(selectedBlock, currentBlock) ? setSelectedBlock(null) : setSelectedBlock(currentBlock);
+                    }}
+                  />
+                );
+              })}
+            </div>
           </div>
         );
       })}
@@ -287,7 +289,7 @@ export function ClientSchedulePage() {
         }}
       />
       <BottomButton
-        hide={selectedBlock === null}
+        hidden={selectedBlock === null}
         title={"Desmarcar"}
         onClick={async () => {
           {

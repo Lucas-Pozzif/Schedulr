@@ -1,4 +1,4 @@
-import { Header } from "../../Components/header/header";
+import { Header } from "../../Components/header/header/header";
 import { SubHeader } from "../../Components/sub-header/sub-header";
 
 import "./rating-form.css";

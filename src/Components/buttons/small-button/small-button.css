@@ -4,10 +4,10 @@
     background-color: #DEE2E6;
     padding-block: 3px;
     margin-block: 10px;
-    font-size: 12px;
+    font-size: 14px;
     color: #212529;
     opacity: .8;
-    width: 80px;
+    width: 100px;
 }
 
 .small-button.selected {

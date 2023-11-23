@@ -6,7 +6,7 @@ import { LoadingScreen } from "../../Components/loading/loading-screen/loading-s
 import { Line } from "../../Components/line/line";
 import { SmallButton } from "../../Components/buttons/small-button/small-button";
 import { LinkButton } from "../../Components/buttons/link-button/link-button";
-import { Header } from "../../Components/header/header";
+import { Header } from "../../Components/header/header/header";
 import { Service } from "../../Classes/service";
 import { ItemButton } from "../../Components/buttons/item-button/item-button";
 import { BottomPopup } from "../../Components/buttons/bottom-popup/bottom-popup";
@@ -14,6 +14,9 @@ import { ServiceForm } from "../service-form/service-form";
 import { BottomButton } from "../../Components/buttons/bottom-button/bottom-button";
 import { SubHeader } from "../../Components/sub-header/sub-header";
 import { Carousel } from "../../Components/carousel/carousel";
+import { HeaderInput } from "../../Components/inputs/header-input/header-input";
+import { IconInput } from "../../Components/inputs/icon-input/icon-input";
+import ErrorPage from "../../Pages/error-page/error-page";
 
 type professionalFormType = {
   user?: User;
@@ -32,11 +35,9 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
 
   const fullDays = ["Domingo", "Segunda-Feira", "Terça-Feira", "Quarta-Feira", "Quinta-Feira", "Sexta-Feira", "Sábado"];
 
-  const arrow = require("../../Assets/arrow.png");
   const more = require("../../Assets/more.png");
   const bin = require("../../Assets/delete.png");
   const mail = require("../../Assets/mail.png");
-  const addImage = require("../../Assets/add-image.png");
   const block = require("../../Assets/block.png");
 
   useEffect(() => {
@@ -57,52 +58,41 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
     if (professional.getId() !== "") {
     }
     switch (tab) {
-      case 0:
+      case 0: // Home tab
         return (
           <div className='service-form'>
-            <div className='sf-header'>
-              <img className='return-button' src={arrow} onClick={onClickReturn} />
-              <div className='sf-header-text-block'>
-                <input
-                  className='sf-header-title'
-                  placeholder='Nome do Profissonal'
-                  value={professionalForm.getName()}
-                  onChange={(e) => {
-                    professionalForm.setName(e.target.value);
-                    const updatedProfessional = new Professional(professionalForm);
-                    setProfessionalForm(updatedProfessional);
-                  }}
-                />
-                <p className='sf-header-subtitle'>{formatArray(professionalForm.getOccupations())}</p>
-              </div>
-              <img
-                className='sf-delete-button'
-                src={bin}
-                onClick={() => {
-                  alert("ainda não implementado");
-                }}
-              />
-            </div>
+            <HeaderInput
+              placeholder='Digite o nome do Profissional'
+              value={professionalForm.getName()}
+              subtitle={formatArray(professionalForm.getOccupations())}
+              icon={bin}
+              onChange={(e) => {
+                professionalForm.setName(e.target.value);
+                const updatedProfessional = new Professional(professionalForm);
+                setProfessionalForm(updatedProfessional);
+              }}
+              onClickReturn={onClickReturn}
+              onClickIcon={() => {
+                alert("ainda não implementado");
+              }}
+            />
             <div className='sf-data-block'>
-              <div className='sf-value-block'>
-                <img className='sf-value-icon' src={mail} />
-                <input
-                  className='sf-value-input'
-                  placeholder='Digitar email'
-                  value={professionalForm.getEmail()}
-                  onChange={(e) => {
-                    professionalForm.setEmail(e.target.value);
-                    const updatedProfessional = new Professional(professionalForm);
-                    setProfessionalForm(updatedProfessional);
-                  }}
-                />
-              </div>
+              <IconInput
+                placeholder='Digitar email'
+                value={professionalForm.getEmail()}
+                onChange={(e) => {
+                  professionalForm.setEmail(e.target.value);
+                  const updatedProfessional = new Professional(professionalForm);
+                  setProfessionalForm(updatedProfessional);
+                }}
+                icon={mail}
+              />
               <Line />
               <div className='sf-bottom-columns'>
                 <div className='sf-left-column'>
                   <SmallButton
                     title={"Admin"}
-                    isSelected={professionalForm.getIsAdmin()}
+                    selected={professionalForm.getIsAdmin()}
                     onClick={() => {
                       professionalForm.setIsAdmin(!professionalForm.getIsAdmin());
                       const updatedProfessional = new Professional(professionalForm);
@@ -129,22 +119,12 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
                       setTab(3);
                     }}
                   />
-                  {/*
-                  <div className='sf-image-group'>
-                    <div className='sf-image-add'>
-                      <img className='sf-image-add-icon' src={addImage} />
-                    </div>
-                    {professionalForm.getImages().map((image) => {
-                      return <img className='gf-image' src={image} />;
-                    })}
-                  </div>
-                    */}
                 </div>
               </div>
             </div>
             <BottomPopup
               title={"Editando..."}
-              subtitle={`Profissional de ${groupForm.getTitle()}`}
+              subtitle={`Os campos ### não foram preenchidos!`}
               buttonTitle={"Salvar"}
               onClick={async () => {
                 setLoading(true);
@@ -162,11 +142,11 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
                 setLoading(false);
                 onClickReturn();
               }}
-              isActive={professionalForm.isValid()}
+              activated={professionalForm.isValid()}
             />
           </div>
         );
-      case 1:
+      case 1: // Service Tab
         return (
           <div className='gf-tab'>
             <Header
@@ -188,7 +168,7 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
                     <ItemButton
                       title={service.getName()}
                       subtitle={service.getDurationValue()}
-                      isSelected={professionalForm.getServices().includes(service.getId())}
+                      selected={professionalForm.getServices().includes(service.getId())}
                       onClick={() => {
                         const services = [...professionalForm.getServices()];
                         if (professionalForm.getServices().includes(service.getId())) {
@@ -206,7 +186,7 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
             </div>
           </div>
         );
-      case 2:
+      case 2: // Time Tab
         const timeArray = [];
 
         for (let i = 0; i <= 24; i++) {
@@ -247,7 +227,7 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
               items={fullDays.map((day, index) => {
                 return {
                   title: day,
-                  isSelected: selectedDay == index,
+                  selected: selectedDay == index,
                   onClick: () => {
                     setSelectedDay(index);
                   },
@@ -266,7 +246,7 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
                   <ItemButton
                     title={timeValue}
                     subtitle={""}
-                    isSelected={selected}
+                    selected={selected}
                     onClick={() => {
                       if (!startHour[selectedDay]) {
                         startHour[selectedDay] = 0;
@@ -310,7 +290,7 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
               })}
             </div>
             <BottomButton
-              hide={false}
+              hidden={false}
               title={"Confirmar"}
               onClick={() => {
                 setTab(0);
@@ -318,49 +298,35 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
             />
           </div>
         );
-      case 3:
+      case 3: // Occupation Tab
         const occupations = [...professionalForm.getOccupations()];
         return (
           <div className='service-form'>
-            <div className='ssf-header'>
-              <img
-                className='return-button'
-                src={arrow}
-                onClick={() => {
-                  setTab(0);
-                }}
-              />
-              <div className='ssf-header-text-block'>
-                <input
-                  className='ssf-header-title'
-                  placeholder='Digite a Ocupação'
-                  maxLength={25}
-                  value={selectedOcupation !== null ? professionalForm.getOccupations()[selectedOcupation] : ""}
-                  onChange={(e) => {
-                    if (selectedOcupation === null) {
-                      setSelectedOcupation(occupations.length);
-                      occupations.push(e.target.value);
-                    } else {
-                      occupations[selectedOcupation] = e.target.value;
-                    }
-                    professionalForm.setOccupations(occupations);
-                    setProfessionalForm(new Professional(professionalForm));
-                  }}
-                />
-                <p className='ssf-header-subtitle'>{professionalForm.getName()}</p>
-              </div>
-              <img
-                className='ssf-delete-button'
-                src={bin}
-                onClick={() => {
-                  const updatedOccupations = occupations.filter((occupation, index) => index !== selectedOcupation);
-                  professionalForm.setOccupations(updatedOccupations);
-                  setProfessionalForm(new Professional(professionalForm));
-                }}
-              />
-            </div>
+            <HeaderInput
+              placeholder={"Digite a Ocupação"}
+              value={selectedOcupation !== null ? professionalForm.getOccupations()[selectedOcupation] : ""}
+              icon={bin}
+              maxLength={25}
+              onChange={(e) => {
+                if (selectedOcupation === null) {
+                  setSelectedOcupation(occupations.length);
+                  occupations.push(e.target.value);
+                } else {
+                  occupations[selectedOcupation] = e.target.value;
+                }
+                professionalForm.setOccupations(occupations);
+                setProfessionalForm(new Professional(professionalForm));
+              }}
+              onClickReturn={() => {
+                setTab(0);
+              }}
+              onClickIcon={() => {
+                const updatedOccupations = occupations.filter((occupation, index) => index !== selectedOcupation);
+                professionalForm.setOccupations(updatedOccupations);
+                setProfessionalForm(new Professional(professionalForm));
+              }}
+            />
             <SubHeader title={selectedOcupation !== null ? professionalForm.getOccupations()[selectedOcupation] : `${professionalForm.getOccupations().length} ocupações`} buttonTitle={"Nova Ocupação"} onClick={() => setSelectedOcupation(null)} />
-
             <div className='sf-item-list'>
               {professionalForm
                 .getOccupations()
@@ -370,7 +336,7 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
                     <ItemButton
                       title={occupation}
                       subtitle={""}
-                      isSelected={index == selectedOcupation}
+                      selected={index == selectedOcupation}
                       onClick={() => {
                         if (index == selectedOcupation) {
                           setSelectedOcupation(null);
@@ -383,7 +349,7 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
                 })}
             </div>
             <BottomButton
-              hide={
+              hidden={
                 !occupations
                   .map((occupation) => {
                     return occupation.length > 0;
@@ -397,10 +363,10 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
             />
           </div>
         );
-      case 4:
+      case 4: // ServiceForm tab
         return <ServiceForm user={user} groupForm={groupForm} setGroupForm={setGroupForm} onClickReturn={() => setTab(1)} />;
       default:
-        return <div />;
+        return <ErrorPage />;
     }
   };
 

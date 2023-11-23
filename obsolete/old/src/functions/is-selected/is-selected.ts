@@ -1,2 +1,2 @@
 
-export const isSelected = (s: boolean) => s ? 'selected' : ''
+export const selected = (s: boolean) => s ? 'selected' : ''
