@@ -1,15 +1,15 @@
-import './link-button.css'
+import "./link-button.css";
 type linkButtonType = {
-    title: string;
-    onClick: () => void
-}
+  title: string;
+  onClick?: () => void;
+};
 const arrow = require("../../../Assets/arrow.png");
 
 export function LinkButton({ title, onClick }: linkButtonType) {
-    return (
-        <div className="link-button" onClick={onClick}>
-            <p className="lb-title">{title}</p>
-            <img className={"sched-arrow right"} src={arrow} />
-        </div>
-    )
+  return (
+    <div className='link-button' onClick={onClick}>
+      <p className='lb-title'>{title}</p>
+      <img className={"sched-arrow right"} src={arrow} />
+    </div>
+  );
 }

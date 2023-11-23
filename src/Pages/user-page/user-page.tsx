@@ -7,6 +7,8 @@ import { LoadingScreen } from "../../Components/loading/loading-screen/loading-s
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../Services/firebase/firebase";
 import { useNavigate } from "react-router-dom";
+import { UserHeader } from "../../Components/header/user-header/user-header";
+import { IconButton } from "../../Components/buttons/icon-button/icon-button";
 
 export function UserPage() {
   const [loading, setLoading] = useState(false);
@@ -39,43 +41,28 @@ export function UserPage() {
     <LoadingScreen />
   ) : (
     <div className='user-page'>
-      <div className='up-header'>
-        <img
-          className='up-return left'
-          src={arrow}
-          onClick={() => {
-            navigate("/");
-          }}
-        />
-
-        <img className='up-profile' src={user.getPhoto() || userProfile} />
-        <div className='up-name-block'>
-          {editing ? (
-            <input
-              className='up-name-input'
-              placeholder={"Digitar novo nome"}
-              onChange={(e) => {
-                user.setName(e.target.value);
-                setUser(new User(user));
-              }}
-            />
-          ) : (
-            <p className='up-name'>{user.getName()}</p>
-          )}
-          <img
-            className='up-edit-button'
-            src={editing ? confirm : edit}
-            onClick={async (e) => {
-              if (editing) {
-                console.log(user.getName());
-                await user.updateUser({ name: user.getName() });
-              }
-              setEditing(!editing);
-            }}
-          />
-        </div>
-        <p className='up-email'>{user.getEmail()}</p>
-      </div>
+      <UserHeader
+        image={user.getPhoto() || userProfile}
+        title={user.getName()}
+        placeholder={"Digitar novo nome"}
+        subtitle={user.getEmail()}
+        titleIcon={editing ? confirm : edit}
+        editing={editing}
+        onClickIcon={async () => {
+          if (editing) {
+            console.log(user.getName());
+            await user.updateUser({ name: user.getName() });
+          }
+          setEditing(!editing);
+        }}
+        onChange={(e) => {
+          user.setName(e.target.value);
+          setUser(new User(user));
+        }}
+        onClickReturn={() => {
+          navigate("/");
+        }}
+      />
       {!hasAccount ? (
         <>
           <div className='up-login-block'>
@@ -103,27 +90,23 @@ export function UserPage() {
         </>
       ) : null}
       <div className='up-item-list'>
-        <div
-          className='up-item'
-          onClick={async () => {
+        <IconButton
+          title={"Criar Agenda"}
+          icon={store}
+          onClick={() => {
             navigate(`/group/add`);
           }}
-        >
-          <img className='up-icon' src={store} />
-          <p className='up-title'>Criar Agenda</p>
-        </div>
-        <div
-          className='up-item'
-          onClick={async () => {
+        />
+        <IconButton
+          title={"Ver Minha Agenda"}
+          icon={mail}
+          onClick={() => {
             navigate(`/user/schedule/${user.getId()}`);
           }}
-        >
-          <img className='up-icon' src={mail} />
-          <p className='up-title'>Ver minha Agenda</p>
-        </div>
-
-        <div
-          className='up-item'
+        />
+        <IconButton
+          title={"Sair da Conta"}
+          icon={exit}
           onClick={async () => {
             setLoading(true);
             await user.logout();
@@ -131,10 +114,7 @@ export function UserPage() {
             setHasAccount(false);
             setLoading(false);
           }}
-        >
-          <img className='up-icon' src={exit} />
-          <p className='up-title'>Sair da Conta</p>
-        </div>
+        />
       </div>
     </div>
   );

@@ -16,9 +16,7 @@
 .carousel-item {
   height: 40px;
   width: 85px;
-  font-size: 12px;
   background-color: #dee2e6;
-  color: black;
   border-radius: 2px;
   display: flex;
   justify-content: center;
@@ -29,4 +27,8 @@
 
 .carousel-item.selected {
   outline: #212529 1px solid;
+}
+.carousel-title {
+  color: black;
+  font-size: 12px;
 }

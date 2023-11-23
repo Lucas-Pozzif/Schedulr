@@ -21,3 +21,11 @@
   margin-top: 10px;
   margin-left: 10px;
 }
+.sp-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.sp-input {
+  margin-inline: 10px;
+}

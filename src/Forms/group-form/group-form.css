@@ -3,28 +3,6 @@
     background-color: #CED4DA;
 }
 
-/* Banner */
-.gf-banner {
-    background: linear-gradient(284deg, #212529 0%, rgba(0, 0, 0, 0.00) 100%);
-    height: 50vw;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.gf-banner-image {
-    object-fit: cover;
-    height: 50vw;
-    width: 100%;
-    background: linear-gradient(284deg, #212529 0%, rgba(0, 0, 0, 0.00) 100%);
-}
-
-/* Banner Placeholder */
-.gf-banner-placeholder {
-    height: 30px;
-    width: 30px;
-}
-
 /* Profile */
 .gf-profile {
     position: absolute;
@@ -55,51 +33,11 @@
     width: 30px;
 }
 
-/* Title Block */
-.gf-title-block {
-    background-color: #DEE2E6;
-    padding-top: 15px;
-    padding-bottom: 5px;
-}
-
-/* Title Input */
-.gf-title-input {
-    font-size: 20px;
-    color: #212529;
-    padding-left: 10px;
-}
-
-/* Group Type Selector Title */
-.gf-group-type-selector {
-    color: #212529;
-    font-size: 12px;
-    padding-left: 10px;
-}
-
 /* Data Block */
 .gf-data-block {
     background-color: #CED4DA;
     padding-inline: 10px;
     min-height: calc(100% + 40px);
-}
-
-/* Location Block */
-.gf-location-block {
-    display: flex;
-    align-items: center;
-    padding-block: 17px;
-}
-
-/* Location Icon */
-.gf-location-icon {
-    width: 20px;
-    height: 20px;
-    margin-left: 2px;
-}
-
-/* Location Input */
-.gf-location-input {
-    padding-left: 5px;
 }
 
 /* Bottom Columns */
@@ -379,7 +317,7 @@
     padding-inline: 95px;
 }
 
-/* Hide Scrollbar */
+/* hidden Scrollbar */
 .gf-day-carrousel::-webkit-scrollbar {
     display: none;
 }

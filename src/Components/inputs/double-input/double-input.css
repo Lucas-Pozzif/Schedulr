@@ -1,0 +1,18 @@
+.double-input {
+  background-color: #dee2e6;
+  padding-top: 15px;
+  display: flex;
+  padding-bottom: 5px;
+  padding-left: 10px;
+  flex-direction: column;
+}
+
+.di-1 {
+  font-size: 20px;
+  color: #212529;
+}
+
+.di-2 {
+  color: #212529;
+  font-size: 12px;
+}
