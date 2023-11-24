@@ -16,7 +16,7 @@ import { Carousel } from "../../Components/carousel/carousel";
 import { ItemButton } from "../../Components/buttons/item-button/item-button";
 import { BottomButton } from "../../Components/buttons/bottom-button/bottom-button";
 import { DoubleButton } from "../../Components/buttons/double-button/double-button";
-import { capitalize } from "../../Function/capitalize/capitalize";
+import { capitalize } from "../../Function/formatting/capitalize/capitalize";
 
 import "./group-page.css";
 import { RatingPage } from "../rating-page/rating-page";

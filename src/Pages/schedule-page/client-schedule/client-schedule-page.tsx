@@ -7,12 +7,12 @@ import { LoadingScreen } from "../../../Components/loading/loading-screen/loadin
 import { Professional } from "../../../Classes/professional";
 import { Header } from "../../../Components/header/header/header";
 import { SubHeader } from "../../../Components/sub-header/sub-header";
-import { parseDate } from "../../../Function/parse-date/parse-date";
-import { capitalize } from "../../../Function/capitalize/capitalize";
+import { parseDate } from "../../../Function/formatting/parse-date/parse-date";
+import { capitalize } from "../../../Function/formatting/capitalize/capitalize";
 import { Service } from "../../../Classes/service";
 import { BottomButton } from "../../../Components/buttons/bottom-button/bottom-button";
 import { findRepetitionBlocks } from "../../../Function/find-repetition-blocks/find-repetition-blocks";
-import { formattedDate } from "../../../Function/formatted-date/formatted-date";
+import { formattedDate } from "../../../Function/formatting/formatted-date/formatted-date";
 import { DoubleButton } from "../../../Components/buttons/double-button/double-button";
 import { DoubleItemButton } from "../../../Components/buttons/double-item-button/double-item-button";
 import { Carousel } from "../../../Components/carousel/carousel";
