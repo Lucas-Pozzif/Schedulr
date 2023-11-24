@@ -24,6 +24,7 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
 
   const [selectedOcupation, setSelectedOcupation] = useState<null | number>(null);
   const [selectedDay, setSelectedDay] = useState(0);
+  
   const [warning, setWarning] = useState<null | string>(null);
   const [message, setMessage] = useState<null | string>(null);
 
