@@ -145,6 +145,7 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
                   return <ItemButton title={service.getName()} subtitle={service.getDurationValue()} selected={professionalForm.getServices().includes(service.getId())} onClick={() => professionalForm.handleService(service, setProfessionalForm)} />;
                 })}
             </div>
+            <BottomButton title={"Confirmar"} onClick={() => setTab(0)} hidden={false} />
           </div>
         );
       case 2: // Time Tab
