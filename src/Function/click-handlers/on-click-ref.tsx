@@ -1,4 +1,4 @@
-import { Group } from "../../Classes/group";
+import { Group } from "../../Classes/group/group";
 
 export const onClickRef = (reference: React.RefObject<HTMLInputElement>) => {
   reference.current!.click();
