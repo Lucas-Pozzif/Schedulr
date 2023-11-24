@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Group } from "../../Classes/group";
+import { Group } from "../../Classes/group/group";
 import { Header } from "../../Components/header/header/header";
 import { RatingItem } from "../../Components/rating-item/rating-item";
 import { SubHeader } from "../../Components/sub-header/sub-header";

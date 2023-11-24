@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { Group } from "../../Classes/group";
+import { Group } from "../../Classes/group/group";
 import { GroupList } from "../../Components/group-list/group-list";
 import { VerticalLine } from "../../Components/line/line";
-import { User } from "../../Classes/user";
+import { User } from "../../Classes/user/user";
 import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../Services/firebase/firebase";

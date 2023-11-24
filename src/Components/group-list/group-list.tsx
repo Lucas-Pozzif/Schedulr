@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom"
-import { Group } from "../../Classes/group"
+import { Group } from "../../Classes/group/group"
 import { GroupButton } from "../buttons/group-button/group-button"
 
 import "./group-list.css"

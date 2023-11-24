@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
-import { User } from "../../../Classes/user";
+import { User } from "../../../Classes/user/user";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../../Services/firebase/firebase";
 import { useNavigate, useParams } from "react-router-dom";
 import { LoadingScreen } from "../../../Components/loading/loading-screen/loading-screen";
-import { Professional } from "../../../Classes/professional";
+import { Professional } from "../../../Classes/professional/professional";
 import { Header } from "../../../Components/header/header/header";
 import { SubHeader } from "../../../Components/sub-header/sub-header";
 import { parseDate } from "../../../Function/formatting/parse-date/parse-date";
 import { capitalize } from "../../../Function/formatting/capitalize/capitalize";
-import { Service } from "../../../Classes/service";
+import { Service } from "../../../Classes/service/service";
 import { BottomButton } from "../../../Components/buttons/bottom-button/bottom-button";
 import { findRepetitionBlocks } from "../../../Function/find-repetition-blocks/find-repetition-blocks";
 import { formattedDate } from "../../../Function/formatting/formatted-date/formatted-date";

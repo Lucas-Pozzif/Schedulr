@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { User } from "../../Classes/user";
+import { User } from "../../Classes/user/user";
 import { Line } from "../../Components/line/line";
 
 import "./user-page.css";
