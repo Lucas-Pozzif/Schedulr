@@ -12,5 +12,6 @@ import { DoubleInput } from "./inputs/double-input/double-input";
 import { IconInput } from "./inputs/icon-input/icon-input";
 import { HeaderInput } from "./inputs/header-input/header-input";
 import { SmallButton } from "./buttons/small-button/small-button";
+import { DropdownButton } from "./buttons/dropdown-button/dropdown-button";
 
-export { LoadingScreen, Line, SmallButton, Header, LinkButton, BottomPopup, BottomButton, SubHeader, ItemButton, Carousel, GroupBanner, DoubleInput, IconInput, HeaderInput };
+export { LoadingScreen,DropdownButton, Line, SmallButton, Header, LinkButton, BottomPopup, BottomButton, SubHeader, ItemButton, Carousel, GroupBanner, DoubleInput, IconInput, HeaderInput };
