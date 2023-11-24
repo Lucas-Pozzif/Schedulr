@@ -25,6 +25,7 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
   const [selectedOcupation, setSelectedOcupation] = useState<null | number>(null);
   const [selectedDay, setSelectedDay] = useState(0);
   const [warning, setWarning] = useState<null | string>(null);
+  const [message, setMessage] = useState<null | string>(null);
 
   useEffect(() => {
     setLoading(true);
@@ -50,14 +51,19 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
 
     if (!professionalForm.getIsAdmin()) {
       admins.push(profUser.getId());
+      setMessage(`${profUser.getName()} é um administrador`);
     } else {
       const index = admins.indexOf(profUser.getId());
       if (index !== -1) {
         admins.splice(index, 1);
       }
+      setMessage(`${profUser.getName()} não é mais um administrador`);
     }
     professionalForm.updateProfessionalState(setProfessionalForm, "isAdmin", !professionalForm.getIsAdmin());
     groupForm.setAdmins(admins);
+    setTimeout(() => {
+      setMessage(null);
+    }, 3000);
   };
 
   const saveProfessional = async () => {
@@ -114,7 +120,8 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
               <div className='sf-bottom-columns'>
                 <div className='sf-left-column'>
                   <SmallButton title={"Admin"} selected={professionalForm.getIsAdmin()} onClick={async () => updateAdmins()} />
-                  <p className={`pf-warning-message ${warning ? "" : "hidden"}`}>{warning}</p>
+                  <p className={`pf-warning ${warning ? "" : "hidden"}`}>{warning}</p>
+                  <p className={`pf-message ${message ? "" : "hidden"}`}>{message}</p>
                 </div>
                 <div className='sf-right-column'>
                   <LinkButton title={"Alterar Serviços"} onClick={() => setTab(1)} />

@@ -7,8 +7,16 @@
   }
 }
 
-.pf-warning-message {
+.pf-warning {
   color: red;
+  opacity: 0.6;
+  text-align: center;
+  width: 100px;
+  font-size: 12px;
+  animation: fadeOut 2s 1s forwards;
+}
+.pf-message {
+  color: blue;
   opacity: 0.6;
   text-align: center;
   width: 100px;
