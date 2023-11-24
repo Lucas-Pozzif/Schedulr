@@ -1,6 +1,8 @@
-import { DocumentSnapshot, deleteDoc, doc, getDoc, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
+import { DocumentSnapshot, collection, deleteDoc, doc, getDoc, getDocs, query, serverTimestamp, setDoc, updateDoc, where } from "firebase/firestore";
 import { db } from "../Services/firebase/firebase";
 import { Schedule, ScheduleItem } from "./schedule";
+import { User } from "./user";
+import { Service } from "./service";
 interface ProfessionalInterface {
     name: string;
     occupations: string[];
@@ -254,6 +256,21 @@ export class Professional {
         return configSnap.data()!.professional.toString();
     }
 
+    public async searchForUser() {
+        const usersRef = collection(db, 'users');
+        const q = query(usersRef, where('email', '==', this._email));
+
+        const querySnapshot = await getDocs(q);
+
+        const user = new User();
+        querySnapshot.forEach((snap) => {
+            user.fillFromSnapshot(snap);
+        });
+
+        return user;
+    }
+
+
     // Schedule methods
 
     public async updateSchedule(day: string, index: string, value: ScheduleItem) {
@@ -331,4 +348,102 @@ export class Professional {
 
         return hasName;
     }
+
+    public updateProfessionalState(
+        setter: React.Dispatch<React.SetStateAction<Professional>>,
+        attribute: "id" | "name" | "occupations" | "email" | "isAdmin" | "services" | "shift" | "startHours" | "images" | "schedule",
+        newValue: any
+    ) {
+        switch (attribute) {
+            case "id":
+                this._id = newValue;
+                break
+            case "name":
+                this._name = newValue;
+                break
+            case "occupations":
+                this._occupations = newValue;
+                break
+            case "email":
+                this._email = newValue;
+                break
+            case "isAdmin":
+                this._isAdmin = newValue;
+                break
+            case "services":
+                this._services = newValue;
+                break
+            case "shift":
+                this._shift = newValue;
+                break
+            case "startHours":
+                this._startHours = newValue;
+                break
+            case "images":
+                this._images = newValue;
+                break
+            case "schedule":
+                this._schedule = newValue;
+                break
+            default:
+                break
+        }
+        setter(new Professional(this))
+    }
+
+    public handleService(service: Service, setter: React.Dispatch<React.SetStateAction<Professional>>) {
+        if (this._services.includes(service.getId())) {
+            const index = this._services.indexOf(service.getId());
+            this._services.splice(index, 1);
+        } else {
+            this._services.push(service.getId());
+        }
+        setter(new Professional(this));
+
+    }
+
+    public cleanDay(selectedDay: number, setter: React.Dispatch<React.SetStateAction<Professional>>) {
+        this._startHours[selectedDay] = 0;
+        this._shift[selectedDay] = [];
+        setter(new Professional(this));
+    }
+
+    public fillHours(selectedDay: number, setter: React.Dispatch<React.SetStateAction<Professional>>) {
+        this._shift[selectedDay] = this._shift[selectedDay]?.map(() => true);
+        setter(new Professional(this));
+    }
+
+    public updateHourList(selectedDay: number, index: number, setter: React.Dispatch<React.SetStateAction<Professional>>) {
+        if (!this._startHours[selectedDay] || isNaN(this._startHours[selectedDay])) this._startHours[selectedDay] = 0;
+        if (this._startHours[selectedDay] > 0) {
+            // Fill the hour list with all the values
+            const pseudoIndexes = Array(this._startHours[selectedDay]).fill(false);
+            this._shift[selectedDay] = [...pseudoIndexes, ...this._shift[selectedDay]];
+            this._startHours[selectedDay] = 0;
+        }
+        if (!this._shift[selectedDay]) this._shift[selectedDay] = [];
+        if (index >= this._shift[selectedDay].length) {
+            // Fill any value between the given index and the last hour list value with falses
+            const diff = index - this._shift[selectedDay].length + 1;
+            this._shift[selectedDay].push(...Array(diff).fill(false));
+        }
+
+        this._shift[selectedDay][index] = !this._shift[selectedDay][index];
+
+        for (let i = this._shift[selectedDay].length - 1; i >= 0; i--) {
+            // Remove any value from the end, until the last value is true
+            if (this._shift[selectedDay][i]) break;
+            this._shift[selectedDay].pop();
+        }
+        this._startHours[selectedDay] = this._shift[selectedDay].indexOf(true); // Update the startHours value
+        for (let i = 0; i < this._startHours[selectedDay]; i++) {
+            // Remove any value from the start, until the first value is true
+            this._shift[selectedDay].shift();
+        }
+
+        setter(new Professional(this));
+    }
+
+
+
 }
