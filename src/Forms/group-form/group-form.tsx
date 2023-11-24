@@ -38,9 +38,9 @@ export function GroupForm({ group, onClickReturn }: GroupFormType) {
       if (!client) return; //There is no user on the firebase authentication
       await user.getUser(client.uid);
       setUser(new User(user));
+      groupForm.setOwner(user.getId());
+      groupForm.setAdmins([...groupForm.getAdmins(), user.getId()]);
     });
-    groupForm.setOwner(user.getId());
-    groupForm.setAdmins([...groupForm.getAdmins(), user.getId()]);
     setLoading(false);
   }, []);
 
