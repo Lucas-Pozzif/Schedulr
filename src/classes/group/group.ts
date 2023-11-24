@@ -1,7 +1,7 @@
 import { DocumentSnapshot, deleteDoc, doc, getDoc, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
-import { Professional } from "./professional";
-import { Service } from "./service";
-import { db, storage } from "../Services/firebase/firebase";
+import { Professional } from "../professional/professional";
+import { Service } from "../service/service";
+import { db, storage } from "../../Services/firebase/firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 export interface GroupInterface {
   title: string;

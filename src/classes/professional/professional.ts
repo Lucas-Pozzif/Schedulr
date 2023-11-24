@@ -1,8 +1,9 @@
 import { DocumentSnapshot, collection, deleteDoc, doc, getDoc, getDocs, query, serverTimestamp, setDoc, updateDoc, where } from "firebase/firestore";
-import { db } from "../Services/firebase/firebase";
-import { Schedule, ScheduleItem } from "./schedule";
-import { User } from "./user";
-import { Service } from "./service";
+import { db } from "../../Services/firebase/firebase";
+import { Schedule, ScheduleItem } from "../schedule/schedule";
+import { User } from "../user/user";
+import { Service } from "../service/service";
+
 interface ProfessionalInterface {
     name: string;
     occupations: string[];

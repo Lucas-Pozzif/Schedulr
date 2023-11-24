@@ -1,8 +1,8 @@
 import { GoogleAuthProvider, UserCredential, signInWithPopup, signOut } from "firebase/auth";
-import { auth, db } from "../Services/firebase/firebase";
+import { auth, db } from "../../Services/firebase/firebase";
 import { DocumentSnapshot, collection, deleteDoc, doc, getDoc, getDocs, query, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
-import { Group } from "./group";
-import { Schedule, ScheduleItem } from "./schedule";
+import { Group } from "../group/group";
+import { Schedule, ScheduleItem } from "../schedule/schedule";
 
 interface UserInterface {
     id: string;
