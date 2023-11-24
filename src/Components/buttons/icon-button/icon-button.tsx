@@ -9,8 +9,8 @@ type IconButtonType = {
 export function IconButton({ title, icon, onClick }: IconButtonType) {
   return (
     <div className='icon-button' onClick={onClick}>
-      <img className='ib-icon' src={icon} />
-      <p className='ib-title'>{title}</p>
+      <img className='icb-icon' src={icon} />
+      <p className='icb-title'>{title}</p>
     </div>
   );
 }
