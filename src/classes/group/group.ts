@@ -289,7 +289,8 @@ export class Group {
     await this.updateTimeStamp();
   }
 
-  public async getGroup(id: string) {
+  public async getGroup(id?: string) {
+    if (!id) return
     const docRef = doc(db, "groups", id);
     const docSnap = await getDoc(docRef);
     if (!docSnap.data()) return;
