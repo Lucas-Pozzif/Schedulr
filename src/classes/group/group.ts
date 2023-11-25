@@ -362,14 +362,19 @@ export class Group {
   }
 
   private async uploadImages() {
-    const profileRef = ref(storage, `groups/${this._id}/profile`);
-    const bannerRef = ref(storage, `groups/${this._id}/banner`);
+    try {
+      const profileRef = ref(storage, `groups/${this._id}/profile`);
+      const bannerRef = ref(storage, `groups/${this._id}/banner`);
 
-    const bannerResponse = await fetch(this._banner);
-    const profileResponse = await fetch(this._profile);
+      const bannerResponse = await fetch(this._banner);
+      const profileResponse = await fetch(this._profile);
 
-    await uploadBytes(bannerRef, await bannerResponse.blob());
-    await uploadBytes(profileRef, await profileResponse.blob());
+      await uploadBytes(bannerRef, await bannerResponse.blob());
+      await uploadBytes(profileRef, await profileResponse.blob());
+
+    } catch (error) {
+      console.error('failed to fetch images')
+    }
   }
 
   private async updateTimeStamp() {
