@@ -1,26 +1,16 @@
+import "../schedule-page.css";
+
 import { useEffect, useState } from "react";
-import { User } from "../../../Classes/user/user";
+
+import { BottomButton, Carousel, DoubleButton, DoubleItemButton, Header, IconInput, Line, LoadingScreen, SubHeader } from "../../../Components/component-imports";
+import { capitalize, findRepetitionBlocks, formattedDate, parseDate } from "../../../Function/functions-imports";
+import { clock, edit, save, week } from "../../../_global";
+import { Professional, Service, User } from "../../../Classes/classes-imports";
+
+import { useNavigate, useParams } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../../Services/firebase/firebase";
-import { useNavigate, useParams } from "react-router-dom";
-import { LoadingScreen } from "../../../Components/loading/loading-screen/loading-screen";
-import { Professional } from "../../../Classes/professional/professional";
-import { SubHeader } from "../../../Components/sub-header/sub-header";
-import { parseDate } from "../../../Function/formatting/parse-date/parse-date";
-import { capitalize } from "../../../Function/formatting/capitalize/capitalize";
-import { BottomButton } from "../../../Components/buttons/bottom-button/bottom-button";
-import { findRepetitionBlocks } from "../../../Function/find-repetition-blocks/find-repetition-blocks";
-import { formattedDate } from "../../../Function/formatting/formatted-date/formatted-date";
-import { DoubleButton } from "../../../Components/buttons/double-button/double-button";
-import { DoubleItemButton } from "../../../Components/buttons/double-item-button/double-item-button";
-import { Carousel } from "../../../Components/carousel/carousel";
-
-import "../schedule-page.css";
-import { IconInput } from "../../../Components/inputs/icon-input/icon-input";
-import { Line } from "../../../Components/line/line";
-import {ErrorPage} from "../../error-page/error-page";
-import { Header } from "../../../Components/header/header/header";
-import { Service } from "../../../Classes/classes-imports";
+import { ErrorPage } from "../../error-page/error-page";
 
 var isEqual = require("lodash.isequal");
 
@@ -54,10 +44,6 @@ export function ProfessionalSchedulePage() {
 
   const { professionalId } = useParams();
   const navigate = useNavigate();
-
-  const save = require("../../../Assets/save.png");
-  const edit = require("../../../Assets/edit-square.png");
-  const clock = require("../../../Assets/clock.png");
 
   useEffect(() => {
     setLoading(true);
@@ -151,33 +137,89 @@ export function ProfessionalSchedulePage() {
   }, []);
 
   const timeList: string[] = [];
-  const week = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
+  const loadWeek = async () => {
+    setLoading(true);
 
-  for (let i = 0; i < 24; i++) {
-    timeList.push(`${i}:00`, `${i}:10`, `${i}:20`, `${i}:30`, `${i}:40`, `${i}:50`);
-  }
+    const fetchScheduleForDays = async (days: Date[]) => {
+      const schedulePromises = days.map(async (scheduleDay) => {
+        const formattedDay = scheduleDay.toLocaleDateString("pt-BR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "2-digit",
+        });
+        await professional.getScheduleDay(formattedDay);
+        if (professional.getSchedule()[formattedDay] === undefined) {
+          const updatedSchedule = professional.getSchedule();
+          delete updatedSchedule[formattedDay];
+          professional.setSchedule(updatedSchedule);
+        }
+      });
+      await Promise.all(schedulePromises);
+    };
+
+    const fetchServicesAndClients = async () => {
+      const scheduleEntries = Object.entries(professional.getSchedule());
+      const servicePromises: Promise<void>[] = [];
+      const clientPromises: Promise<void>[] = [];
+
+      scheduleEntries.forEach(([day, schedule]) => {
+        const scheduleItemEntries = Object.entries(schedule);
+        scheduleItemEntries.forEach(([index, scheduleItem]) => {
+          if (!scheduleItem.edited) {
+            if (!serviceCache[scheduleItem.service]) {
+              servicePromises.push(fetchServiceAndCache(scheduleItem.service));
+            }
+            if (!clientCache[scheduleItem.client]) {
+              clientPromises.push(fetchClientAndCache(scheduleItem.client));
+            }
+          }
+        });
+      });
+
+      await Promise.all([...servicePromises, ...clientPromises]);
+    };
+
+    const fetchServiceAndCache = async (serviceId: string) => {
+      const service = new Service();
+      await service.getService(serviceId);
+      setServiceCache((prevServiceCache) => ({
+        ...prevServiceCache,
+        [service.getId()]: service,
+      }));
+    };
+
+    const fetchClientAndCache = async (clientId: string) => {
+      const client = new User();
+      await client.getUser(clientId);
+      setClientCache((prevClientCache) => ({
+        ...prevClientCache,
+        [client.getId()]: client,
+      }));
+    };
+
+    const scheduleDays: Date[] = Array.from({ length: 8 }, (_, index) => {
+      const currentDate = new Date(dayList[dayList.length - 1]);
+      currentDate.setDate(currentDate.getDate() + index);
+      return currentDate;
+    });
+    setDayList([...dayList, ...scheduleDays]);
+
+    await fetchScheduleForDays(scheduleDays);
+    await fetchServicesAndClients();
+    setLoading(false);
+  };
 
   const tabHandler = () => {
     switch (tab) {
       case 0: //Home page
         return (
           <div className='schedule-page'>
-            <Header
-              title={"Minha Agenda"}
-              icon={edit}
-              onClickReturn={() => {
-                navigate(-1);
-              }}
-              onClickIcon={() => {
-                setTab(1); //Edit schedule tab
-              }}
-            />
+            <Header title={"Minha Agenda"} icon={edit} onClickReturn={() => navigate(-1)} onClickIcon={() => setTab(1)} />
             {Object.entries(professional.getSchedule()).map(([date, schedule]) => {
               const formattedDay = formattedDate(parseDate(date));
               const hiddenMessage = displayList.includes(date) ? "Ocultar" : "Exibir";
-
-              const weekDay = capitalize(parseDate(date).toLocaleDateString("pt-BR", { weekday: "long" }));
               const weekIndex = parseDate(date).getDay();
+
               return (
                 <div className='sp-day-block'>
                   <SubHeader
@@ -225,81 +267,7 @@ export function ProfessionalSchedulePage() {
                 </div>
               );
             })}
-            <SubHeader
-              title={formattedDate(dayList[dayList.length - 1])}
-              buttonTitle={"Carregar semana"}
-              onClick={async () => {
-                setLoading(true);
-
-                const fetchScheduleForDays = async (days: Date[]) => {
-                  const schedulePromises = days.map(async (scheduleDay) => {
-                    const formattedDay = scheduleDay.toLocaleDateString("pt-BR", {
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "2-digit",
-                    });
-                    await professional.getScheduleDay(formattedDay);
-                    if (professional.getSchedule()[formattedDay] === undefined) {
-                      const updatedSchedule = professional.getSchedule();
-                      delete updatedSchedule[formattedDay];
-                      professional.setSchedule(updatedSchedule);
-                    }
-                  });
-                  await Promise.all(schedulePromises);
-                };
-
-                const fetchServicesAndClients = async () => {
-                  const scheduleEntries = Object.entries(professional.getSchedule());
-                  const servicePromises: Promise<void>[] = [];
-                  const clientPromises: Promise<void>[] = [];
-
-                  scheduleEntries.forEach(([day, schedule]) => {
-                    const scheduleItemEntries = Object.entries(schedule);
-                    scheduleItemEntries.forEach(([index, scheduleItem]) => {
-                      if (!scheduleItem.edited) {
-                        if (!serviceCache[scheduleItem.service]) {
-                          servicePromises.push(fetchServiceAndCache(scheduleItem.service));
-                        }
-                        if (!clientCache[scheduleItem.client]) {
-                          clientPromises.push(fetchClientAndCache(scheduleItem.client));
-                        }
-                      }
-                    });
-                  });
-
-                  await Promise.all([...servicePromises, ...clientPromises]);
-                };
-
-                const fetchServiceAndCache = async (serviceId: string) => {
-                  const service = new Service();
-                  await service.getService(serviceId);
-                  setServiceCache((prevServiceCache) => ({
-                    ...prevServiceCache,
-                    [service.getId()]: service,
-                  }));
-                };
-
-                const fetchClientAndCache = async (clientId: string) => {
-                  const client = new User();
-                  await client.getUser(clientId);
-                  setClientCache((prevClientCache) => ({
-                    ...prevClientCache,
-                    [client.getId()]: client,
-                  }));
-                };
-
-                const scheduleDays: Date[] = Array.from({ length: 8 }, (_, index) => {
-                  const currentDate = new Date(dayList[dayList.length - 1]);
-                  currentDate.setDate(currentDate.getDate() + index);
-                  return currentDate;
-                });
-                setDayList([...dayList, ...scheduleDays]);
-
-                await fetchScheduleForDays(scheduleDays);
-                await fetchServicesAndClients();
-                setLoading(false);
-              }}
-            />
+            <SubHeader title={formattedDate(dayList[dayList.length - 1])} buttonTitle={"Carregar semana"} onClick={async () => loadWeek()} />
             <BottomButton
               hidden={selectedBlock === null}
               title={"Editar"}
@@ -315,10 +283,7 @@ export function ProfessionalSchedulePage() {
             <Header
               title={"Minha Agenda"}
               icon={changedValues.length == 0 ? "" : save}
-              onClickReturn={() => {
-                //saved?
-                setTab(0); //Home page
-              }}
+              onClickReturn={() => setTab(0)}
               onClickIcon={async () => {
                 if (changedValues.length == 0) return;
                 setLoading(true);
@@ -372,9 +337,9 @@ export function ProfessionalSchedulePage() {
                       const servicePromises: Promise<void>[] = [];
                       const clientPromises: Promise<void>[] = [];
 
-                      scheduleEntries.forEach(([day, schedule]) => {
+                      scheduleEntries.forEach(([_, schedule]) => {
                         const scheduleItemEntries = Object.entries(schedule);
-                        scheduleItemEntries.forEach(([index, scheduleItem]) => {
+                        scheduleItemEntries.forEach(([_, scheduleItem]) => {
                           if (!scheduleItem.edited) {
                             if (!serviceCache[scheduleItem.service]) {
                               servicePromises.push(fetchServiceAndCache(scheduleItem.service));
@@ -650,7 +615,6 @@ export function ProfessionalSchedulePage() {
               const weekDay = week[parseDate(day).getDay()];
               const schedule = professional.getSchedule()[day];
               const scheduleItem = schedule?.[index + startIndex];
-              const available = scheduleItem === undefined || editedTime.edited === false;
 
               if (selected) {
                 scheduleItem.service = editedTime.service;
