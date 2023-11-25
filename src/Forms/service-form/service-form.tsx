@@ -5,7 +5,7 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { Group, Professional, Service, SubService, User } from "../../Classes/classes-imports";
 import { addUser, bin, longTimeArray, money, more } from "../../_global";
 import { formatDuration, idSwitcher } from "../../Function/functions-imports";
-import { BottomButton, BottomPopup, Carousel, DropdownButton, Header, HeaderInput, IconInput, ItemButton, Line, LinkButton, LoadingScreen, SmallButton, SubHeader } from "../../Components/component-imports";
+import { AlertBlock, BottomButton, BottomPopup, Carousel, DropdownButton, Header, HeaderInput, IconInput, ItemButton, Line, LinkButton, LoadingScreen, SmallButton, SubHeader } from "../../Components/component-imports";
 
 import { SubServiceForm } from "../sub-service-form/sub-service-form";
 import { ProfessionalForm } from "../professional-form/professional-form";
@@ -24,6 +24,7 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
   const [tab, setTab] = useState(0);
 
   const [selectedSService, setSelectedSService] = useState<null | SubService>(null);
+  const [hiddenAlert, setHiddenAlert] = useState(true);
 
   var SServDropList: [string, () => void][] = serviceForm.getSubServices().map((SubService) => {
     return [SubService.getName(), () => setSelectedSService(SubService)];
@@ -59,6 +60,18 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
 
     groupForm.updateGroupState(setGroupForm, "professionals", professionals);
   };
+  const handleDelete = async () => {
+    setLoading(true);
+    if (serviceForm.getId() !== "") {
+      await serviceForm.deleteService();
+      const updatedIds = groupForm.getServicesIds().filter((id) => id !== serviceForm.getId());
+      const updatedServices = groupForm.getServices().filter((serv) => serv.getId() !== serviceForm.getId());
+      groupForm.setServicesIds(updatedIds);
+      groupForm.setServices(updatedServices);
+    }
+    onClickReturn();
+    setLoading(false);
+  };
 
   const tabHandler = () => {
     switch (tab) {
@@ -71,7 +84,7 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
               icon={bin}
               onChange={(e) => serviceForm.updateServiceState(setServiceForm, "name", e.target.value)}
               onClickReturn={onClickReturn}
-              onClickIcon={() => alert("ainda não implementado")}
+              onClickIcon={() => setHiddenAlert(false)}
             />
             <div className='sf-data-block'>
               <IconInput placeholder={"Digite o valor"} value={serviceForm.getValue()} onChange={(e) => serviceForm.updateServiceState(setServiceForm, "value", e.target.value)} icon={money} />
@@ -88,6 +101,24 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
               </div>
             </div>
             <BottomPopup title={"Editando..."} subtitle={`Os campos ### não foram preenchidos!`} buttonTitle={"Salvar"} onClick={async () => await saveService()} activated={serviceForm.isValid()} />
+            <AlertBlock
+              title={"Você realmente deseja excluir"}
+              itemButtons={[
+                {
+                  title: serviceForm.getName(),
+                  subtitle: formatDuration(serviceForm.getDuration()),
+                  selected: true,
+                },
+              ]}
+              bottomText='Essa ação não pode ser desfeita'
+              button1={{
+                hidden: false,
+                title: "Excluir Profissional",
+                onClick: async () => await handleDelete(),
+              }}
+              hidden={hiddenAlert}
+              onClickOut={() => setHiddenAlert(true)}
+            />
           </div>
         );
       case 1: // Time Tab
