@@ -4,7 +4,7 @@ import { Dispatch, SetStateAction, useState } from "react";
 
 import { Group, Professional, Service, SubService, User } from "../../Classes/classes-imports";
 import { addUser, bin, longTimeArray, money, more } from "../../_global";
-import { formatDuration } from "../../Function/functions-imports";
+import { formatDuration, idSwitcher } from "../../Function/functions-imports";
 
 import { SubServiceForm } from "../sub-service-form/sub-service-form";
 import { ProfessionalForm } from "../professional-form/professional-form";
@@ -143,21 +143,7 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
             />
             <div className='sf-item-list'>
               {serviceForm.getSubServices().map((sserivce: SubService) => {
-                return (
-                  <ItemButton
-                    title={sserivce.getName()}
-                    subtitle={"Detalhes"}
-                    selected={selectedSService?.getId() === sserivce.getId()}
-                    onClick={() => {
-                      console.log(sserivce, selectedSService);
-                      if (selectedSService?.getId() === sserivce.getId()) {
-                        setSelectedSService(null);
-                      } else {
-                        setSelectedSService(sserivce);
-                      }
-                    }}
-                  />
-                );
+                return <ItemButton title={sserivce.getName()} subtitle={"Detalhes"} selected={selectedSService?.getId() === sserivce.getId()} onClick={() => idSwitcher(selectedSService, sserivce, setSelectedSService)} />;
               })}
             </div>
             <BottomButton hidden={selectedSService === null} title={"Editar Subserviço"} onClick={() => setTab(5)} />
