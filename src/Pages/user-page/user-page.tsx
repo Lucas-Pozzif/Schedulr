@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { auth } from "../../Services/firebase/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 
-import { edit, exit, google, mail, store, userProfile } from "../../_global";
+import { confirm, edit, exit, google, mail, store, userProfile } from "../../_global";
 import { User } from "../../Classes/classes-imports";
 import { IconButton, Line, LoadingScreen, UserHeader } from "../../Components/component-imports";
 
@@ -31,10 +31,8 @@ export function UserPage() {
     setLoading(true);
     await user.loginWithGoogle();
     if (await user.checkUser()) {
-      console.log("tem conta");
       await user.getUser(user.getId());
     } else {
-      console.log("nao tem conta");
       await user.setUser();
     }
     setHasAccount(true);
@@ -83,9 +81,9 @@ export function UserPage() {
         </>
       ) : null}
       <div className='up-item-list'>
-        <IconButton title={"Criar Agenda"} icon={store} onClick={() => navigate(`/group/add`)} />
-        <IconButton title={"Ver Minha Agenda"} icon={mail} onClick={() => navigate(`/user/schedule/${user.getId()}`)} />
-        <IconButton title={"Sair da Conta"} icon={exit} onClick={async () => await logOut()} />
+        <IconButton title={"Criar Agenda"} hidden={!hasAccount} icon={store} onClick={() => navigate(`/group/add`)} />
+        <IconButton title={"Ver Minha Agenda"} hidden={!hasAccount} icon={mail} onClick={() => navigate(`/user/schedule/${user.getId()}`)} />
+        <IconButton title={"Sair da Conta"} icon={exit} hidden={!hasAccount} onClick={async () => await logOut()} />
       </div>
     </div>
   );
