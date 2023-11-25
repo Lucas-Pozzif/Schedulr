@@ -218,12 +218,9 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
             />
             <SubHeader title={selectedOcupation !== null ? professionalForm.getOccupations()[selectedOcupation] : `${professionalForm.getOccupations().length} ocupações`} buttonTitle={"Nova Ocupação"} onClick={() => setSelectedOcupation(null)} />
             <div className='sf-item-list'>
-              {professionalForm
-                .getOccupations()
-                .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
-                .map((occupation, index) => (
-                  <ItemButton title={occupation} subtitle={""} selected={index == selectedOcupation} onClick={() => stateSwitcher(selectedOcupation, index, setSelectedOcupation)} />
-                ))}
+              {professionalForm.getOccupations().map((occupation, index) => (
+                <ItemButton title={occupation} subtitle={""} selected={index == selectedOcupation} onClick={() => stateSwitcher(selectedOcupation, index, setSelectedOcupation)} />
+              ))}
             </div>
             <BottomButton
               hidden={
