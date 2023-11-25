@@ -15,7 +15,6 @@ interface ProfessionalInterface {
     images: string[];
 }
 
-
 export class Professional {
     private _id: string;
     private _name: string;
@@ -28,7 +27,18 @@ export class Professional {
     private _images: string[];
     private _schedule: Schedule | any;
 
-    constructor(arg?: string | Professional, name: string = "", occupations: string[] = [], email: string = "", isAdmin: boolean = false, services: string[] = [], shift: boolean[][] = [], startHours: number[] = [], images: string[] = [], schedule: Schedule = {}) {
+    constructor(
+        arg?: string | Professional,
+        name: string = "",
+        occupations: string[] = [],
+        email: string = "",
+        isAdmin: boolean = false,
+        services: string[] = [],
+        shift: boolean[][] = [],
+        startHours: number[] = [],
+        images: string[] = [],
+        schedule: Schedule = {}
+    ) {
         if (typeof arg === "string") {
             // Case: ID provided
             this._id = arg;
@@ -169,7 +179,7 @@ export class Professional {
 
     public async addProfessional() {
         this._id = await this.updateProfessionalId();
-        await this.addSchedule()
+        await this.addSchedule();
         await this.setProfessional();
     }
 
@@ -215,8 +225,10 @@ export class Professional {
             return console.error("no id was found");
         }
 
-        const docRef = doc(db, "professionals_dev", this._id);
-        await deleteDoc(docRef);
+        const profRef = doc(db, "professionals_dev", this._id);
+        const schedRef = doc(db, "schedules", this._id);
+        await deleteDoc(profRef);
+        await deleteDoc(schedRef);
     }
 
     private getFirestoreFormat() {
@@ -258,8 +270,8 @@ export class Professional {
     }
 
     public async searchForUser() {
-        const usersRef = collection(db, 'users');
-        const q = query(usersRef, where('email', '==', this._email));
+        const usersRef = collection(db, "users");
+        const q = query(usersRef, where("email", "==", this._email));
 
         const querySnapshot = await getDocs(q);
 
@@ -270,7 +282,6 @@ export class Professional {
 
         return user;
     }
-
 
     // Schedule methods
 
@@ -287,7 +298,6 @@ export class Professional {
             if (docSnap.exists()) {
                 await updateDoc(docRef, { [index]: value });
                 console.log("Document updated successfully!");
-
             } else {
                 // Document doesn't exist, create it with the field
                 await setDoc(docRef, { [index]: value });
@@ -303,10 +313,10 @@ export class Professional {
         const date = `${monthPart}-${yearPart.slice(-2)}`;
         const formattedDay = dayPart;
 
-        delete this._schedule[day][index]
+        delete this._schedule[day][index];
 
         const docRef = doc(db, "schedules", this._id, date, formattedDay);
-        await setDoc(docRef, this._schedule[day])
+        await setDoc(docRef, this._schedule[day]);
     }
 
     public async getScheduleDay(day: string) {
@@ -349,46 +359,42 @@ export class Professional {
         return hasName;
     }
 
-    public updateProfessionalState(
-        setter: React.Dispatch<React.SetStateAction<Professional>>,
-        attribute: "id" | "name" | "occupations" | "email" | "isAdmin" | "services" | "shift" | "startHours" | "images" | "schedule",
-        newValue: any
-    ) {
+    public updateProfessionalState(setter: React.Dispatch<React.SetStateAction<Professional>>, attribute: "id" | "name" | "occupations" | "email" | "isAdmin" | "services" | "shift" | "startHours" | "images" | "schedule", newValue: any) {
         switch (attribute) {
             case "id":
                 this._id = newValue;
-                break
+                break;
             case "name":
                 this._name = newValue;
-                break
+                break;
             case "occupations":
                 this._occupations = newValue;
-                break
+                break;
             case "email":
                 this._email = newValue;
-                break
+                break;
             case "isAdmin":
                 this._isAdmin = newValue;
-                break
+                break;
             case "services":
                 this._services = newValue;
-                break
+                break;
             case "shift":
                 this._shift = newValue;
-                break
+                break;
             case "startHours":
                 this._startHours = newValue;
-                break
+                break;
             case "images":
                 this._images = newValue;
-                break
+                break;
             case "schedule":
                 this._schedule = newValue;
-                break
+                break;
             default:
-                break
+                break;
         }
-        setter(new Professional(this))
+        setter(new Professional(this));
     }
 
     public handleService(service: Service, setter: React.Dispatch<React.SetStateAction<Professional>>) {
@@ -399,7 +405,6 @@ export class Professional {
             this._services.push(service.getId());
         }
         setter(new Professional(this));
-
     }
 
     public cleanDay(selectedDay: number, setter: React.Dispatch<React.SetStateAction<Professional>>) {
@@ -443,7 +448,4 @@ export class Professional {
 
         setter(new Professional(this));
     }
-
-
-
 }
