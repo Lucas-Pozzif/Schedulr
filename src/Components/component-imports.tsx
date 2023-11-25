@@ -18,8 +18,12 @@ import { DoubleTextBlock } from "./blocks/double-text-block/double-text-block";
 import { DoubleButton } from "./buttons/double-button/double-button";
 import { UserHeader } from "./header/user-header/user-header";
 import { IconButton } from "./buttons/icon-button/icon-button";
+import { VerticalLine } from "./line/line";
+import { GroupList } from "./group-list/group-list";
 
 export {
+  GroupList,
+  VerticalLine,
   IconButton,
   LoadingScreen,
   DropdownButton,
