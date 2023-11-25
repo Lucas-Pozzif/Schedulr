@@ -327,7 +327,6 @@ export class Professional {
 
         const docSnap = await getDoc(docRef);
         this._schedule = docSnap.data();
-        console.log(docSnap.data())
     }
 
     private async addSchedule() {

@@ -201,7 +201,6 @@ export function ClientSchedulePage() {
     /* Grabs the day data before accessing it so it doesn't bug with the undefined day, very important */
     await professionalCache[professional].getScheduleDay(day);
     await user.getScheduleDay(day);
-    console.log(user.getSchedule()[day]);
 
     const userPromise = Array.from({ length: serviceSpan }, async (_, index) => {
       const realIndex = (index + startIndex).toString();
