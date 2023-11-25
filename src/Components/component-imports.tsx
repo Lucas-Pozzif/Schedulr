@@ -16,5 +16,28 @@ import { DropdownButton } from "./buttons/dropdown-button/dropdown-button";
 import { DoubleItemButton } from "./buttons/double-item-button/double-item-button";
 import { DoubleTextBlock } from "./blocks/double-text-block/double-text-block";
 import { DoubleButton } from "./buttons/double-button/double-button";
+import { UserHeader } from "./header/user-header/user-header";
+import { IconButton } from "./buttons/icon-button/icon-button";
 
-export { LoadingScreen, DropdownButton, Line, SmallButton, Header, LinkButton, BottomPopup, BottomButton, SubHeader, ItemButton, Carousel, GroupBanner, DoubleInput, IconInput, HeaderInput, DoubleTextBlock, DoubleItemButton, DoubleButton };
+export {
+  IconButton,
+  LoadingScreen,
+  DropdownButton,
+  Line,
+  SmallButton,
+  Header,
+  UserHeader,
+  LinkButton,
+  BottomPopup,
+  BottomButton,
+  SubHeader,
+  ItemButton,
+  Carousel,
+  GroupBanner,
+  DoubleInput,
+  IconInput,
+  HeaderInput,
+  DoubleTextBlock,
+  DoubleItemButton,
+  DoubleButton,
+};
