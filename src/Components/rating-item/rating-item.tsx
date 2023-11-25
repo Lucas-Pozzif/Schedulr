@@ -1,7 +1,7 @@
 import { onAuthStateChanged } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 import { auth } from "../../Services/firebase/firebase";
-import { User } from "../../Classes/user";
+import { User } from "../../Classes/user/user";
 import { LoadingScreen } from "../loading/loading-screen/loading-screen";
 
 type RatingItemType = {

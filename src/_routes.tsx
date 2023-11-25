@@ -1,5 +1,5 @@
 import { GroupForm } from "./Forms/group-form/group-form";
-import ErrorPage from "./Pages/error-page/error-page";
+import {ErrorPage} from "./Pages/error-page/error-page";
 import { GroupPage } from "./Pages/group-page/group-page";
 import { Home } from "./Pages/home/home";
 import { ClientSchedulePage } from "./Pages/schedule-page/client-schedule/client-schedule-page";

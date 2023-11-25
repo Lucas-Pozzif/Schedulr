@@ -1,8 +1,8 @@
-import { GoogleAuthProvider, UserCredential, signInWithPopup, signInWithRedirect, signOut } from "firebase/auth";
-import { auth, db } from "../Services/firebase/firebase";
+import { GoogleAuthProvider, UserCredential, signInWithRedirect, signOut } from "firebase/auth";
 import { DocumentSnapshot, collection, deleteDoc, doc, getDoc, getDocs, query, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
-import { Group } from "./group";
-import { Schedule, ScheduleItem } from "./schedule";
+import { Group } from "../group/group";
+import { Schedule, ScheduleItem } from "../schedule/schedule";
+import { auth, db } from "../../Services/firebase/firebase";
 
 interface UserInterface {
     id: string;
@@ -171,7 +171,6 @@ export class User {
                 (this as any)[`_${prop}`] = updates[prop]!;
             }
         });
-        console.log(updates)
 
         await updateDoc(docRef, updates);
         await this.updateTimeStamp();
@@ -290,7 +289,6 @@ export class User {
 
         const docSnap = await getDoc(docRef);
         this._schedule = docSnap.data();
-        console.log(docSnap.data())
     }
 
     private async addSchedule() {
