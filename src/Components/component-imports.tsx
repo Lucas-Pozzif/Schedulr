@@ -20,8 +20,10 @@ import { UserHeader } from "./header/user-header/user-header";
 import { IconButton } from "./buttons/icon-button/icon-button";
 import { VerticalLine } from "./line/line";
 import { GroupList } from "./group-list/group-list";
+import { AlertBlock } from "./blocks/alert-block/alert-block";
 
 export {
+  AlertBlock,
   GroupList,
   VerticalLine,
   IconButton,
