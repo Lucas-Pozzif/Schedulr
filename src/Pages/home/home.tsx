@@ -1,14 +1,13 @@
+import "./home.css";
+
 import { useEffect, useState } from "react";
-import { Group } from "../../Classes/group/group";
-import { GroupList } from "../../Components/group-list/group-list";
-import { VerticalLine } from "../../Components/line/line";
-import { User } from "../../Classes/user/user";
+import { auth } from "../../Services/firebase/firebase";
 import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../../Services/firebase/firebase";
-import { LoadingScreen } from "../../Components/loading/loading-screen/loading-screen";
 
-import "./home.css";
+import { filter, search, sort, userProfile } from "../../_global";
+import { Group, User } from "../../Classes/classes-imports";
+import { LoadingScreen, VerticalLine, GroupList } from "../../Components/component-imports";
 
 export function Home() {
   const [loading, setLoading] = useState(false);
@@ -25,11 +24,6 @@ export function Home() {
   });
 
   const navigate = useNavigate();
-
-  const search = require("../../Assets/search.png");
-  const filter = require("../../Assets/filter.png");
-  const sort = require("../../Assets/sort.png");
-  const userProfile = require("../../Assets/user.png");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -48,8 +42,6 @@ export function Home() {
     fetchData();
   }, []);
 
-  console.log(groups);
-
   return loading ? (
     <LoadingScreen />
   ) : (
@@ -59,23 +51,11 @@ export function Home() {
         <p className='h-subtitle'>Verifique sua agenda para ver seus agendamentos</p>
         <div className='h-searchbar-block'>
           <img className='h-search-icon' src={search} />
-          <input
-            className='h-search-input'
-            placeholder='Pesquisar'
-            onChange={(e) => {
-              setSearch(e.target.value);
-            }}
-          />
+          <input className='h-search-input' placeholder='Pesquisar' onChange={(e) => setSearch(e.target.value)} />
           <VerticalLine />
           <img className='h-filter-icon' src={filter} />
         </div>
-        <img
-          className='h-user-icon'
-          src={user.getPhoto() || userProfile}
-          onClick={() => {
-            navigate("/user");
-          }}
-        />
+        <img className='h-user-icon' src={user.getPhoto() || userProfile} onClick={() => navigate("/user")} />
       </div>
       <div className='h-banner-block'>
         <div className='h-banner'>
@@ -86,17 +66,13 @@ export function Home() {
           <p
             className='h-banner-feedback-button'
             onClick={() => {
-              window.location.href = "mailto:lucaspozzif20@gmail.com";
+              const subject = encodeURIComponent("Feedback sobre S-agenda");
+              window.location.href = `mailto:lucaspozzif20@gmail.com?subject=${subject}`;
             }}
           >
             Enviar Feedback
           </p>
-          <p
-            className='h-banner-schedule-button'
-            onClick={() => {
-              navigate(`/user/schedule/${user.getId()}`);
-            }}
-          >
+          <p className='h-banner-schedule-button' onClick={() => navigate(`/user/schedule/${user.getId()}`)}>
             Ver Agenda
           </p>
         </div>
@@ -105,7 +81,12 @@ export function Home() {
           <img className='hb-sort-icon' src={sort} />
         </div>
       </div>
-      <GroupList groupList={filteredGroups} />
+      <GroupList
+        onClick={() => {
+          if (user.getId() == "") navigate("/user");
+        }}
+        groupList={filteredGroups}
+      />
     </div>
   );
 }
