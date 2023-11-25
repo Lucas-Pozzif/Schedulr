@@ -6,11 +6,12 @@ import { auth } from "../../Services/firebase/firebase";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { Group, Professional, Service, User } from "../../Classes/classes-imports";
-import { capitalize, idSwitcher } from "../../Function/functions-imports";
+import { capitalize, formatDuration, idSwitcher } from "../../Function/functions-imports";
 import { BottomButton, BottomPopup, Carousel, DoubleItemButton, DoubleTextBlock, GroupBanner, Header, ItemButton, Line, LinkButton, LoadingScreen, SubHeader } from "../../Components/component-imports";
 import { DoubleButton } from "../../Components/buttons/double-button/double-button";
 
 import { ErrorPage } from "../error-page/error-page";
+import { GroupForm } from "../../Forms/group-form/group-form";
 
 export function GroupPage() {
   const [loading, setLoading] = useState(false);
@@ -152,6 +153,7 @@ export function GroupPage() {
               <Line />
             </div>
             <div className='gp-bottom-columns'>
+              <LinkButton title='Editar Estabelecimento' hidden={!group.getAdmins().includes(user.getId())} onClick={() => setTab(4)} />
               <LinkButton title='Horário e Serviço' onClick={() => (selectedService === null ? setTab(3) : setTab(1))} />
               <LinkButton title='Profissional' onClick={() => setTab(2)} />
             </div>
@@ -272,12 +274,14 @@ export function GroupPage() {
                 .getServices()
                 .sort((a, b) => a.getName().localeCompare(b.getName()))
                 .map((service) => {
-                  return <ItemButton title={service.getName()} subtitle={"Ainda não implementado"} selected={service.getId() === selectedService?.getId()} onClick={() => idSwitcher(selectedService, service, setSelectedService)} />;
+                  return <ItemButton title={service.getName()} subtitle={formatDuration(service.getDuration())} selected={service.getId() === selectedService?.getId()} onClick={() => idSwitcher(selectedService, service, setSelectedService)} />;
                 })}
             </div>
             <BottomButton hidden={selectedService == null} title={"Escolher Horário"} onClick={() => setTab(1)} />
           </div>
         );
+      case 4: // Group edit Tab
+        return <GroupForm group={group} onClickReturn={() => setTab(0)} />;
       default:
         return <ErrorPage />;
     }
