@@ -39,7 +39,10 @@ export function GroupForm({ group, onClickReturn }: GroupFormType) {
       await user.getUser(client.uid);
       setUser(new User(user));
       groupForm.setOwner(user.getId());
-      groupForm.setAdmins([...groupForm.getAdmins(), user.getId()]);
+      const adminsArray = groupForm.getAdmins();
+      if (!adminsArray.includes(user.getId())) {
+        groupForm.setAdmins([...adminsArray, user.getId()]);
+      }
     });
     setLoading(false);
   }, []);
