@@ -67,12 +67,15 @@ export function Home() {
             className='h-banner-feedback-button'
             onClick={() => {
               const subject = encodeURIComponent("Feedback sobre S-agenda");
-              window.location.href = `mailto:lucaspozzif20@gmail.com?subject=${subject}`;
+              window.location.href = `mailto:lucaspozzif.feedback@gmail.com?subject=${subject}`;
             }}
           >
             Enviar Feedback
           </p>
-          <p className='h-banner-schedule-button' onClick={() => navigate(`/user/schedule/${user.getId()}`)}>
+          <p className='h-banner-schedule-button' onClick={() => navigate(`/user`)}>
+            Fazer Login{" "}
+          </p>
+          <p className={"h-banner-schedule-button" + (user.getId() === "" ? " hidden" : "")} onClick={() => navigate(`/user/schedule/${user.getId()}`)}>
             Ver Agenda
           </p>
         </div>
