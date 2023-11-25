@@ -1,14 +1,13 @@
-import { useEffect, useState } from "react";
-import { User } from "../../Classes/user/user";
-import { Line } from "../../Components/line/line";
-
 import "./user-page.css";
-import { LoadingScreen } from "../../Components/loading/loading-screen/loading-screen";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../../Services/firebase/firebase";
+
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserHeader } from "../../Components/header/user-header/user-header";
-import { IconButton } from "../../Components/buttons/icon-button/icon-button";
+import { auth } from "../../Services/firebase/firebase";
+import { onAuthStateChanged } from "firebase/auth";
+
+import { edit, exit, google, mail, store, userProfile } from "../../_global";
+import { User } from "../../Classes/classes-imports";
+import { IconButton, Line, LoadingScreen, UserHeader } from "../../Components/component-imports";
 
 export function UserPage() {
   const [loading, setLoading] = useState(false);
@@ -17,15 +16,6 @@ export function UserPage() {
   const [hasAccount, setHasAccount] = useState(false);
 
   const navigate = useNavigate();
-
-  const arrow = require("../../Assets/arrow.png");
-  const edit = require("../../Assets/edit.png");
-  const google = require("../../Assets/google.png");
-  const exit = require("../../Assets/exit.png");
-  const confirm = require("../../Assets/confirm.png");
-  const mail = require("../../Assets/mail.png");
-  const userProfile = require("../../Assets/user.png");
-  const store = require("../../Assets/store.png");
 
   useEffect(() => {
     onAuthStateChanged(auth, async (client) => {
@@ -36,6 +26,27 @@ export function UserPage() {
       }
     });
   }, []);
+
+  const logIn = async () => {
+    setLoading(true);
+    await user.loginWithGoogle();
+    if (await user.checkUser()) {
+      console.log("tem conta");
+      await user.getUser(user.getId());
+    } else {
+      console.log("nao tem conta");
+      await user.setUser();
+    }
+    setHasAccount(true);
+    setLoading(false);
+  };
+  const logOut = async () => {
+    setLoading(true);
+    await user.logout();
+    setUser(new User());
+    setHasAccount(false);
+    setLoading(false);
+  };
 
   return loading ? (
     <LoadingScreen />
@@ -50,7 +61,6 @@ export function UserPage() {
         editing={editing}
         onClickIcon={async () => {
           if (editing) {
-            console.log(user.getName());
             await user.updateUser({ name: user.getName() });
           }
           setEditing(!editing);
@@ -59,29 +69,12 @@ export function UserPage() {
           user.setName(e.target.value);
           setUser(new User(user));
         }}
-        onClickReturn={() => {
-          navigate("/");
-        }}
+        onClickReturn={() => navigate("/")}
       />
       {!hasAccount ? (
         <>
           <div className='up-login-block'>
-            <div
-              className='up-login-button'
-              onClick={async () => {
-                setLoading(true);
-                await user.loginWithGoogle();
-                if (await user.checkUser()) {
-                  console.log("tem conta");
-                  await user.getUser(user.getId());
-                } else {
-                  console.log("nao tem conta");
-                  await user.setUser();
-                }
-                setHasAccount(true);
-                setLoading(false);
-              }}
-            >
+            <div className='up-login-button' onClick={async () => await logIn()}>
               <p className='up-login-title'>Entrar com</p>
               <img className='up-login-icon' src={google} />
             </div>
@@ -90,31 +83,9 @@ export function UserPage() {
         </>
       ) : null}
       <div className='up-item-list'>
-        <IconButton
-          title={"Criar Agenda"}
-          icon={store}
-          onClick={() => {
-            navigate(`/group/add`);
-          }}
-        />
-        <IconButton
-          title={"Ver Minha Agenda"}
-          icon={mail}
-          onClick={() => {
-            navigate(`/user/schedule/${user.getId()}`);
-          }}
-        />
-        <IconButton
-          title={"Sair da Conta"}
-          icon={exit}
-          onClick={async () => {
-            setLoading(true);
-            await user.logout();
-            setUser(new User());
-            setHasAccount(false);
-            setLoading(false);
-          }}
-        />
+        <IconButton title={"Criar Agenda"} icon={store} onClick={() => navigate(`/group/add`)} />
+        <IconButton title={"Ver Minha Agenda"} icon={mail} onClick={() => navigate(`/user/schedule/${user.getId()}`)} />
+        <IconButton title={"Sair da Conta"} icon={exit} onClick={async () => await logOut()} />
       </div>
     </div>
   );
