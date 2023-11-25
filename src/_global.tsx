@@ -9,7 +9,14 @@ for (let i = 1; i <= 11; i++) {
 }
 longTimeArray.push(`12:00`);
 
+export const fullTimeArray: string[] = [];
+
+for (let i = 0; i < 24; i++) {
+  fullTimeArray.push(`${i}:00`, `${i}:10`, `${i}:20`, `${i}:30`, `${i}:40`, `${i}:50`);
+}
+
 export const fullDays = ["Domingo", "Segunda-Feira", "Terça-Feira", "Quarta-Feira", "Quinta-Feira", "Sexta-Feira", "Sábado"];
+export const week = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
 
 export const addImage = require("./Assets/add-image.png");
 export const locationPin = require("./Assets/location-pin.png");
@@ -20,3 +27,10 @@ export const bin = require("./Assets/delete.png");
 export const mail = require("./Assets/mail.png");
 export const arrow = require("./Assets/arrow.png");
 export const money = require("./Assets/money.png");
+export const edit = require("./Assets/edit.png");
+export const save = require("./Assets/save.png");
+export const clock = require("./Assets/clock.png");
+export const userProfile = require("./Assets/user.png");
+export const google = require("./Assets/google.png");
+export const store = require("./Assets/store.png");
+export const exit = require("./Assets/exit.png");
