@@ -3,5 +3,6 @@ import { stateSwitcher } from "./switchers/state-switcher/state-switcher";
 import { idSwitcher } from "./switchers/id-switcher/id-switcher";
 import { formatArray } from "./formatting/format-array/format-array";
 import { formatDuration } from "./formatting/format-duration/format-duration";
+import {capitalize} from './formatting/capitalize/capitalize'
 
-export { handleImageInput, onClickRef, stateSwitcher, formatArray, formatDuration,idSwitcher };
+export { handleImageInput, onClickRef, stateSwitcher, formatArray, formatDuration,idSwitcher,capitalize };

@@ -5,11 +5,11 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { Group, Professional, Service, SubService, User } from "../../Classes/classes-imports";
 import { addUser, bin, longTimeArray, money, more } from "../../_global";
 import { formatDuration, idSwitcher } from "../../Function/functions-imports";
+import { BottomButton, BottomPopup, Carousel, DropdownButton, Header, HeaderInput, IconInput, ItemButton, Line, LinkButton, LoadingScreen, SmallButton, SubHeader } from "../../Components/component-imports";
 
 import { SubServiceForm } from "../sub-service-form/sub-service-form";
 import { ProfessionalForm } from "../professional-form/professional-form";
 import { ErrorPage } from "../../Pages/error-page/error-page";
-import { BottomButton, BottomPopup, Carousel, DropdownButton, Header, HeaderInput, IconInput, ItemButton, Line, LinkButton, LoadingScreen, SmallButton, SubHeader } from "../../Components/component-imports";
 
 type ServiceFormType = {
   user?: User;
