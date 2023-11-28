@@ -1,0 +1,25 @@
+.home-header {
+  padding-inline: 10px;
+  padding-top: 20px;
+}
+
+.hh-salutation {
+  font-size: 22px;
+  color: var(--eerieBlack);
+}
+
+.hh-subtitle {
+  font-size: 14px;
+  color: var(--eerieBlack);
+  opacity: 0.8;
+}
+
+.hh-profile {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+
+  height: 48px;
+  width: 48px;
+  border-radius: 15px;
+}
