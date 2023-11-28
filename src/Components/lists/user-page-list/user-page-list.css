@@ -1,0 +1,7 @@
+.user-page-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-inline: 10px;
+  padding-top: 10px;
+}
