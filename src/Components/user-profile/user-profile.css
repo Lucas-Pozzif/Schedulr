@@ -1,0 +1,40 @@
+.user-profile {
+  display: flex;
+  gap: 10px;
+  padding-top: 10px;
+  padding-inline: 10px;
+  position: relative;
+}
+
+.up-image {
+  height: 100px;
+  width: 100px;
+  border-radius: 5px;
+}
+
+.up-name,
+.up-input-name {
+  color: var(--eerieBlack);
+  opacity: 0.8;
+  font-size: 20px;
+  padding-bottom: 5px;
+}
+
+.up-number,
+.up-mail,
+.up-input-number {
+  color: var(--onyx);
+  opacity: 0.8;
+  font-size: 16px;
+}
+
+.up-small-button-block {
+  position: absolute;
+  bottom: 0;
+  left: 120px;
+  display: flex;
+  gap: 5px;
+  padding-top: 10px;
+  width: 100%;
+  justify-content: center;
+}
