@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Group } from "../../Classes/group/group";
-import { Header } from "../../Components/header/header/header";
-import { RatingItem } from "../../Components/rating-item/rating-item";
-import { SubHeader } from "../../Components/sub-header/sub-header";
-import { LoadingScreen } from "../../Components/loading/loading-screen/loading-screen";
+import { Header } from "../../AComponents/header/header/header";
+import { RatingItem } from "../../AComponents/rating-item/rating-item";
+import { SubHeader } from "../../AComponents/sub-header/sub-header";
+import { LoadingScreen } from "../../AComponents/loading/loading-screen/loading-screen";
 import { RatingForm } from "../../Forms/rating-form/rating-form";
 
 type RatingPageType = {

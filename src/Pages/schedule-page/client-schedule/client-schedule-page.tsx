@@ -8,7 +8,7 @@ import { auth } from "../../../Services/firebase/firebase";
 import { fullTimeArray } from "../../../_global";
 import { Professional, Service, User } from "../../../Classes/classes-imports";
 import { capitalize, findRepetitionBlocks, formattedDate, parseDate } from "../../../Function/functions-imports";
-import { BottomButton, DoubleItemButton, Header, LoadingScreen, SubHeader } from "../../../Components/component-imports";
+import { BottomButton, DoubleItemButton, Header, LoadingScreen, SubHeader } from "../../../AComponents/component-imports";
 
 var isEqual = require("lodash.isequal");
 

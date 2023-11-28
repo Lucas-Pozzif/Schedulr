@@ -1,121 +1,15 @@
-.home {
-  background-color: #e9ecef;
-}
-
-.h-header {
-  padding-inline: 15px;
-  background-color: #ced4da;
-  margin-bottom: 5px;
-  padding-bottom: 10px;
-}
-
-.h-title {
-  font-size: 18px;
-  padding-top: 20px;
-}
-
-.h-subtitle {
-  font-size: 12px;
-  padding-bottom: 20px;
-}
-
-.h-searchbar-block {
-  background-color: #dee2e6;
-  border-radius: 20px;
-  height: 25px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding-inline: 10px;
-  padding-block: 5px;
-}
-
-.h-search-icon {
-  height: 25px;
-  width: 25px;
-}
-
-.h-search-input {
-  width: 100%;
-  font-size: 21px;
-}
-
-.h-filter-icon {
-  height: 20px;
-  width: 20px;
-}
-
-.h-user-icon {
-  height: 48px;
-  width: 48px;
-  border-radius: 24px;
-  position: absolute;
-  top: 10px;
-  right: 10px;
-}
-
-.h-banner-block {
-  padding-top: 10px;
-  padding-inline: 10px;
-  padding-bottom: 5px;
-  background-color: #ced4da;
-}
-
-.h-banner {
-  background-color: #212529;
-  height: 140px;
-  width: 100%;
-  border-radius: 10px;
-  position: relative;
-}
-.development-message {
-  font-size: 16px;
-  color: #e9ecef;
-  padding: 15px;
-  border-radius: 5px;
-  position: absolute;
-  top: 10px;
-  left: 15px;
-  right: 30px;
-}
-.dm-signature {
-  font-size: 12px;
-  opacity: 0.8;
-}
-.development-message p {
-  margin: 0;
-}
-.h-banner-feedback-button {
-  font-size: 16px;
-  padding-inline: 15px;
-  padding-block: 5px;
-  border-radius: 10px;
-  background-color: #e9ecef;
-  position: absolute;
-  bottom: 18px;
-  right: 137px;
-}
-.h-banner-schedule-button {
-  font-size: 16px;
-  padding-inline: 15px;
-  padding-block: 5px;
-  border-radius: 10px;
-  background-color: #e9ecef;
-  position: absolute;
-  bottom: 18px;
-  right: 15px;
-}
-.hb-bottom {
+.hp-group-title-block {
   display: flex;
   justify-content: space-between;
-  padding-top: 25px;
+  padding-inline: 10px;
+  padding-bottom: 15px;
 }
 
-.hb-sort-icon {
+.hp-group-title {
+  font-size: 18px;
+}
+
+.hp-sort-icon {
   height: 20px;
   width: 20px;
-}
-
-.hb-list-title {
-  font-size: 18px;
 }

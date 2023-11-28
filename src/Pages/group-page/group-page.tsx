@@ -7,8 +7,8 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { Group, Professional, Service, User } from "../../Classes/classes-imports";
 import { capitalize, formatDuration, idSwitcher } from "../../Function/functions-imports";
-import { BottomButton, BottomPopup, Carousel, DoubleItemButton, DoubleTextBlock, GroupBanner, Header, ItemButton, Line, LinkButton, LoadingScreen, SubHeader } from "../../Components/component-imports";
-import { DoubleButton } from "../../Components/buttons/double-button/double-button";
+import { BottomButton, BottomPopup, Carousel, DoubleItemButton, DoubleTextBlock, GroupBanner, Header, ItemButton, Line, LinkButton, LoadingScreen, SubHeader } from "../../AComponents/component-imports";
+import { DoubleButton } from "../../AComponents/buttons/double-button/double-button";
 
 import { ErrorPage } from "../error-page/error-page";
 import { GroupForm } from "../../Forms/group-form/group-form";

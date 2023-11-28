@@ -2,7 +2,7 @@ import "../schedule-page.css";
 
 import { useEffect, useState } from "react";
 
-import { BottomButton, Carousel, DoubleButton, DoubleItemButton, Header, IconInput, Line, LoadingScreen, SubHeader } from "../../../Components/component-imports";
+import { BottomButton, Carousel, DoubleButton, DoubleItemButton, Header, IconInput, Line, LoadingScreen, SubHeader } from "../../../AComponents/component-imports";
 import { capitalize, findRepetitionBlocks, formattedDate, parseDate } from "../../../Function/functions-imports";
 import { clock, edit, save, week } from "../../../_global";
 import { Professional, Service, User } from "../../../Classes/classes-imports";
