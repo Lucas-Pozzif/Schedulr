@@ -11,3 +11,8 @@ export function VerticalLine() {
         <div className="vertical-line"></div>
     )
 }
+export function ThickLine() {
+    return (
+        <div className="thick-line"></div>
+    )
+}
