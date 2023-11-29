@@ -1,5 +1,6 @@
 .small-icon-button,
-.small-icon-button-hide {
+.small-icon-button-hide,
+.small-icon-button-select {
   background: var(--frenchGray);
   height: 20px;
   width: 100px;
@@ -14,6 +15,9 @@
 .small-icon-button-hide {
   opacity: 0;
   pointer-events: none;
+}
+.small-icon-button-select {
+  background: var(--frenchGray2);
 }
 
 .sib-icon {
