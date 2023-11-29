@@ -1,0 +1,39 @@
+.carousel {
+  overflow-x: auto;
+  display: flex;
+  gap: 5px;
+  padding-inline: 20px;
+  margin-top: 10px;
+}
+
+.carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.carousel-item,
+.carousel-item-selected {
+  height: 50px;
+  width: 100px;
+  background: var(--platinum);
+  border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.carousel-item-selected {
+  outline: #212529 1px solid;
+}
+
+.carousel-title {
+  font-size: 16px;
+  color: var(--eerieBlack);
+  opacity: 0.8;
+}
+
+.carousel-subtitle {
+  font-size: 14px;
+  color: var(--onix);
+  opacity: 0.8;
+}

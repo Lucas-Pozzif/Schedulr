@@ -1,22 +1,22 @@
 import "./carousel.css";
 
-type carouselType = {
+type CarouselType = {
   items: {
     title?: string;
-    title2?: string;
-    selected?: boolean;
+    subtitle?: string;
+    select?: boolean;
     onClick?: () => void;
   }[];
 };
 
-export function Carousel({ items }: carouselType) {
+export function Carousel({ items }: CarouselType) {
   return (
     <div className='carousel'>
       {items.map((item) => {
         return (
-          <div className={"carousel-item" + (item.selected ? " selected" : "")} onClick={item.onClick}>
+          <div className={"carousel-item" + (item.select ? "-selected" : "")} onClick={item.onClick}>
             <p className={"carousel-title"}>{item.title}</p>
-            <p className={"carousel-title"}>{item.title2}</p>
+            <p className={"carousel-subtitle"}>{item.subtitle}</p>
           </div>
         );
       })}
