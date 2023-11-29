@@ -1,7 +1,7 @@
 import { IconButton } from "../../component-imports";
-import "./user-page-list.css";
+import "./icon-list.css";
 
-type UserPageListType = {
+type IconListType = {
   items?: {
     title: string;
     icon: string;
@@ -9,10 +9,10 @@ type UserPageListType = {
     onClick: () => void;
   }[];
 };
-export function UserPageList({ items }: UserPageListType) {
+export function IconList({ items }: IconListType) {
   return (
-    <div className='user-page-list'>
-      {items?.map((item,index) => (
+    <div className='icon-list'>
+      {items?.map((item, index) => (
         <IconButton key={index} title={item.title} hide={item.hide} icon={item.icon} onClick={item.onClick} />
       ))}
     </div>
