@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../Services/firebase/firebase";
 
-import { SmallHeader, UserPageList, UserPageLoading, UserProfile } from "../../Components/component-imports";
+import { SmallHeader, IconList, UserPageLoading, UserProfile } from "../../Components/component-imports";
 import { addCalendar, calendar, confirm, edit, google, logOutIcon } from "../../_global";
 import { User } from "../../Classes/classes-imports";
 
@@ -121,7 +121,7 @@ export function UserPage() {
         onChangeName={(e) => user.updateState(setUser, "name", e.target.value)}
         onChangeNumber={(e) => user.updateState(setUser, "number", e.target.value)}
       />
-      <UserPageList items={hasAccount ? listButtons : listButtonsUnlogged} />
+      <IconList items={hasAccount ? listButtons : listButtonsUnlogged} />
     </div>
   );
 }
