@@ -1,13 +1,14 @@
 import "./professional-form.css";
 import { Dispatch, SetStateAction, useState, useEffect } from "react";
 
-import { LoadingScreen, Line, Header, LinkButton, BottomPopup, BottomButton, SubHeader, ItemButton, Carousel, IconInput, HeaderInput, SmallButton, AlertBlock } from "../../Components/component-imports";
 import { Group, Professional, Service, User } from "../../Classes/classes-imports";
-import { bin, block, fullDays, mail, more, timeArray } from "../../_global";
-import { formatArray, stateSwitcher } from "../../Function/functions-imports";
+import { add, bin, block, calendar, clock, fullDays, key, mail, more, occupation, timeArray } from "../../_global";
+import { formatArray, formatDuration, stateSwitcher } from "../../Function/functions-imports";
 
 import { ServiceForm } from "../service-form/service-form";
 import { ErrorPage } from "../../Pages/error-page/error-page";
+import { HeaderInput } from "../../Components/inputs/header-input/header-input";
+import { BottomPopup, Carousel, GenericHeader, IconCarousel, ItemList, Line, LinkList, SubHeader } from "../../Components/component-imports";
 
 type professionalFormType = {
   user?: User;
@@ -18,6 +19,241 @@ type professionalFormType = {
 };
 
 export function ProfessionalForm({ user, groupForm, setGroupForm, professional = new Professional(), onClickReturn }: professionalFormType) {
+  const [loading, setLoading] = useState(false);
+  const [professionalForm, setProfessionalForm] = useState<Professional>(professional);
+  const [tab, setTab] = useState(0);
+
+  const [selectedDay, setSelectedDay] = useState(0);
+  const [selectedOcupation, setSelectedOcupation] = useState<null | number>(null);
+
+  const updateAdmins = async () => {
+    const profUser = await professionalForm.searchForUser();
+
+    if (profUser.getId() == "") {
+      professionalForm.updateProfessionalState(setProfessionalForm, "isAdmin", false);
+      setWarning("email não encontrado");
+      setTimeout(() => {
+        setWarning(null);
+      }, 3000);
+      return;
+    }
+    const admins = groupForm.getAdmins();
+
+    if (!professionalForm.getIsAdmin()) {
+      admins.push(profUser.getId());
+      setMessage(`${profUser.getName()} é um administrador`);
+    } else {
+      const index = admins.indexOf(profUser.getId());
+      if (index !== -1) {
+        admins.splice(index, 1);
+      }
+      setMessage(`${profUser.getName()} não é mais um administrador`);
+    }
+    professionalForm.updateProfessionalState(setProfessionalForm, "isAdmin", !professionalForm.getIsAdmin());
+    groupForm.setAdmins(admins);
+    setTimeout(() => {
+      setMessage(null);
+    }, 3000);
+  };
+
+  const saveProfessional = async () => {
+    setLoading(true);
+    if (professionalForm.getId()) {
+      await professionalForm.setProfessional();
+      const idIndex = groupForm.getProfessionalsIds().indexOf(professionalForm.getId());
+      const professional = groupForm.getProfessionals();
+      professional[idIndex] = professionalForm;
+    } else {
+      await professionalForm.addProfessional();
+      groupForm.setProfessionalsIds([...groupForm.getProfessionalsIds(), professionalForm.getId()]);
+      groupForm.setProfessionals([...groupForm.getProfessionals(), professionalForm]);
+    }
+    setGroupForm(new Group(groupForm));
+    setLoading(false);
+    onClickReturn();
+  };
+
+  const handleDeleteOccupation = () => {
+    professionalForm.updateProfessionalState(
+      setProfessionalForm,
+      "occupations",
+      professionalForm.getOccupations().filter((_, index) => index !== selectedOcupation)
+    );
+    setSelectedOcupation(null);
+  };
+
+  const handleOccupationInput = (occupations: string[], input: string) => {
+    if (selectedOcupation === null) {
+      setSelectedOcupation(occupations.length);
+      occupations.push(input);
+    } else occupations[selectedOcupation] = input;
+    professionalForm.updateProfessionalState(setProfessionalForm, "occupations", occupations);
+  };
+
+  const handleDelete = async () => {
+    setLoading(true);
+    if (professionalForm.getId() !== "") {
+      await professionalForm.deleteProfessional();
+      const updatedIds = groupForm.getProfessionalsIds().filter((id) => id !== professionalForm.getId());
+      const updatedProfessionals = groupForm.getProfessionals().filter((prof) => prof.getId() !== professionalForm.getId());
+      groupForm.setProfessionalsIds(updatedIds);
+      groupForm.setProfessionals(updatedProfessionals);
+    }
+    onClickReturn();
+    setLoading(false);
+  };
+
+  const buttonList = [
+    {
+      title: "Alterar Serviços",
+      subtitle: `${professionalForm.getServices().length} Serviços selecionados`,
+      onClick: () => setTab(2),
+    },
+    {
+      title: "Alterar Profissionais",
+      subtitle: `${professionalForm.getOccupations()} Ocupações criadas`,
+      onClick: () => setTab(3),
+    },
+  ];
+  const professionalButtons = [
+    {
+      title: "Horários",
+      icon: calendar,
+      onClick: () => setTab(1),
+    },
+    {
+      title: "Admin",
+      select: groupForm.getAdmins().includes(professionalForm.getId()),
+      icon: key,
+      onClick: () => {},
+    },
+  ];
+
+  const tabCarousel = [
+    {
+      title: "Horário",
+      select: tab === 1,
+      icon: clock,
+      onClick: () => setTab(1),
+    },
+    {
+      title: "Serviço",
+      select: tab === 2,
+      icon: calendar,
+      onClick: () => setTab(2),
+    },
+    {
+      title: "Ocupações",
+      select: tab === 3,
+      icon: occupation,
+      onClick: () => setTab(3),
+    },
+  ];
+
+  const tabHandler = () => {
+    switch (tab) {
+      case 0: // Professional tab
+        return (
+          <div className='tab'>
+            <HeaderInput
+              placeholder={"Nome do Profissional"}
+              value={professionalForm.getName()}
+              subtitle={formatArray(professionalForm.getOccupations())}
+              icon={bin}
+              onChange={(e) => professionalForm.updateProfessionalState(setProfessionalForm, "name", e.target.value)}
+              onClickReturn={onClickReturn}
+              onClickIcon={() => {}}
+            />
+            <input className='pf-input' value={professionalForm.getEmail()} placeholder='Digitar Email' onChange={(e) => professionalForm.updateProfessionalState(setProfessionalForm, "email", e.target.value)} />
+            <Line />
+            <IconCarousel items={professionalButtons} />
+            <LinkList items={buttonList} />
+          </div>
+        );
+      case 1: // Time tab
+        return (
+          <div className='tab'>
+            <GenericHeader title={"Editar Horários"} icon={""} onClickReturn={() => setTab(0)} onClickIcon={() => professionalForm.cleanDay(selectedDay, setProfessionalForm)} />
+            <IconCarousel items={tabCarousel} />
+            <SubHeader title={"Aberto x dias na semana"} buttonTitle={"Salvar"} onClick={() => setTab(0)} />
+            <Carousel
+              items={fullDays.map((day, index) => ({
+                title: day,
+                subtitle: "Fechado",
+                selected: selectedDay === index,
+                onClick: () => setSelectedDay(index),
+              }))}
+            />
+            <ItemList
+              items={timeArray
+                .filter((_, index) => index >= 12)
+                .map((timeValue, index) => {
+                  const selected = professionalForm.getShift()[selectedDay]?.[index - professionalForm.getStartHours()[selectedDay]];
+                  return {
+                    title: timeValue,
+                    select: selected,
+                    onClick: () => professionalForm.updateHourList(selectedDay, index, setProfessionalForm),
+                  };
+                })}
+            />
+            <BottomPopup stage={1} title={fullDays[selectedDay]} subtitle={"Fechado"} buttonTitle={"Preencher Horários"} onClick={() => professionalForm.fillHours(selectedDay, setProfessionalForm)} />
+          </div>
+        );
+      case 2: // Service tab
+        return (
+          <div className='tab'>
+            <GenericHeader title={"Editar Serviços"} icon={add} onClickReturn={() => setTab(1)} onClickIcon={() => setTab(4)} />
+            <IconCarousel items={tabCarousel} />
+            <SubHeader title={`${groupForm.getServicesIds()} Serviços criados`} buttonTitle={"Salvar"} onClick={() => setTab(0)} />
+            <ItemList
+              items={groupForm
+                .getServices()
+                .sort((a, b) => a.getName().localeCompare(b.getName()))
+                .map((service: Service) => {
+                  return {
+                    title: service.getName(),
+                    subtitle: formatDuration(service.getDuration()),
+                    selected: professionalForm.getServices().includes(service.getId()),
+                    onClick: () => professionalForm.handleService(service, setProfessionalForm),
+                  };
+                })}
+            />
+          </div>
+        );
+      case 3: // Occupation Tab
+        return (
+          <div className='tab'>
+            <HeaderInput
+              placeholder='Digite a Ocupação'
+              value={selectedOcupation !== null ? professionalForm.getOccupations()[selectedOcupation] : ""}
+              subtitle='Ocupações do profissional'
+              icon={bin}
+              maxLength={30}
+              onChange={(e) => handleOccupationInput(professionalForm.getOccupations(), e.target.value)}
+              onClickReturn={() => setTab(0)}
+              onClickIcon={() => handleDeleteOccupation()}
+            />
+            <IconCarousel items={tabCarousel} />
+            <SubHeader title={`${groupForm.getServicesIds()} Ocupações criadas`} buttonTitle={"Salvar"} onClick={() => setTab(0)} />
+            <ItemList
+              items={professionalForm.getOccupations().map((occupation: string, index: number) => {
+                return {
+                  title: occupation,
+                  selected: index == selectedOcupation,
+                  onClick: () => stateSwitcher(selectedOcupation, index, setSelectedOcupation),
+                };
+              })}
+            />
+          </div>
+        );
+      case 4: // Service form
+        return <ServiceForm user={user} groupForm={groupForm} setGroupForm={setGroupForm} onClickReturn={() => setTab(2)} />;
+      default:
+        return;
+    }
+  };
+}
+export function ProfessionalFormd({ user, groupForm, setGroupForm, professional = new Professional(), onClickReturn }: professionalFormType) {
   const [loading, setLoading] = useState(false);
   const [professionalForm, setProfessionalForm] = useState<Professional>(professional);
   const [tab, setTab] = useState(0);
