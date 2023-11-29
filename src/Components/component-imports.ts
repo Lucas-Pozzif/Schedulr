@@ -15,9 +15,21 @@ import { HomeBanner } from "./banners/home-banner/home-banner";
 import { GroupHeader } from "./headers/group-header/group-header";
 import { LinkList } from "./lists/link-list/link-list";
 import { GenericHeader } from "./headers/generic-header/generic-header";
-import {Carousel} from './carousels/carousel/carousel'
+import { Carousel } from "./carousels/carousel/carousel";
+import { IconCarousel } from "./carousels/icon-carousel/icon-carousel";
+import { ItemList } from "./lists/item-list/item-list";
+import { SubHeader } from "./headers/sub-header/sub-header";
+import { BottomPopup } from "./popups/bottom-popup/bottom-popup";
+import { GroupBanner } from "./banners/group-banner/group-banner";
+import { GroupFormLoading } from "./loading/group-form-loading/group-form-loading";
 
 export {
+  IconCarousel,
+  ItemList,
+  SubHeader,
+  BottomPopup,
+  GroupBanner,
+  GroupFormLoading,
   Carousel,
   ReturnButton,
   LinkList,
