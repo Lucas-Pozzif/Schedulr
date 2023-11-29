@@ -8,18 +8,18 @@ type DoubleButtonType = {
   };
   title: string;
   subtitle?: string;
-  selected?: boolean;
+  select?: boolean;
   onClick?: () => void;
 };
 
-export function DualButton({ leftButton, title, subtitle, selected, onClick }: DoubleButtonType) {
+export function DualButton({ leftButton, title, subtitle, select, onClick }: DoubleButtonType) {
   return (
     <div className='dual-button' onClick={onClick}>
-      <div className={"db-left-button" + (selected ? "-selected" : "")}>
+      <div className={"db-left-button" + (select ? "-selected" : "")}>
         <p className='dblb-title'>{leftButton.title}</p>
         <p className='dblb-subtitle'>{leftButton.subtitle}</p>
       </div>
-      <ItemButton title={title} subtitle={subtitle} select={selected} />
+      <ItemButton title={title} subtitle={subtitle} select={select} />
     </div>
   );
 }
