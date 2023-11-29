@@ -6,7 +6,7 @@ type IconCarouselType = {
     title: string;
     icon: string;
     onClick: () => void;
-    select: boolean;
+    select?: boolean;
   }[];
 };
 
