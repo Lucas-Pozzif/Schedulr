@@ -111,15 +111,16 @@ export function GroupPage() {
   };
 
   const timeValidator = (index: number) => {
-    var isProfAvailable = true;
     var isAvailable = false;
     const professionals: Professional[] = [];
     group
       .getProfessionals()
       .sort((a, b) => a.getName().localeCompare(b.getName()))
       .map((prof) => {
+        var isProfAvailable = true;
         selectedService?.getDuration().map((time, i) => {
-          if (prof.getSchedule()?.[days[selectedDay]?.[2]]?.[index + i + startHour * 6] !== undefined && time) {
+          console.log(selectedService, prof);
+          if (!prof.getServices().includes(selectedService.getId()) || (prof.getSchedule()?.[days[selectedDay]?.[2]]?.[index + i + startHour * 6] !== undefined && time)) {
             isProfAvailable = false;
           }
         });

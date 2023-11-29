@@ -291,7 +291,7 @@ export class Service {
     }
 
     public async setService() {
-        if (this._id == "") {
+        if (this._id === "") {
             return console.error("no id was found");
         }
 
@@ -301,14 +301,14 @@ export class Service {
     }
 
     public async updateService(updates: Partial<ServiceInterface>) {
-        if (this._id == "") {
+        if (this._id === "") {
             return console.error("no id was found");
         }
 
         const docRef = doc(db, "services", this._id);
         const propertiesToUpdate: (keyof ServiceInterface)[] = ["name", "value", "photos", "duration", "inicial", "subServices"];
 
-        propertiesToUpdate.map((prop) => {
+        propertiesToUpdate.forEach((prop) => {
             if (updates[prop] !== undefined) {
                 (this as any)[`_${prop}`] = updates[prop]!;
             }
@@ -327,7 +327,7 @@ export class Service {
     }
 
     public async deleteService() {
-        if (this._id == "") {
+        if (this._id === "") {
             return console.error("no id was found");
         }
 
@@ -419,13 +419,13 @@ export class Service {
         setter(new Service(this));
     }
     public fillHours(setter: React.Dispatch<React.SetStateAction<Service>>, sServiceId?: string) {
-        if (sServiceId) this._subServices.find((sservice) => sservice.getId() == sServiceId)?.fillHours();
+        if (sServiceId) this._subServices.find((sservice) => sservice.getId() === sServiceId)?.fillHours();
         else this._duration = this._duration.map(() => true);
         setter(new Service(this));
     }
 
     public updateHourList(index: number, setter: React.Dispatch<React.SetStateAction<Service>>, sServiceId?: string) {
-        if (sServiceId) this._subServices.find((sservice) => sservice.getId() == sServiceId)?.updateHourList(index);
+        if (sServiceId) this._subServices.find((sservice) => sservice.getId() === sServiceId)?.updateHourList(index);
         else {
             if (index >= this._duration.length) {
                 // Fill any value between the given index and the last hour list value with falses

@@ -19,7 +19,9 @@ export function DoubleItemButton({ leftButtonTitle, title, subtitle, selected, o
         <p className='dilb-title'>{leftButtonTitle.title1}</p>
         <p className='dilb-title'>{leftButtonTitle.title2}</p>
       </div>
-      <ItemButton title={title} subtitle={subtitle} selected={selected} onClick={() => {}} />
+      <div className='dbib'>
+        <ItemButton title={title} subtitle={subtitle} selected={selected} onClick={() => {}} />
+      </div>
     </div>
   );
 }

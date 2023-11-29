@@ -199,7 +199,7 @@ export function ClientSchedulePage() {
     const serviceSpan = endIndex - startIndex + 1;
 
     /* Grabs the day data before accessing it so it doesn't bug with the undefined day, very important */
-    await professionalCache[professional].getScheduleDay(day);
+    await professionalCache[professional]?.getScheduleDay(day);
     await user.getScheduleDay(day);
 
     const userPromise = Array.from({ length: serviceSpan }, async (_, index) => {
@@ -209,7 +209,7 @@ export function ClientSchedulePage() {
 
     const profPromise = Array.from({ length: serviceSpan }, async (_, index) => {
       const realIndex = index + startIndex;
-      await professionalCache[professional].deleteScheduleIndex(day, realIndex.toString());
+      await professionalCache[professional]?.deleteScheduleIndex(day, realIndex.toString());
     });
 
     await Promise.all(userPromise);
@@ -244,8 +244,8 @@ export function ClientSchedulePage() {
                 const lastIndex = block[1];
                 const scheduleItem = schedule[firstIndex]; //the block content is all the same regardless of the index so i'll take the first one
 
-                const serviceName = serviceCache[scheduleItem.service].getName();
-                const profName = professionalCache[scheduleItem.client].getName();
+                const serviceName = serviceCache[scheduleItem.service]?.getName();
+                const profName = professionalCache[scheduleItem.client]?.getName();
 
                 const currentBlock = {
                   client: scheduleItem.client,

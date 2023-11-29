@@ -1,7 +1,7 @@
 import "./professional-form.css";
 import { Dispatch, SetStateAction, useState, useEffect } from "react";
 
-import { LoadingScreen, Line, Header, LinkButton, BottomPopup, BottomButton, SubHeader, ItemButton, Carousel, IconInput, HeaderInput, SmallButton } from "../../Components/component-imports";
+import { LoadingScreen, Line, Header, LinkButton, BottomPopup, BottomButton, SubHeader, ItemButton, Carousel, IconInput, HeaderInput, SmallButton, AlertBlock } from "../../Components/component-imports";
 import { Group, Professional, Service, User } from "../../Classes/classes-imports";
 import { bin, block, fullDays, mail, more, timeArray } from "../../_global";
 import { formatArray, stateSwitcher } from "../../Function/functions-imports";
@@ -19,14 +19,15 @@ type professionalFormType = {
 
 export function ProfessionalForm({ user, groupForm, setGroupForm, professional = new Professional(), onClickReturn }: professionalFormType) {
   const [loading, setLoading] = useState(false);
-  const [professionalForm, setProfessionalForm] = useState(professional);
+  const [professionalForm, setProfessionalForm] = useState<Professional>(professional);
   const [tab, setTab] = useState(0);
 
   const [selectedOcupation, setSelectedOcupation] = useState<null | number>(null);
   const [selectedDay, setSelectedDay] = useState(0);
-  
+
   const [warning, setWarning] = useState<null | string>(null);
   const [message, setMessage] = useState<null | string>(null);
+  const [hiddenAlert, setHiddenAlert] = useState(true);
 
   useEffect(() => {
     setLoading(true);
@@ -101,6 +102,19 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
     professionalForm.updateProfessionalState(setProfessionalForm, "occupations", occupations);
   };
 
+  const handleDelete = async () => {
+    setLoading(true);
+    if (professionalForm.getId() !== "") {
+      await professionalForm.deleteProfessional();
+      const updatedIds = groupForm.getProfessionalsIds().filter((id) => id !== professionalForm.getId());
+      const updatedProfessionals = groupForm.getProfessionals().filter((prof) => prof.getId() !== professionalForm.getId());
+      groupForm.setProfessionalsIds(updatedIds);
+      groupForm.setProfessionals(updatedProfessionals);
+    }
+    onClickReturn();
+    setLoading(false);
+  };
+
   const tabHandler = () => {
     switch (tab) {
       case 0: // Home tab
@@ -113,7 +127,7 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
               icon={bin}
               onChange={(e) => professionalForm.updateProfessionalState(setProfessionalForm, "name", e.target.value)}
               onClickReturn={onClickReturn}
-              onClickIcon={() => alert("ainda não implementado")}
+              onClickIcon={() => setHiddenAlert(false)}
             />
             <div className='sf-data-block'>
               <IconInput placeholder='Digitar email' value={professionalForm.getEmail()} onChange={(e) => professionalForm.updateProfessionalState(setProfessionalForm, "email", e.target.value)} icon={mail} />
@@ -132,6 +146,24 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
               </div>
             </div>
             <BottomPopup title={"Editando..."} subtitle={`Os campos ### não foram preenchidos!`} buttonTitle={"Salvar"} onClick={async () => await saveProfessional()} activated={professionalForm.isValid()} />
+            <AlertBlock
+              title={"Você realmente deseja excluir"}
+              itemButtons={[
+                {
+                  title: professionalForm.getName(),
+                  subtitle: professionalForm.getOccupations().join(", "),
+                  selected: true,
+                },
+              ]}
+              bottomText='Essa ação não pode ser desfeita'
+              button1={{
+                hidden: false,
+                title: "Excluir Profissional",
+                onClick: async () => await handleDelete(),
+              }}
+              hidden={hiddenAlert}
+              onClickOut={() => setHiddenAlert(true)}
+            />
           </div>
         );
       case 1: // Service Tab
@@ -186,12 +218,9 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
             />
             <SubHeader title={selectedOcupation !== null ? professionalForm.getOccupations()[selectedOcupation] : `${professionalForm.getOccupations().length} ocupações`} buttonTitle={"Nova Ocupação"} onClick={() => setSelectedOcupation(null)} />
             <div className='sf-item-list'>
-              {professionalForm
-                .getOccupations()
-                .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
-                .map((occupation, index) => (
-                  <ItemButton title={occupation} subtitle={""} selected={index == selectedOcupation} onClick={() => stateSwitcher(selectedOcupation, index, setSelectedOcupation)} />
-                ))}
+              {professionalForm.getOccupations().map((occupation, index) => (
+                <ItemButton title={occupation} subtitle={""} selected={index == selectedOcupation} onClick={() => stateSwitcher(selectedOcupation, index, setSelectedOcupation)} />
+              ))}
             </div>
             <BottomButton
               hidden={
