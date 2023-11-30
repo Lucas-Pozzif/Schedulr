@@ -46,3 +46,4 @@ export const add = require("./Assets/add.png");
 export const key = require("./Assets/key.png");
 export const occupation = require("./Assets/occupation.png");
 export const closeIcon = require("./Assets/close.png");
+export const redClose = require("./Assets/red-close.png");
