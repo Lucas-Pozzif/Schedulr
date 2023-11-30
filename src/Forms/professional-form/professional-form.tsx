@@ -2,13 +2,12 @@ import "./professional-form.css";
 import { Dispatch, SetStateAction, useState, useEffect } from "react";
 
 import { Group, Professional, Service, User } from "../../Classes/classes-imports";
-import { add, bin, block, calendar, clock, fullDays, key, mail, more, occupation, timeArray } from "../../_global";
+import { add, bin, calendar, clock, fullDays, key, occupation, timeArray } from "../../_global";
 import { formatArray, formatDuration, stateSwitcher } from "../../Function/functions-imports";
 
 import { ServiceForm } from "../service-form/service-form";
 import { ErrorPage } from "../../Pages/error-page/error-page";
-import { HeaderInput } from "../../Components/inputs/header-input/header-input";
-import { BottomPopup, Carousel, GenericHeader, IconCarousel, ItemList, Line, LinkList, SubHeader } from "../../Components/component-imports";
+import { BottomPopup, Carousel, GenericHeader, HeaderInput, IconCarousel, ItemList, Line, LinkList, Popup, ProfessionalFormLoading, SubHeader } from "../../Components/component-imports";
 
 type professionalFormType = {
   user?: User;
@@ -26,14 +25,28 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
   const [selectedDay, setSelectedDay] = useState(0);
   const [selectedOcupation, setSelectedOcupation] = useState<null | number>(null);
 
+  const [message, setMessage] = useState<string | null>(null);
+  const [popupData, setPopup] = useState({
+    title: "",
+    text: "",
+    display: false,
+    onClickExit: () => {},
+    buttons: [
+      {
+        title: "",
+        onClick: () => {},
+      },
+    ],
+  });
+
   const updateAdmins = async () => {
     const profUser = await professionalForm.searchForUser();
 
     if (profUser.getId() == "") {
       professionalForm.updateProfessionalState(setProfessionalForm, "isAdmin", false);
-      setWarning("email não encontrado");
+      setMessage("email não encontrado");
       setTimeout(() => {
-        setWarning(null);
+        setMessage(null);
       }, 3000);
       return;
     }
@@ -161,13 +174,49 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
               subtitle={formatArray(professionalForm.getOccupations())}
               icon={bin}
               onChange={(e) => professionalForm.updateProfessionalState(setProfessionalForm, "name", e.target.value)}
-              onClickReturn={onClickReturn}
-              onClickIcon={() => {}}
+              onClickReturn={() =>
+                setPopup({
+                  title: "Você tem Certeza?",
+                  text: "Existem alterações não salvas",
+                  display: true,
+                  onClickExit: () => setPopup({ ...popupData, display: false }),
+                  buttons: [
+                    {
+                      title: "Cancelar",
+                      onClick: () => setPopup({ ...popupData, display: false }),
+                    },
+                    {
+                      title: "Confirmar",
+                      onClick: onClickReturn,
+                    },
+                  ],
+                })
+              }
+              onClickIcon={() =>
+                setPopup({
+                  title: "Você realmente deseja excluir?",
+                  text: "Essa ação não pode ser desfeita",
+                  display: true,
+                  onClickExit: () => setPopup({ ...popupData, display: false }),
+                  buttons: [
+                    {
+                      title: "Cancelar",
+                      onClick: () => setPopup({ ...popupData, display: false }),
+                    },
+                    {
+                      title: "Confirmar",
+                      onClick: async () => await handleDelete(),
+                    },
+                  ],
+                })
+              }
             />
             <input className='pf-input' value={professionalForm.getEmail()} placeholder='Digitar Email' onChange={(e) => professionalForm.updateProfessionalState(setProfessionalForm, "email", e.target.value)} />
             <Line />
             <IconCarousel items={professionalButtons} />
+            <p className={`pf-message ${message ? "" : "hidden"}`}>{message}</p>
             <LinkList items={buttonList} />
+            <Popup title={popupData.title} text={popupData.text} onClickExit={popupData.onClickExit} buttons={popupData.buttons} />
           </div>
         );
       case 1: // Time tab
@@ -249,10 +298,14 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
       case 4: // Service form
         return <ServiceForm user={user} groupForm={groupForm} setGroupForm={setGroupForm} onClickReturn={() => setTab(2)} />;
       default:
-        return;
+        return <ErrorPage />;
     }
   };
+
+  return loading ? <ProfessionalFormLoading /> : tabHandler();
 }
+
+/*
 export function ProfessionalFormd({ user, groupForm, setGroupForm, professional = new Professional(), onClickReturn }: professionalFormType) {
   const [loading, setLoading] = useState(false);
   const [professionalForm, setProfessionalForm] = useState<Professional>(professional);
@@ -479,3 +532,4 @@ export function ProfessionalFormd({ user, groupForm, setGroupForm, professional 
 
   return loading ? <LoadingScreen /> : tabHandler();
 }
+*/
