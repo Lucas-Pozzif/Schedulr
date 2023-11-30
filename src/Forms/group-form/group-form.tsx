@@ -5,7 +5,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../Services/firebase/firebase";
 
-import { add, calendar, clock, fullDays, timeArray, userIcon } from "../../_global";
+import { add, calendar, clock, closeIcon, fullDays, timeArray, userIcon } from "../../_global";
 import { Group, Professional, Service, User } from "../../Classes/classes-imports";
 import { formatDuration, handleImageInput, idSwitcher, onClickRef } from "../../Function/functions-imports";
 
@@ -41,11 +41,12 @@ export function GroupForm({ group, onClickReturn = () => navigate(-1) }: GroupFo
     onAuthStateChanged(auth, async (client) => {
       if (client?.uid) {
         await user.getUser(client.uid);
+        setLoading(false);
       }
     });
-    if (group?.getId() === "") {
+    if (group?.getId() === undefined) {
       groupForm.setOwner(user.getId());
-      if (!adminsArray.includes(user.getId())) groupForm.setAdmins([...adminsArray, user.getId()]);
+      if (adminsArray.includes(user.getId())) groupForm.setAdmins([...adminsArray, user.getId()]);
     } else if (!adminsArray.includes(user.getId())) {
       setTab(-1);
     }
@@ -116,9 +117,10 @@ export function GroupForm({ group, onClickReturn = () => navigate(-1) }: GroupFo
               titlePlaceholder={"Nome do estabelecimento"}
               subtitlePlaceholder={"Tipo de estabelecimento"}
             />
-            <p className='gf-location'>{groupForm.getLocation()}</p>
+            <input className='gf-location' placeholder='Endereço do estabelecimento' value={groupForm.getLocation()} onChange={(e) => groupForm.updateGroupState(setGroupForm, "location", e.target.value)} />
             <Line />
             <LinkList items={buttonList} />
+            <BottomPopup stage={groupForm.isValid() ? 1 : 0} title={"Editando..."} subtitle={"Possui alterações"} buttonTitle={"Salvar alterações"} onClick={() => saveGroupForm()} />
 
             {/* Hidden inputs that are refferencied */}
             <input className='hidden' type='file' accept='image/*' onChange={(event) => handleImageInput(event, groupForm, setGroupForm, "banner")} ref={bannerRef} />
@@ -128,14 +130,14 @@ export function GroupForm({ group, onClickReturn = () => navigate(-1) }: GroupFo
       case 1: // Time tab
         return (
           <div className='tab'>
-            <GenericHeader title={"Editar Horários"} icon={""} onClickReturn={() => setTab(0)} onClickIcon={() => groupForm.cleanDay(selectedDay, setGroupForm)} />
+            <GenericHeader title={"Editar Horários"} icon={closeIcon} onClickReturn={() => setTab(0)} onClickIcon={() => groupForm.cleanDay(selectedDay, setGroupForm)} />
             <IconCarousel items={tabCarousel} />
             <SubHeader title={"Aberto x dias na semana"} buttonTitle={"Salvar"} onClick={() => setTab(0)} />
             <Carousel
               items={fullDays.map((day, index) => ({
                 title: day,
                 subtitle: "Fechado",
-                selected: selectedDay === index,
+                select: selectedDay === index,
                 onClick: () => setSelectedDay(index),
               }))}
             />
