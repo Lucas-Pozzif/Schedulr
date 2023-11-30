@@ -1,9 +1,0 @@
-.group-list {
-    display: grid;
-    padding-top: 10px;
-    margin-top: 5px;
-    grid-template-columns: repeat(2, 150px);
-    gap: 20px;
-    justify-content: center;
-    background-color: #CED4DA;
-}
