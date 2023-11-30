@@ -38,7 +38,7 @@ export function BottomPopup({ stage, title, subtitle, buttonTitle, onClick, topT
                   }}
                   title={item.title}
                   subtitle={item.subtitle}
-                  selected={item.selected}
+                  select={item.selected}
                   onClick={item.onClick}
                 />
               );

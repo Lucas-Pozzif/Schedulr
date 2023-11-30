@@ -1,3 +1,4 @@
+import { closeIcon } from "../../../_global";
 import "./popup.css";
 
 type PopupType = {
