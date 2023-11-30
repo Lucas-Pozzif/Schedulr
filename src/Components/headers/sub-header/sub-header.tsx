@@ -9,7 +9,7 @@ type subHeaderType = {
 export function SubHeader({ title, buttonTitle, onClick }: subHeaderType) {
   return (
     <div className='sub-header'>
-      <div className='sub-header-left'>{title}</div>
+      <p className='sub-header-title'>{title}</p>
       <p className='sub-header-button' onClick={onClick}>
         {buttonTitle}
       </p>
