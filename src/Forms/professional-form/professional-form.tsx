@@ -136,9 +136,9 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
     },
     {
       title: "Admin",
-      select: groupForm.getAdmins().includes(professionalForm.getId()),
+      select: professionalForm.getIsAdmin(),
       icon: key,
-      onClick: () => {},
+      onClick: () => updateAdmins(),
     },
   ];
 
@@ -192,31 +192,31 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
                   ],
                 })
               }
-              onClickIcon={() =>
-                setPopup({
+              onClickIcon={() => {
+                setPopup((prevPopupData) => ({
                   title: "Você realmente deseja excluir?",
                   text: "Essa ação não pode ser desfeita",
                   display: true,
-                  onClickExit: () => setPopup({ ...popupData, display: false }),
+                  onClickExit: () => setPopup({ ...prevPopupData, display: false }),
                   buttons: [
                     {
                       title: "Cancelar",
-                      onClick: () => setPopup({ ...popupData, display: false }),
+                      onClick: () => setPopup({ ...prevPopupData, display: false }),
                     },
                     {
                       title: "Confirmar",
                       onClick: async () => await handleDelete(),
                     },
                   ],
-                })
-              }
+                }));
+              }}
             />
             <input className='pf-input' value={professionalForm.getEmail()} placeholder='Digitar Email' onChange={(e) => professionalForm.updateProfessionalState(setProfessionalForm, "email", e.target.value)} />
             <Line />
             <IconCarousel items={professionalButtons} />
             <p className={`pf-message ${message ? "" : "hidden"}`}>{message}</p>
             <LinkList items={buttonList} />
-            <Popup title={popupData.title} text={popupData.text} onClickExit={popupData.onClickExit} buttons={popupData.buttons} />
+            <Popup title={popupData.title} text={popupData.text} display={popupData.display} onClickExit={popupData.onClickExit} buttons={popupData.buttons} />
           </div>
         );
       case 1: // Time tab
@@ -283,7 +283,7 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
               onClickIcon={() => handleDeleteOccupation()}
             />
             <IconCarousel items={tabCarousel} />
-            <SubHeader title={`${groupForm.getServicesIds()} Ocupações criadas`} buttonTitle={"Salvar"} onClick={() => setTab(0)} />
+            <SubHeader title={`${groupForm.getServicesIds()} Ocupações criadas`} buttonTitle={"Salvar"} onClick={() => setTab(2)} />
             <ItemList
               items={professionalForm.getOccupations().map((occupation: string, index: number) => {
                 return {

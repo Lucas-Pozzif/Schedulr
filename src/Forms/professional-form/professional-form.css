@@ -1,25 +1,24 @@
 @keyframes fadeOut {
   from {
-    opacity: 0.6;
+    opacity: 0.8;
   }
   to {
     opacity: 0;
   }
 }
 
-.pf-warning {
-  color: red;
-  opacity: 0.6;
-  text-align: center;
-  width: 100px;
-  font-size: 12px;
-  animation: fadeOut 2s 1s forwards;
+.pf-input {
+  font-size: 14px;
+  color: var(--eerieBlack);
+  opacity: 0.8;
+  padding: 10px;
 }
 .pf-message {
-  color: blue;
-  opacity: 0.6;
-  text-align: center;
-  width: 100px;
-  font-size: 12px;
+  font-size: 14px;
+  display: flex;
+  justify-content: center;
+  padding-top: 5px;
+  color: var(--eerieBlack);
+  opacity: 0.8;
   animation: fadeOut 2s 1s forwards;
 }
