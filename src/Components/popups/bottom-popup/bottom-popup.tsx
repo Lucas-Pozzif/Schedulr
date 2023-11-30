@@ -1,6 +1,6 @@
 import { DualButton } from "../../buttons/dual-button/dual-button";
 import { Line } from "../../component-imports";
-import "./bottom-popup";
+import "./bottom-popup.css";
 
 type BottomPopupType = {
   stage?: number;
@@ -24,7 +24,7 @@ type BottomPopupType = {
 export function BottomPopup({ stage, title, subtitle, buttonTitle, onClick, topText, bottomText, items }: BottomPopupType) {
   return (
     <>
-      <div className={`bp-blur ${stage !== 2 ? "hidden" : ""}`} />
+      <div className={`blur ${stage !== 2 ? "hidden" : ""}`} />
       <div className={`bottom-popup${stage === 0 ? "-hide" : stage === 1 ? "" : "-expand"}`}>
         {stage === 2 ? (
           <div className='bp-top-block'>
