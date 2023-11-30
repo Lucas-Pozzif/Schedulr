@@ -22,8 +22,14 @@ import { SubHeader } from "./headers/sub-header/sub-header";
 import { BottomPopup } from "./popups/bottom-popup/bottom-popup";
 import { GroupBanner } from "./banners/group-banner/group-banner";
 import { GroupFormLoading } from "./loading/group-form-loading/group-form-loading";
+import { HeaderInput } from "./inputs/header-input/header-input";
+import { Popup } from "./popups/popup/popup";
+import { ProfessionalFormLoading } from "./loading/professional-form-loading/professional-form-loading";
 
 export {
+  HeaderInput,
+  Popup,
+  ProfessionalFormLoading,
   IconCarousel,
   ItemList,
   SubHeader,
