@@ -25,7 +25,6 @@ export function UserPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Cleanest login checker approach so far, reuse
     setLoading(true);
     onAuthStateChanged(auth, async (client) => {
       if (client?.uid) {
