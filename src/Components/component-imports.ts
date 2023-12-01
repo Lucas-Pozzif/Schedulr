@@ -25,9 +25,11 @@ import { GroupFormLoading } from "./loading/group-form-loading/group-form-loadin
 import { HeaderInput } from "./inputs/header-input/header-input";
 import { ServiceFormLoading } from "./loading/service-form-loading/service-form-loading";
 import { Popup } from "./popups/popup/popup";
+import { BottomButton } from "./buttons/bottom-button/bottom-button";
 import { ProfessionalFormLoading } from "./loading/professional-form-loading/professional-form-loading";
 
 export {
+  BottomButton,
   HeaderInput,
   ServiceFormLoading,
   Popup,
