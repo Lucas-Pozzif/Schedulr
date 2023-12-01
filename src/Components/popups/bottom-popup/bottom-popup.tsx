@@ -17,7 +17,7 @@ type BottomPopupType = {
     selected: boolean;
     leftTitle: string;
     leftSubtitle: string;
-    onClick: () => void;
+    onClick?: () => void;
   }[];
 };
 
@@ -47,7 +47,7 @@ export function BottomPopup({ stage, title, subtitle, buttonTitle, onClick, topT
             <Line />
           </div>
         ) : null}
-        <div className='bp-bottom-block'>
+        <div className={`bp-bottom-block${stage === 1?'-single':''}`}>
           <div className='bp-text-block'>
             <p className='bp-title'>{title}</p>
             <p className='bp-subtitle'>{subtitle}</p>
