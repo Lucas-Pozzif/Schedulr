@@ -1,8 +1,8 @@
-import "./user-profile.css";
+import "./profile.css";
 
 import { SmallIconButton } from "../component-imports";
 
-type UserProfileType = {
+type ProfileType = {
   image?: string;
   name?: string;
   number?: string;
@@ -14,15 +14,15 @@ type UserProfileType = {
     onClick: () => void;
   }[];
   editMode?: boolean;
-  namePlaceholder: string;
-  numberPlaceholder: string;
+  namePlaceholder?: string;
+  numberPlaceholder?: string;
   onChangeName?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onChangeNumber?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
-export function UserProfile({ image, name, number, mail, iconButtons, editMode, namePlaceholder, numberPlaceholder, onChangeName, onChangeNumber }: UserProfileType) {
+export function Profile({ image, name, number, mail, iconButtons, editMode, namePlaceholder, numberPlaceholder, onChangeName, onChangeNumber }: ProfileType) {
   return (
-    <div className='user-profile'>
+    <div className='profile'>
       <img className='up-image' src={image} />
       <div className='up-text-block'>
         {editMode ? (
