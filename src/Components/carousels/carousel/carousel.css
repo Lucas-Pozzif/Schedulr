@@ -4,8 +4,7 @@
   gap: 5px;
   padding-inline: 20px;
   padding-block: 1px;
-  margin-bottom: 10px;
-  margin-top: 10px;
+  padding-top: 10px;
 }
 
 .carousel::-webkit-scrollbar {
