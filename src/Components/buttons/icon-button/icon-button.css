@@ -6,13 +6,13 @@
   align-items: center;
   border-radius: 5px;
 }
-.ib-icon {
+.icb-icon {
   height: 26px;
   width: 26px;
   padding-left: 10px;
   opacity: 0.8;
 }
-.ib-title {
+.icb-title {
   font-size: 22px;
   color: var(--eerieBlack);
   opacity: 0.8;
