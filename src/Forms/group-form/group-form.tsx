@@ -169,7 +169,7 @@ export function GroupForm({ group, onClickReturn = () => navigate(-1) }: GroupFo
               }}
             />
             <IconCarousel items={tabCarousel} />
-            <SubHeader title={`${groupForm.getServicesIds()} Serviços criados`} buttonTitle={"Salvar"} onClick={() => setTab(0)} />
+            <SubHeader title={`${groupForm.getServicesIds().length} Serviços criados`} buttonTitle={"Salvar"} onClick={() => setTab(0)} />
             <ItemList
               items={groupForm
                 .getServices()
@@ -179,7 +179,7 @@ export function GroupForm({ group, onClickReturn = () => navigate(-1) }: GroupFo
                     title: service.getName(),
                     subtitle: formatDuration(service.getDuration()),
                     select: selectedService?.getId() == service.getId(),
-                    onClick: () => idSwitcher(selectedService, service.getId(), setSelectedService),
+                    onClick: () => idSwitcher(selectedService, service, setSelectedService),
                   };
                 })}
             />
@@ -230,6 +230,7 @@ export function GroupForm({ group, onClickReturn = () => navigate(-1) }: GroupFo
         return <ErrorPage />;
     }
   };
+
   return loading ? <GroupFormLoading /> : tabHandler();
 }
 /*

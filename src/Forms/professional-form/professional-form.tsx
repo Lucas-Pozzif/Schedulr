@@ -2,7 +2,7 @@ import "./professional-form.css";
 import { Dispatch, SetStateAction, useState, useEffect } from "react";
 
 import { Group, Professional, Service, User } from "../../Classes/classes-imports";
-import { add, bin, calendar, clock, fullDays, key, occupation, timeArray } from "../../_global";
+import { add, bin, calendar, clock, closeIcon, fullDays, key, occupation, timeArray } from "../../_global";
 import { formatArray, formatDuration, stateSwitcher } from "../../Function/functions-imports";
 
 import { ServiceForm } from "../service-form/service-form";
@@ -124,7 +124,7 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
     },
     {
       title: "Alterar Profissionais",
-      subtitle: `${professionalForm.getOccupations()} Ocupações criadas`,
+      subtitle: `${professionalForm.getOccupations().length} Ocupações criadas`,
       onClick: () => setTab(3),
     },
   ];
@@ -222,14 +222,14 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
       case 1: // Time tab
         return (
           <div className='tab'>
-            <GenericHeader title={"Editar Horários"} icon={""} onClickReturn={() => setTab(0)} onClickIcon={() => professionalForm.cleanDay(selectedDay, setProfessionalForm)} />
+            <GenericHeader title={"Editar Horários"} icon={closeIcon} onClickReturn={() => setTab(0)} onClickIcon={() => professionalForm.cleanDay(selectedDay, setProfessionalForm)} />
             <IconCarousel items={tabCarousel} />
             <SubHeader title={"Aberto x dias na semana"} buttonTitle={"Salvar"} onClick={() => setTab(0)} />
             <Carousel
               items={fullDays.map((day, index) => ({
                 title: day,
                 subtitle: "Fechado",
-                selected: selectedDay === index,
+                select: selectedDay === index,
                 onClick: () => setSelectedDay(index),
               }))}
             />
@@ -253,7 +253,7 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
           <div className='tab'>
             <GenericHeader title={"Editar Serviços"} icon={add} onClickReturn={() => setTab(1)} onClickIcon={() => setTab(4)} />
             <IconCarousel items={tabCarousel} />
-            <SubHeader title={`${groupForm.getServicesIds()} Serviços criados`} buttonTitle={"Salvar"} onClick={() => setTab(0)} />
+            <SubHeader title={`${groupForm.getServicesIds().length} Serviços criados`} buttonTitle={"Salvar"} onClick={() => setTab(0)} />
             <ItemList
               items={groupForm
                 .getServices()
@@ -262,7 +262,7 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
                   return {
                     title: service.getName(),
                     subtitle: formatDuration(service.getDuration()),
-                    selected: professionalForm.getServices().includes(service.getId()),
+                    select: professionalForm.getServices().includes(service.getId()),
                     onClick: () => professionalForm.handleService(service, setProfessionalForm),
                   };
                 })}
@@ -283,16 +283,17 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
               onClickIcon={() => handleDeleteOccupation()}
             />
             <IconCarousel items={tabCarousel} />
-            <SubHeader title={`${groupForm.getServicesIds()} Ocupações criadas`} buttonTitle={"Salvar"} onClick={() => setTab(2)} />
+            <SubHeader title={`${professionalForm.getOccupations().length} Ocupações criadas`} buttonTitle={"Salvar"} onClick={() => setTab(2)} />
             <ItemList
               items={professionalForm.getOccupations().map((occupation: string, index: number) => {
                 return {
                   title: occupation,
-                  selected: index == selectedOcupation,
+                  select: index == selectedOcupation,
                   onClick: () => stateSwitcher(selectedOcupation, index, setSelectedOcupation),
                 };
               })}
             />
+            <BottomPopup stage={selectedOcupation === null ? 0 : 1} title='' buttonTitle='Adicionar Ocupação' onClick={() => setSelectedOcupation(null)} />
           </div>
         );
       case 4: // Service form
