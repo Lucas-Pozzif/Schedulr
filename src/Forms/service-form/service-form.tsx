@@ -2,14 +2,13 @@ import "./service-form.css";
 
 import { Dispatch, SetStateAction, useState } from "react";
 
-import { Group, Professional, Service, SubService, User } from "../../Classes/classes-imports";
-import { addUser, bin, longTimeArray, money, more } from "../../_global";
-import { formatDuration, idSwitcher } from "../../Function/functions-imports";
-import { AlertBlock, BottomButton, BottomPopup, Carousel, DropdownButton, Header, HeaderInput, IconInput, ItemButton, Line, LinkButton, LoadingScreen, SmallButton, SubHeader } from "../../Components/component-imports";
+import { Group, Professional, Service, User } from "../../Classes/classes-imports";
+import { add, bin, clock, dollar, longTimeArray, money, more, userIcon } from "../../_global";
+import { formatDuration } from "../../Function/functions-imports";
 
-import { SubServiceForm } from "../sub-service-form/sub-service-form";
 import { ProfessionalForm } from "../professional-form/professional-form";
 import { ErrorPage } from "../../Pages/error-page/error-page";
+import { BottomPopup, GenericHeader, HeaderInput, IconCarousel, ItemList, Line, LinkList, Popup, ServiceFormLoading, SmallIconButton, SubHeader } from "../../Components/component-imports";
 
 type ServiceFormType = {
   user?: User;
@@ -18,7 +17,207 @@ type ServiceFormType = {
   service?: Service;
   onClickReturn: () => void;
 };
+
 export function ServiceForm({ user, groupForm, setGroupForm, service = new Service(), onClickReturn }: ServiceFormType) {
+  const [loading, setLoading] = useState(false);
+  const [serviceForm, setServiceForm] = useState(service);
+  const [tab, setTab] = useState(0);
+
+  const [popupData, setPopup] = useState({
+    title: "",
+    text: "",
+    display: false,
+    onClickExit: () => {},
+    buttons: [
+      {
+        title: "",
+        onClick: () => {},
+      },
+    ],
+  });
+
+  const saveService = async () => {
+    setLoading(true);
+    if (serviceForm.getId()) {
+      await serviceForm.setService();
+      const idIndex = groupForm.getServicesIds().indexOf(serviceForm.getId());
+      const services = groupForm.getServices();
+      services[idIndex] = serviceForm;
+    } else {
+      await serviceForm.addService();
+      groupForm.setServicesIds([...groupForm.getServicesIds(), serviceForm.getId()]);
+      groupForm.setServices([...groupForm.getServices(), serviceForm]);
+    }
+    setGroupForm(new Group(groupForm));
+    setLoading(false);
+    onClickReturn();
+  };
+
+  const handleProfessionals = (profServices: string[], professional: Professional) => {
+    if (profServices.includes(serviceForm.getId())) {
+      profServices = profServices.filter((id) => id !== serviceForm.getId());
+    } else {
+      profServices.push(serviceForm.getId());
+    }
+    const professionals = groupForm.getProfessionals();
+    const foundProfessional = professionals.find((prof) => prof.getId() === professional.getId());
+
+    if (foundProfessional) {
+      foundProfessional.setServices(profServices);
+      groupForm.updateGroupState(setGroupForm, "professionals", professionals);
+    }
+  };
+
+  const handleDelete = async () => {
+    setLoading(true);
+    if (serviceForm.getId() !== "") {
+      await serviceForm.deleteService();
+      const updatedIds = groupForm.getServicesIds().filter((id) => id !== serviceForm.getId());
+      const updatedServices = groupForm.getServices().filter((serv) => serv.getId() !== serviceForm.getId());
+      groupForm.setServicesIds(updatedIds);
+      groupForm.setServices(updatedServices);
+    }
+    onClickReturn();
+    setLoading(false);
+  };
+
+  const buttonList = [
+    {
+      title: "Alterar Tempo de Duração",
+      subtitle: `${formatDuration(serviceForm.getDuration())}`,
+      onClick: () => setTab(1),
+    },
+    {
+      title: "Alterar Profissionais",
+      subtitle: `${groupForm.getProfessionalsIds().length} Profissionais disponíveis`,
+      onClick: () => setTab(2),
+    },
+  ];
+
+  const tabCarousel = [
+    {
+      title: "Duração",
+      select: tab === 1,
+      icon: clock,
+      onClick: () => setTab(1),
+    },
+    {
+      title: "Profissional",
+      select: tab === 2,
+      icon: userIcon,
+      onClick: () => setTab(2),
+    },
+  ];
+
+  const tabHandler = () => {
+    switch (tab) {
+      case 0: // Home tab
+        return (
+          <div className='tab'>
+            <HeaderInput
+              placeholder='Nome do serviço'
+              value={serviceForm.getName()}
+              icon={bin}
+              onChange={(e) => serviceForm.updateServiceState(setServiceForm, "name", e.target.value)}
+              onClickReturn={() =>
+                setPopup({
+                  title: "Você tem Certeza?",
+                  text: "Existem alterações não salvas",
+                  display: true,
+                  onClickExit: () => setPopup({ ...popupData, display: false }),
+                  buttons: [
+                    {
+                      title: "Cancelar",
+                      onClick: () => setPopup({ ...popupData, display: false }),
+                    },
+                    {
+                      title: "Confirmar",
+                      onClick: onClickReturn,
+                    },
+                  ],
+                })
+              }
+              onClickIcon={() =>
+                setPopup((prevPopupData) => ({
+                  title: "Você realmente deseja excluir?",
+                  text: "Essa ação não pode ser desfeita",
+                  display: true,
+                  onClickExit: () => setPopup({ ...prevPopupData, display: false }),
+                  buttons: [
+                    {
+                      title: "Cancelar",
+                      onClick: () => setPopup({ ...prevPopupData, display: false }),
+                    },
+                    {
+                      title: "Confirmar",
+                      onClick: async () => await handleDelete(),
+                    },
+                  ],
+                }))
+              }
+            />
+            <div className='sf-input-block'>
+              <input className='sf-input' value={serviceForm.getValue()} placeholder='Digitar Valor' onChange={(e) => serviceForm.updateServiceState(setServiceForm, "value", e.target.value)} />
+              <SmallIconButton title={"A partir de"} icon={dollar} select={serviceForm.getInicial()} onClick={() => serviceForm.updateServiceState(setServiceForm, "inicial", !serviceForm.getInicial())} />
+            </div>
+            <Line />
+            <LinkList items={buttonList} />
+            <BottomPopup stage={serviceForm.isValid() ? 1 : 0} title={"Editando..."} subtitle={"Possui alterações"} buttonTitle={"Salvar alterações"} onClick={async () => await saveService()} />
+            <Popup title={popupData.title} text={popupData.text} display={popupData.display} onClickExit={popupData.onClickExit} buttons={popupData.buttons} />
+          </div>
+        );
+      case 1: // Duration tab
+        return (
+          <div className='tab'>
+            <GenericHeader title={"Alterar Horários"} icon={bin} onClickReturn={() => setTab(0)} onClickIcon={() => serviceForm.updateServiceState(setServiceForm, "duration", [])} />
+            <IconCarousel items={tabCarousel} />
+            <SubHeader title={formatDuration(serviceForm.getDuration())} buttonTitle={"Salvar"} onClick={() => setTab(0)} />
+            <ItemList
+              items={longTimeArray.map((timeValue, index) => {
+                return {
+                  title: timeValue,
+                  select: serviceForm.getDuration()?.[index],
+                  onClick: () => serviceForm.updateHourList(index, setServiceForm),
+                };
+              })}
+            />
+            <BottomPopup stage={1} title={formatDuration(serviceForm.getDuration())} buttonTitle={"Preencher Horários"} onClick={() => serviceForm.fillHours(setServiceForm)} />
+          </div>
+        );
+      case 2: // Professional tab
+        return (
+          <div className='tab'>
+            <GenericHeader title={"Alterar Profissionais"} icon={add} onClickReturn={() => setTab(1)} onClickIcon={() => setTab(3)} />
+            <IconCarousel items={tabCarousel} />
+            <SubHeader title={`${groupForm.getProfessionalsIds().length} Profissionais disponíveis`} buttonTitle={"Salvar"} onClick={() => setTab(0)} />
+            <ItemList
+              items={groupForm
+                .getProfessionals()
+                .sort((a, b) => a.getName().localeCompare(b.getName()))
+                .map((professional: Professional) => {
+                  var profServices = professional.getServices();
+                  return {
+                    title: professional.getName(),
+                    subtitle: professional.getOccupations().join(", "),
+                    selected: profServices.includes(serviceForm.getId()),
+                    onClick: () => handleProfessionals(profServices, professional),
+                  };
+                })}
+            />
+            <BottomPopup stage={0} />
+          </div>
+        );
+      case 3: // Professional Form
+        return <ProfessionalForm user={user} groupForm={groupForm} setGroupForm={setGroupForm} onClickReturn={() => setTab(0)} />;
+      default:
+        return <ErrorPage />;
+    }
+  };
+
+  return loading ? <ServiceFormLoading /> : tabHandler();
+}
+/*
+export function ServiceFordm({ user, groupForm, setGroupForm, service = new Service(), onClickReturn }: ServiceFormType) {
   const [loading, setLoading] = useState(false);
   const [serviceForm, setServiceForm] = useState(service);
   const [tab, setTab] = useState(0);
@@ -193,5 +392,7 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
         return <ErrorPage />;
     }
   };
-  return loading ? <LoadingScreen /> : tabHandler();
+
+  return loading ? <LoadingScreen /> : <LoadingScreen />;
 }
+*/
