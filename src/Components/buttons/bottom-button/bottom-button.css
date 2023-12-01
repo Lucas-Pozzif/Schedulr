@@ -1,0 +1,14 @@
+.bottom-button {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  right: 10px;
+  height: 35px;
+  background: var(--eerieBlack);
+  color: var(--platinum);
+  border-radius: 5px;
+  font-size: 22px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
