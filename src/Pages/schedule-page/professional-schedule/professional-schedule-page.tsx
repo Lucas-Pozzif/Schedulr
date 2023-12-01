@@ -1,14 +1,14 @@
 import "../schedule-page.css";
 
 import { useEffect, useState } from "react";
-
-import { BottomButton, Carousel, DoubleButton, DualButton, Header, IconInput, Line, LoadingScreen, SubHeader } from "../../../AComponents/component-imports";
-import { capitalize, findRepetitionBlocks, formattedDate, parseDate } from "../../../Function/functions-imports";
-import { clock, edit, save, week } from "../../../_global";
-import { Professional, Service, User } from "../../../Classes/classes-imports";
-
 import { useNavigate, useParams } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
+
+import { capitalize, findRepetitionBlocks, formattedDate, parseDate } from "../../../Function/functions-imports";
+import { editSquare, fullDays, fullTimeArray, longTimeArray, save, week } from "../../../_global";
+import { Professional, Service, User } from "../../../Classes/classes-imports";
+import { BottomButton, Carousel, DoubleButton, DualList, GenericHeader, Line, SchedulePageLoading, SubHeader } from "../../../Components/component-imports";
+
 import { auth } from "../../../Services/firebase/firebase";
 import { ErrorPage } from "../../error-page/error-page";
 
@@ -19,7 +19,7 @@ export function ProfessionalSchedulePage() {
   const [tab, setTab] = useState(0);
 
   const [user, setUser] = useState(new User());
-  const [professional, SetProfessional] = useState<Professional>(new Professional());
+  const [professional, SetProfessional] = useState(new Professional());
 
   const [dayList, setDayList] = useState([new Date()]);
 
@@ -137,6 +137,7 @@ export function ProfessionalSchedulePage() {
   }, []);
 
   const timeList: string[] = [];
+
   const loadWeek = async () => {
     setLoading(true);
 
@@ -209,19 +210,33 @@ export function ProfessionalSchedulePage() {
     setLoading(false);
   };
 
+  const saveSchedule = async () => {
+    if (changedValues.length == 0) return;
+    setLoading(true);
+    const updatePromises = changedValues.map(async ({ day, index }) => {
+      return await professional.updateSchedule(day, index.toString(), professional.getSchedule()[day][index]);
+    });
+
+    await Promise.all(updatePromises);
+    setChangedValues([]);
+    setSelectedTimeList([]);
+    setLoading(false);
+  };
+
   const tabHandler = () => {
     switch (tab) {
-      case 0: //Home page
+      case 0: // Schedule tab
         return (
-          <div className='schedule-page'>
-            <Header title={"Minha Agenda"} icon={edit} onClickReturn={() => navigate(-1)} onClickIcon={() => setTab(1)} />
+          <div className='tab'>
+            <GenericHeader title={`Agenda de ${professional.getName()}`} icon={editSquare} onClickReturn={() => navigate(-1)} onClickIcon={() => setTab(1)} />
             {Object.entries(professional.getSchedule()).map(([date, schedule]) => {
+              // This is a day array
               const formattedDay = formattedDate(parseDate(date));
               const hiddenMessage = displayList.includes(date) ? "Ocultar" : "Exibir";
               const weekIndex = parseDate(date).getDay();
 
               return (
-                <div className='sp-day-block'>
+                <div className='sp-day'>
                   <SubHeader
                     title={formattedDay}
                     buttonTitle={hiddenMessage}
@@ -230,79 +245,56 @@ export function ProfessionalSchedulePage() {
                       setDisplayList(updatedList);
                     }}
                   />
-                  <div className='sp-list'>
-                    {findRepetitionBlocks(schedule).map((block) => {
-                      if (!displayList.includes(date)) return null;
+                  <DualList
+                    items={findRepetitionBlocks(schedule)
+                      .map((block) => {
+                        if (!displayList.includes(date)) return null;
 
-                      const firstIndex = block[0];
-                      const lastIndex = block[1];
-                      const scheduleItem = schedule[firstIndex]; //the block content is all the same regardless of the index so i'll take the first one
+                        const firstIndex = block[0];
+                        const lastIndex = block[1];
+                        const scheduleItem = schedule[firstIndex];
 
-                      const serviceName = scheduleItem.edited ? scheduleItem.service : serviceCache[scheduleItem.service].getName();
-                      const clientName = clientCache[scheduleItem.client]?.getName();
+                        const serviceName = scheduleItem.edited ? scheduleItem.service : serviceCache[scheduleItem.service].getName();
+                        const clientName = clientCache[scheduleItem.client]?.getName();
 
-                      const currentBlock = {
-                        client: scheduleItem.client,
-                        service: scheduleItem.service,
-                        timeRange: block,
-                        day: date,
-                      };
+                        const currentBlock = {
+                          client: scheduleItem.client,
+                          service: scheduleItem.service,
+                          timeRange: block,
+                          day: date,
+                        };
 
-                      return (
-                        <DualButton
-                          leftButton={{
+                        return {
+                          title: serviceName,
+                          subtitle: clientName,
+                          select: isEqual(selectedBlock, currentBlock),
+                          onClick: () => (isEqual(selectedBlock, currentBlock) ? setSelectedBlock(null) : setSelectedBlock(currentBlock)),
+                          leftButton: {
                             title: week[weekIndex],
-                            subtitle: `${timeList[firstIndex]} - ${timeList[lastIndex]}`,
-                          }}
-                          title={serviceName}
-                          subtitle={clientName}
-                          select={isEqual(selectedBlock, currentBlock)}
-                          onClick={() => {
-                            isEqual(selectedBlock, currentBlock) ? setSelectedBlock(null) : setSelectedBlock(currentBlock);
-                          }}
-                        />
-                      );
-                    })}
-                  </div>
+                            subtitle: `${longTimeArray[firstIndex]} - ${longTimeArray[lastIndex]}`,
+                          },
+                        };
+                      })
+                      .filter((item): item is NonNullable<typeof item> => item !== null)}
+                  />
                 </div>
               );
             })}
-            <SubHeader title={formattedDate(dayList[dayList.length - 1])} buttonTitle={"Carregar semana"} onClick={async () => loadWeek()} />
-            <BottomButton
-              hide={selectedBlock === null}
-              title={"Editar"}
-              onClick={() => {
-                setTab(2); //Edit block tab
-              }}
-            />
+            <SubHeader title={formattedDate(dayList[dayList.length - 1])} buttonTitle={"Próxima semana"} onClick={async () => loadWeek()} />
+            <BottomButton hide={selectedBlock === null} title={"Editar"} onClick={() => setTab(2)} />
           </div>
         );
-      case 1: //Edit schedule tab
+      case 1: // Edit schedule tab
         return (
-          <div className='edit-schedule-tab'>
-            <Header
-              title={"Minha Agenda"}
-              icon={changedValues.length == 0 ? "" : save}
-              onClickReturn={() => setTab(0)}
-              onClickIcon={async () => {
-                if (changedValues.length == 0) return;
-                setLoading(true);
-                const updatePromises = changedValues.map(async ({ day, index }) => {
-                  return await professional.updateSchedule(day, index.toString(), professional.getSchedule()[day][index]);
-                });
-
-                await Promise.all(updatePromises);
-                setChangedValues([]);
-                setSelectedTimeList([]);
-                setLoading(false);
-              }}
-            />
+          <div className='tab'>
+            <GenericHeader title={`Agenda de ${professional.getName()}`} icon={changedValues.length == 0 ? "" : save} onClickReturn={() => setTab(0)} onClickIcon={() => saveSchedule()} />
             <Carousel
               items={[
                 ...dayList.map((day) => {
                   return {
-                    title: formattedDate(day),
-                    selected: selectedDay == day,
+                    title: fullDays[day.getDay()],
+                    subtitle: day.toLocaleString("pt-BR", { day: "2-digit", month: "2-digit" }),
+                    select: selectedDay == day,
                     onClick: () => {
                       setSelectedTimeList([]);
                       setSelectedDay(day);
@@ -311,7 +303,7 @@ export function ProfessionalSchedulePage() {
                 }),
                 {
                   title: "Carregar semana",
-                  selected: false,
+                  select: false,
                   onClick: async () => {
                     setLoading(true);
 
@@ -390,22 +382,13 @@ export function ProfessionalSchedulePage() {
               title={formattedDate(selectedDay)}
               buttonTitle={"Selecionar Tudo"}
               onClick={() => {
-                const allTimes = timeList
-                  .map((time, index) => {
+                const allTimes = longTimeArray
+                  .map((_, index) => {
                     const dayShift = professional.getShift()[selectedDay.getDay()];
                     const startHours = professional.getStartHours()[selectedDay.getDay()];
 
                     const startTime = Math.floor(startHours / 2) * 6;
                     const endTime = Math.floor((dayShift.length - 1) / 2) * 6 + startTime;
-                    const schedule =
-                      professional.getSchedule()[
-                        selectedDay.toLocaleString("pt-BR", {
-                          day: "2-digit",
-                          month: "2-digit",
-                          year: "2-digit",
-                        })
-                      ];
-                    const scheduleItem = schedule?.[index];
 
                     if (!dayShift[0] || startTime > index || endTime < index) return;
 
@@ -423,67 +406,67 @@ export function ProfessionalSchedulePage() {
                 setSelectedTimeList([...allTimes]);
               }}
             />
-            <div className='sp-list'>
-              {timeList.map((time, index) => {
-                const dayShift = professional.getShift()[selectedDay.getDay()];
-                const startHours = professional.getStartHours()[selectedDay.getDay()];
+            <DualList
+              items={longTimeArray
+                .map((time, index) => {
+                  const dayShift = professional.getShift()[selectedDay.getDay()];
+                  const startHours = professional.getStartHours()[selectedDay.getDay()];
 
-                const startTime = Math.floor(startHours / 2) * 6;
-                const endTime = Math.floor((dayShift.length - 1) / 2) * 6 + startTime;
+                  const startTime = Math.floor(startHours / 2) * 6;
+                  const endTime = Math.floor((dayShift.length - 1) / 2) * 6 + startTime;
 
-                if (
-                  !dayShift[0] || // Check if the first element in dayShift is false
-                  startTime > index || // Check if startHours is less than index
-                  endTime < index
-                ) {
-                  return null;
-                }
+                  if (
+                    !dayShift[0] || // Check if the first element in dayShift is false
+                    startTime > index || // Check if startHours is less than index
+                    endTime < index
+                  ) {
+                    return null;
+                  }
 
-                const weekDay = capitalize(week[selectedDay.getDay()]);
-                const schedule =
-                  professional.getSchedule()[
-                    selectedDay.toLocaleString("pt-BR", {
+                  const weekDay = capitalize(week[selectedDay.getDay()]);
+                  const schedule =
+                    professional.getSchedule()[
+                      selectedDay.toLocaleString("pt-BR", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "2-digit",
+                      })
+                    ];
+                  const scheduleItem = schedule?.[index];
+                  const available = scheduleItem === undefined;
+
+                  const serviceName = available ? "Disponível" : scheduleItem?.edited ? scheduleItem?.service : serviceCache[scheduleItem?.service]?.getName();
+                  const clientName = clientCache[scheduleItem?.client]?.getName();
+
+                  const currentTime = {
+                    day: selectedDay.toLocaleString("pt-BR", {
                       day: "2-digit",
                       month: "2-digit",
                       year: "2-digit",
-                    })
-                  ];
-                const scheduleItem = schedule?.[index];
-                const available = scheduleItem === undefined;
+                    }),
+                    index: index,
+                  };
+                  const selected = selectedTimeList.find((time) => currentTime.day === time.day && currentTime.index === time.index) !== undefined;
 
-                const serviceName = available ? "Disponível" : scheduleItem?.edited ? scheduleItem?.service : serviceCache[scheduleItem?.service]?.getName();
-                const clientName = clientCache[scheduleItem?.client]?.getName();
-
-                const currentTime = {
-                  day: selectedDay.toLocaleString("pt-BR", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "2-digit",
-                  }),
-                  index: index,
-                };
-                const selected = selectedTimeList.find((time) => currentTime.day === time.day && currentTime.index === time.index) !== undefined;
-
-                return (
-                  <DualButton
-                    leftButton={{
+                  return {
+                    leftButton: {
                       title: weekDay,
                       subtitle: time,
-                    }}
-                    title={serviceName}
-                    subtitle={clientName}
-                    select={selected}
-                    onClick={() => {
+                    },
+                    title: serviceName,
+                    subtitle: clientName,
+                    select: selected,
+                    onClick: () => {
                       if (selectedTimeList.some((time) => time.day === currentTime.day && time.index === currentTime.index)) {
                         setSelectedTimeList(selectedTimeList.filter((time) => time.day !== currentTime.day || time.index !== currentTime.index));
                       } else {
                         setSelectedTimeList([...selectedTimeList, currentTime]);
                       }
-                    }}
-                  />
-                );
-              })}
-            </div>
+                    },
+                  };
+                })
+                .filter((item): item is NonNullable<typeof item> => item !== null)}
+            />
             <DoubleButton
               title={["Bloquear", "Editar"]}
               onClick={[
@@ -526,11 +509,11 @@ export function ProfessionalSchedulePage() {
                   setTab(3); //Edit time tab
                 },
               ]}
-              hidden={[selectedTimeList.length <= 0, selectedTimeList.length <= 0]}
+              hide={[selectedTimeList.length <= 0, selectedTimeList.length <= 0]}
             />
           </div>
         );
-      case 2: //Edit block tab
+      case 2:
         const day = selectedBlock!.day;
 
         const client = selectedBlock!.client;
@@ -559,19 +542,12 @@ export function ProfessionalSchedulePage() {
         };
 
         return (
-          <div className='edit-schedule-block-tab'>
-            <Header
-              title={"Editar Bloco de Serviços"}
-              icon={""}
-              onClickReturn={() => {
-                setTab(0);
-              }}
-              onClickIcon={() => {}}
-            />
-            <div className='sp-input'>
-              <IconInput
-                icon={clock}
-                placeholder={"Digitar Serviço"}
+          <div className='tab'>
+            <GenericHeader title={"Editar Bloco de Serviços"} onClickReturn={() => setTab(0)} />
+            <div className='sp-input-block'>
+              <input
+                className='sp-input'
+                placeholder='Digitar Serviço'
                 value={editedTime.service}
                 onChange={(e) => {
                   setEditedTime((time) => ({
@@ -607,44 +583,43 @@ export function ProfessionalSchedulePage() {
                 setSelectedTimeList([...allTimes]);
               }}
             />
+            <DualList
+              items={serviceList.map((_, index) => {
+                const currentTime = { day: day, index: index + startIndex };
+                const selected = selectedTimeList.find((time) => currentTime.day === time.day && currentTime.index === time.index) !== undefined;
 
-            {serviceList.map((_, index) => {
-              const currentTime = { day: day, index: index + startIndex };
-              const selected = selectedTimeList.find((time) => currentTime.day === time.day && currentTime.index === time.index) !== undefined;
+                const weekDay = week[parseDate(day).getDay()];
+                const schedule = professional.getSchedule()[day];
+                const scheduleItem = schedule?.[index + startIndex];
 
-              const weekDay = week[parseDate(day).getDay()];
-              const schedule = professional.getSchedule()[day];
-              const scheduleItem = schedule?.[index + startIndex];
+                if (selected) {
+                  scheduleItem.service = editedTime.service;
+                  scheduleItem.edited = editedTime.edited;
+                  scheduleItem.client = user.getId();
+                }
 
-              if (selected) {
-                scheduleItem.service = editedTime.service;
-                scheduleItem.edited = editedTime.edited;
-                scheduleItem.client = user.getId();
-              }
+                const serviceName = selected
+                  ? editedTime.edited
+                    ? editedTime.service
+                    : "Disponível"
+                  : scheduleItem?.edited
+                  ? scheduleItem.service !== ""
+                    ? scheduleItem.service
+                    : "Disponível"
+                  : scheduleItem.service !== ""
+                  ? serviceCache[scheduleItem?.service]?.getName()
+                  : "Disponível";
+                const clientName = editedTime.service === "" ? clientCache[scheduleItem?.client]?.getName() : user.getName();
 
-              const serviceName = selected
-                ? editedTime.edited
-                  ? editedTime.service
-                  : "Disponível"
-                : scheduleItem?.edited
-                ? scheduleItem.service !== ""
-                  ? scheduleItem.service
-                  : "Disponível"
-                : scheduleItem.service !== ""
-                ? serviceCache[scheduleItem?.service]?.getName()
-                : "Disponível";
-              const clientName = editedTime.service === "" ? clientCache[scheduleItem?.client]?.getName() : user.getName();
-
-              return (
-                <DualButton
-                  leftButton={{
+                return {
+                  leftButton: {
                     title: weekDay,
                     subtitle: timeList[index + startIndex],
-                  }}
-                  title={serviceName}
-                  subtitle={clientName}
-                  select={selected}
-                  onClick={() => {
+                  },
+                  title: serviceName,
+                  subtitle: clientName,
+                  select: selected,
+                  onClick: () => {
                     if (selectedTimeList.some((time) => time.day === currentTime.day && time.index === currentTime.index)) {
                       setSelectedTimeList(selectedTimeList.filter((time) => time.day !== currentTime.day || time.index !== currentTime.index));
                     } else {
@@ -659,10 +634,10 @@ export function ProfessionalSchedulePage() {
                         service: "",
                       }));
                     }
-                  }}
-                />
-              );
-            })}
+                  },
+                };
+              })}
+            />
             <DoubleButton
               title={["Salvar Alterações", "Desbloquear Horários"]}
               onClick={[
@@ -724,7 +699,7 @@ export function ProfessionalSchedulePage() {
                   setChangedValues([...changedValues, ...filteredNewValues]);
                 },
               ]}
-              hidden={[hiddenSaveButton(), selectedTimeList.length == 0]}
+              hide={[hiddenSaveButton(), selectedTimeList.length == 0]}
             />
           </div>
         );
@@ -743,13 +718,12 @@ export function ProfessionalSchedulePage() {
           return !available; // Check if the item is not available
         });
         return (
-          <div className='edit-schedule-time-tab'>
-            <Header
+          <div className='tab'>
+            <GenericHeader
               title={`Editar Horários - ${selectedDay.toLocaleString("pt-BR", {
                 day: "2-digit",
                 month: "2-digit",
               })}`}
-              icon={""}
               onClickReturn={() => {
                 setTab(1);
                 const filteredArray = changedValues.filter((item) => {
@@ -765,11 +739,11 @@ export function ProfessionalSchedulePage() {
                   service: "",
                 }));
               }}
-              onClickIcon={() => {}}
             />
-            <div className='sp-input'>
-              <IconInput
-                placeholder={"Digitar Serviço"}
+            <div className='sp-input-block'>
+              <input
+                className='sp-input'
+                placeholder='Digitar Serviço'
                 onChange={(e) => {
                   setEditedTime((time) => ({
                     ...time,
@@ -788,11 +762,11 @@ export function ProfessionalSchedulePage() {
 
                   setChangedValues([...changedValues, ...filteredNewValues]);
                 }}
-                icon={clock}
               />
+              <Line />
             </div>
-            <div className='sp-list'>
-              {selectedTimeList.map(({ day, index }) => {
+            <DualList
+              items={selectedTimeList.map(({ day, index }) => {
                 const weekDay = capitalize(week[selectedDay.getDay()]);
 
                 const schedule =
@@ -831,20 +805,16 @@ export function ProfessionalSchedulePage() {
                   scheduleItem.client = user.getId();
                 }
 
-                return (
-                  <DualButton
-                    leftButton={{
-                      title: weekDay,
-                      subtitle: timeList[index],
-                    }}
-                    title={serviceName}
-                    subtitle={clientName}
-                    select={false}
-                    onClick={() => {}}
-                  />
-                );
+                return {
+                  leftButton: {
+                    title: weekDay,
+                    subtitle: timeList[index],
+                  },
+                  title: serviceName,
+                  subtitle: clientName,
+                };
               })}
-            </div>
+            />
             <DoubleButton
               title={["Salvar Alterações", "Desbloquear Horários"]}
               onClick={[
@@ -899,7 +869,7 @@ export function ProfessionalSchedulePage() {
                   }));
                 },
               ]}
-              hidden={[(editedTime.edited === true && editedTime.service === "") || (editedTime.edited === false && editedTime.service !== ""), !isUnblockable]}
+              hide={[(editedTime.edited === true && editedTime.service === "") || (editedTime.edited === false && editedTime.service !== ""), !isUnblockable]}
             />
           </div>
         );
@@ -908,5 +878,5 @@ export function ProfessionalSchedulePage() {
     }
   };
 
-  return loading ? <LoadingScreen /> : tabHandler();
+  return loading ? <SchedulePageLoading /> : tabHandler();
 }
