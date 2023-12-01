@@ -2,14 +2,14 @@ import { ItemButton } from "../item-button/item-button";
 import "./dual-button.css";
 
 type DoubleButtonType = {
-  leftButton: {
-    title?: string;
-    subtitle?: string;
-  };
   title: string;
   subtitle?: string;
   select?: boolean;
   onClick?: () => void;
+  leftButton: {
+    title?: string;
+    subtitle?: string;
+  };
 };
 
 export function DualButton({ leftButton, title, subtitle, select, onClick }: DoubleButtonType) {
