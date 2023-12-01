@@ -36,7 +36,6 @@ export function GroupPage() {
     onAuthStateChanged(auth, async (client) => {
       if (client?.uid) {
         await user.getUser(client.uid);
-        setUser(new User(user)); //unnecessary but if fixes bottom bug
 
         await group.getGroup(groupId);
         await group.updateServices();
