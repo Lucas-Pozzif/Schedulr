@@ -12,6 +12,7 @@ export const routes = [
   { path: "/user/schedule/:userId", element: <ClientSchedulePage /> },
   { path: "/group/:groupId", element: <GroupPage /> },
   { path: "/group/add", element: <GroupForm /> },
+  { path: "/group/edit/:groupId", element: <GroupForm /> },
   { path: "/professional/schedule/:professionalId", element: <ProfessionalSchedulePage /> },
   { path: "/error", element: <ErrorPage /> },
 ];
