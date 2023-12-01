@@ -19,7 +19,7 @@ export function GroupBanner({ banner, profile, onClickProfile, onClickBanner, on
   return (
     <div className='group-banner'>
       <img className={`group-banner-${banner ? "image" : "placeholder"}`} src={banner ? banner : placeholder} onClick={onClickBanner} />
-      <div className='gp-blur' />
+      <div className='gp-blur' onClick={onClickBanner} />
       <div className='gp-profile' onClick={onClickProfile}>
         <img className={`gp-profile-${profile ? "image" : "placeholder"}`} src={profile ? profile : addImage} />
       </div>
