@@ -4,7 +4,7 @@ import { Dispatch, SetStateAction, useState } from "react";
 
 import { Service, SubService, User } from "../../Classes/classes-imports";
 import { bin, longTimeArray } from "../../_global";
-import { BottomButton, HeaderInput, IconInput, ItemButton, Line, LoadingScreen, SmallButton, SubHeader } from "../../Components/component-imports";
+import { BottomButton, HeaderInput, IconInput, ItemButton, Line, LoadingScreen, SmallButton, SubHeader } from "../../AComponents/component-imports";
 import { formatDuration } from "../../Function/functions-imports";
 
 type subServiceFormType = {
