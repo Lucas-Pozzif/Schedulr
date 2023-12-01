@@ -9,6 +9,7 @@
   background-color: var(--platinum);
   border-radius: 2px;
   box-sizing: border-box;
+  width: 100%;
 }
 
 .item-button-selected {
@@ -16,7 +17,7 @@
 }
 
 .ib-title {
-  font-size: 16px;
+  font-size: 20px;
   color: var(--eerieBlack);
   opacity: 0.8;
 }
