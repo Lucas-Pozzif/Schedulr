@@ -2,6 +2,9 @@ input {
   all: unset;
   font-family: "Regular";
 }
+div {
+  transition: 200ms;
+}
 
 textarea {
   all: unset;
@@ -22,4 +25,5 @@ textarea {
 
 p {
   font-family: "Regular";
+  transition: 200ms;
 }
