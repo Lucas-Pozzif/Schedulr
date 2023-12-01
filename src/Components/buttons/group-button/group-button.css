@@ -1,0 +1,74 @@
+.group-button {
+  background-color: #dee2e6;
+  height: 190px;
+  width: 150px;
+  position: relative;
+  border-radius: 5px;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+}
+
+.gb-banner {
+  object-fit: cover;
+  height: 80px;
+  width: 100%;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+}
+
+.gb-title {
+  font-size: 18px;
+  padding-top: 5px;
+  padding-inline: 5px;
+  max-width: 110px;
+}
+
+.gb-day-selector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+}
+
+.gb-day {
+  font-size: 14px;
+  color: #212529;
+  opacity: 0.8;
+}
+
+.gb-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+}
+
+.gb-time {
+  font-size: 14px;
+  color: #212529;
+  opacity: 0.8;
+}
+
+.gb-rating-block {
+  display: flex;
+  gap: 2px;
+}
+
+.gb-star {
+  height: 8px;
+  width: 8px;
+}
+
+.gb-profile {
+  object-fit: cover;
+  position: absolute;
+  top: 40px;
+  right: 5px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50px;
+}
+
+.gbds {
+  margin-inline: 3px;
+  opacity: 0.8;
+}
