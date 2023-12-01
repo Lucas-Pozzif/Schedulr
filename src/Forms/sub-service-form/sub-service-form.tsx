@@ -65,7 +65,7 @@ export function SubServiceForm({ user, serviceForm, setServiceForm, subService =
           </div>
         </div>
       </div>
-      <BottomButton hidden={!sServiceForm.isValid()} title={"Salvar Subserviço"} onClick={saveSService} />
+      <BottomButton hide={!sServiceForm.isValid()} title={"Salvar Subserviço"} onClick={saveSService} />
     </div>
   );
 }
