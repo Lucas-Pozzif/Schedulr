@@ -8,7 +8,8 @@ import { auth } from "../../../Services/firebase/firebase";
 import { fullTimeArray } from "../../../_global";
 import { Professional, Service, User } from "../../../Classes/classes-imports";
 import { capitalize, findRepetitionBlocks, formattedDate, parseDate } from "../../../Function/functions-imports";
-import { BottomButton, DualButton, Header, LoadingScreen, SubHeader } from "../../../AComponents/component-imports";
+import { BottomButton, GenericHeader, SchedulePageLoading, SubHeader } from "../../../Components/component-imports";
+import { DualButton } from "../../../Components/buttons/dual-button/dual-button";
 
 var isEqual = require("lodash.isequal");
 
@@ -218,10 +219,10 @@ export function ClientSchedulePage() {
   };
 
   return loading ? (
-    <LoadingScreen />
+    <SchedulePageLoading />
   ) : (
     <div className='schedule-page'>
-      <Header title={"Minha Agenda"} icon={user.getPhoto()} onClickReturn={() => navigate(-1)} onClickIcon={() => navigate("/user")} />
+      <GenericHeader title={"Minha Agenda"} icon={user.getPhoto()} onClickReturn={() => navigate(-1)} onClickIcon={() => navigate("/user")} />
       {Object.entries(user.getSchedule()).map(([date, schedule]) => {
         const formattedDay = formattedDate(parseDate(date));
         const hiddenMessage = displayList.includes(formattedDay) ? "Ocultar" : "Exibir";
