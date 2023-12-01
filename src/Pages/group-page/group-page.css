@@ -1,149 +1,27 @@
-.group-page {
-  background-color: #ced4da;
-}
-
-.gp-banner {
-  height: 180px;
-  width: 100%;
-  object-fit: cover;
-}
-.gp-profile {
-  position: absolute;
-  height: 70px;
-  width: 70px;
-  right: 10px;
-  top: calc(50vw - 50px);
-  border-radius: 40px;
-  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.25);
-}
-
-.gp-title-block {
-  background-color: #dee2e6;
-  padding-top: 15px;
-  padding-bottom: 5px;
-  padding-inline: 10px;
-}
-
-.gp-title {
-  font-size: 20px;
-  color: #212529;
-}
-
-.gp-type {
-  color: #212529;
+.gp-location {
+  font-size: 16px;
+  color: var(--eerieBlack);
   opacity: 0.8;
-  font-size: 12px;
+  padding: 10px;
+}
+.gp-confirm-title {
+  color: var(--eerieBlack);
+  font-size: 20px;
+  padding-top: 10px;
+  padding-bottom: 5px;
+  text-align: center;
 }
 
-.gp-header {
-  padding-inline: 10px;
+.gp-confirm-bottom-block {
+  position: absolute;
+  bottom: 55px;
+  left: 10px;
+  right: 10px;
 }
 
-.gp-block {
-  padding-left: 5px;
-  padding-top: 5px;
-  display: flex;
-  gap: 10px;
-}
-
-.gp-rating-block {
-  background-color: #f8f9fa;
-  border-radius: 10px;
-  padding-block: 3px;
-  padding-inline: 5px;
-  display: flex;
-  gap: 5px;
-}
-
-.gp-rating-icon {
-  height: 10px;
-  width: 10px;
-}
-
-.gp-rating {
-  font-size: 12px;
-  color: #212529;
-}
-
-.gp-comment {
-  background-color: #f8f9fa;
-  border-radius: 10px;
-  padding-block: 3px;
-  padding-inline: 5px;
-  font-size: 12px;
-  color: #212529;
-}
-
-.gp-distance {
-  padding-left: 5px;
-  font-size: 12px;
-  color: #212529;
+.gp-bottom-text {
+  color: var(--eerieBlack);
+  text-align: center;
   opacity: 0.8;
   padding-bottom: 10px;
-  padding-top: 10px;
-}
-
-.gp-bottom-columns {
-  padding-left: 10px;
-  padding-right: 15px;
-  padding-top: 10px;
-}
-
-.gp-right-column {
-  width: 100%;
-}
-
-.gf-image-group {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-gap: 5px;
-  padding-bottom: 90px;
-}
-
-.carousel-item-text {
-  font-size: 14px;
-  color: #212529;
-}
-
-.gp-service-tab {
-  background-color: #ced4da;
-}
-.gp-professional-tab {
-  background-color: #ced4da;
-}
-.gp-list {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  padding-inline: 10px;
-  padding-bottom: 90px;
-  min-height: calc(100vh - 215px);
-  margin-top: 10px;
-}
-.gp-time-row {
-  display: flex;
-  gap: 5px;
-}
-
-.gpt-row-item {
-  flex: 1;
-}
-.gp-time-button {
-  height: 40px;
-  width: 85px;
-  background-color: #dee2e6;
-  border-radius: 2px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.gp-time-button.selected {
-  outline: #212529 1px solid;
-}
-.gpt-title {
-  font-size: 12px;
-  color: #212529;
-  opacity: 0.8;
-  padding-left: 5px;
 }

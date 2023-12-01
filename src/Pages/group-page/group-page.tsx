@@ -4,16 +4,382 @@ import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../Services/firebase/firebase";
 import { useNavigate, useParams } from "react-router-dom";
-
 import { Group, Professional, Service, User } from "../../Classes/classes-imports";
-import { capitalize, formatDuration, idSwitcher } from "../../Function/functions-imports";
-import { BottomButton, BottomPopup, Carousel, DoubleItemButton, DoubleTextBlock, GroupBanner, Header, ItemButton, Line, LinkButton, LoadingScreen, SubHeader } from "../../AComponents/component-imports";
-import { DoubleButton } from "../../AComponents/buttons/double-button/double-button";
-
+import { capitalize, formatArray, formatDuration, idSwitcher } from "../../Function/functions-imports";
+import { BottomButton, BottomPopup, Carousel, GenericHeader, GroupBanner, GroupHeader, IconCarousel, ItemList, Line, LinkList } from "../../Components/component-imports";
+import { calendar, clock, fullDays, userIcon } from "../../_global";
+import { DualList } from "../../Components/lists/dual-list/dual-list";
+import { DualButton, LoadingScreen } from "../../AComponents/component-imports";
 import { ErrorPage } from "../error-page/error-page";
-import { GroupForm } from "../../Forms/group-form/group-form";
 
 export function GroupPage() {
+  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(new User());
+  const [group, setGroup] = useState(new Group());
+  const [tab, setTab] = useState(0);
+
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [selectedProfessional, setSelectedProfessional] = useState<Professional | null>(null);
+  const [selectedDay, setSelectedDay] = useState<number>(-1);
+  const [selectedTime, setSelectedTime] = useState<number | null>(null);
+
+  const [selectedWeekDay, setSelectedWeekDay] = useState(1);
+  const [availableProfessionals, setAvailableProfessionals] = useState<Professional[]>([]);
+  const [confirm, setConfirm] = useState(false);
+
+  const { groupId } = useParams();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    setLoading(true);
+    onAuthStateChanged(auth, async (client) => {
+      if (client?.uid) {
+        await user.getUser(client.uid);
+
+        await group.getGroup(groupId);
+        await group.updateServices();
+        await group.updateProfessionals();
+        setGroup(new Group(group));
+
+        setLoading(false);
+      } else setTab(-1);
+    });
+  }, []);
+
+  const days: any[][] = [];
+
+  for (let i = 0; i < 9; i++) {
+    const day = new Date();
+    day.setDate(day.getDate() + i);
+    days.push([]);
+    switch (i) {
+      case 0:
+        days[i].push("Hoje");
+        break;
+      case 1:
+        days[i].push("Amanhã");
+        break;
+      default:
+        days[i].push(capitalize(day.toLocaleString("pt-BR", { weekday: "long" })));
+        break;
+    }
+    days[i].push(day.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" }));
+    days[i].push(day.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "2-digit" }));
+    days[i].push(day.getDay());
+  }
+
+  const timeArray: any[] = [];
+  const startHour = Math.floor(group.getStartHours()[selectedWeekDay] / 2);
+  const endHour = Math.floor(group.getHours()[selectedWeekDay]?.length / 2);
+
+  const tempTime: string[] = [];
+
+  for (let i = 0; i < 24; i++) {
+    tempTime.push(`${i}:00`, `${i}:10`, `${i}:20`, `${i}:30`, `${i}:40`, `${i}:50`);
+  }
+
+  for (let i = startHour; i - startHour < endHour; i++) {
+    if (i >= 0) {
+      timeArray.push(`${i}:00`, `${i}:10`, `${i}:20`, `${i}:30`, `${i}:40`, `${i}:50`);
+    }
+  }
+
+  const profSchedValue = {
+    client: user.getId(),
+    service: selectedService?.getId() || "error",
+  };
+  const clientSchedValue = {
+    client: selectedProfessional?.getId() || "error",
+    service: selectedService?.getId() || "error",
+  };
+
+  const handleDaySwitch = async (day: any, index: number) => {
+    setLoading(true);
+    setSelectedTime(null); // The time is now resetted
+    setSelectedDay(index); // new day selected
+    setSelectedWeekDay(day[3]); // new weekDay
+    if (selectedService !== null) {
+      await Promise.all(
+        group
+          .getProfessionals()
+          .sort((a, b) => a.getName().localeCompare(b.getName())) // Professionals ordered in order
+          .map(async (prof: Professional) => {
+            if (prof.getServices().includes(selectedService!.getId())) await prof?.getScheduleDay(days[index][2]);
+          })
+      );
+    }
+    setLoading(false);
+  };
+
+  const timeValidator = (index: number) => {
+    var isAvailable = false;
+    const professionals: Professional[] = [];
+    group
+      .getProfessionals()
+      .sort((a, b) => a.getName().localeCompare(b.getName()))
+      .map((prof) => {
+        var isProfAvailable = true;
+        selectedService?.getDuration().map((time, i) => {
+          console.log(selectedService, prof);
+          if (!prof.getServices().includes(selectedService.getId()) || (prof.getSchedule()?.[days[selectedDay]?.[2]]?.[index + i + startHour * 6] !== undefined && time)) {
+            isProfAvailable = false;
+          }
+        });
+        if (isProfAvailable) {
+          professionals.push(prof);
+          isAvailable = true;
+        }
+      });
+    return {
+      isAvailable: isAvailable,
+      professionals: professionals,
+    };
+  };
+  const switchSelectedTime = (index: number, professionals: Professional[]) => {
+    const newSelectedTime = index + startHour * 6;
+    if (selectedTime === null || selectedTime !== newSelectedTime) {
+      setSelectedTime(newSelectedTime);
+      setAvailableProfessionals(professionals);
+    } else setSelectedTime(null);
+  };
+
+  const handleSchedule = async () => {
+    if (selectedService && selectedProfessional && selectedTime) {
+      setLoading(true);
+      for (let i = 0; i < selectedService.getDuration().length; i++) {
+        if (selectedService.getDuration()[i] === true) {
+          await selectedProfessional?.updateSchedule(days[selectedDay][2], (selectedTime + i).toString(), profSchedValue);
+          await user?.updateSchedule(days[selectedDay][2], (selectedTime + i).toString(), clientSchedValue);
+        }
+      }
+
+      setTab(4);
+      setLoading(false);
+    }
+  };
+
+  const buttonList = [
+    {
+      title: "Selecionar Serviço",
+      subtitle: `${group.getServicesIds().length} Serviços disponíveis`,
+      onClick: () => setTab(1),
+    },
+    {
+      title: "Selecionar Profissional",
+      subtitle: `${group.getProfessionalsIds().length} Profissionais disponíveis`,
+      onClick: () => setTab(3),
+    },
+  ];
+
+  const tabCarousel = [
+    {
+      title: "Serviço",
+      select: tab === 1,
+      icon: calendar,
+      onClick: () => setTab(1),
+    },
+    {
+      title: "Horário",
+      select: tab === 2,
+      icon: clock,
+      onClick: () => setTab(2),
+    },
+    {
+      title: "Profissional",
+      select: tab === 3,
+      icon: userIcon,
+      onClick: () => setTab(3),
+    },
+  ];
+
+  const tabHandler = () => {
+    switch (tab) {
+      case -1:
+        return <div></div>;
+      case 0: // Home tab
+        return (
+          <div className='tab'>
+            <GroupBanner banner={group.getBanner()} profile={group.getProfile()} returnButton onClickReturn={() => navigate(-1)} />
+            <GroupHeader
+              title={group.getTitle()}
+              subtitle={group.getType()}
+              iconButton={{
+                icon: calendar,
+                title: "Agenda",
+                onClick: () => navigate(`/user/schedule/${user.getId()}`),
+              }}
+            />
+            <p className='gp-location'>{group.getLocation()}</p>
+            <Line />
+            <LinkList items={buttonList} />
+            <BottomPopup stage={0} />
+          </div>
+        );
+      case 1: // Service tab
+        return (
+          <div className='tab'>
+            <GenericHeader title={"Escolha o serviço"} onClickReturn={() => setTab(0)} />
+            <IconCarousel items={tabCarousel} />
+            <Carousel
+              items={days.map((day, index) => {
+                return {
+                  title: day[0],
+                  subtitle: day[1],
+                  select: index === selectedDay,
+                  onClick: async () => await handleDaySwitch(day, index),
+                };
+              })}
+            />
+            <ItemList
+              items={group
+                .getServices()
+                .sort((a, b) => a.getName().localeCompare(b.getName()))
+                .map((service) => {
+                  return {
+                    title: service.getName(),
+                    subtitle: formatDuration(service.getDuration()),
+                    select: service.getId() === selectedService?.getId(),
+                    onClick: () => idSwitcher(selectedService, service, setSelectedService),
+                  };
+                })}
+            />
+            <BottomPopup stage={selectedService ? 1 : 0} title={`${fullDays?.[selectedDay]} - ${days?.[selectedDay]?.[1]}`} subtitle={selectedService?.getName()} buttonTitle={"Escolher Horário"} onClick={() => setTab(2)} />
+          </div>
+        );
+      case 2: // Time tab
+        return (
+          <div className='tab'>
+            <GenericHeader title='Escolha o Horário' onClickReturn={() => setTab(1)} />
+            <IconCarousel items={tabCarousel} />
+            <Carousel
+              items={days.map((day, index) => {
+                return {
+                  title: day[0],
+                  subtitle: day[1],
+                  select: index === selectedDay,
+                  onClick: async () => await handleDaySwitch(day, index),
+                };
+              })}
+            />
+            <DualList
+              items={timeArray
+                .map((time, index) => {
+                  const validation = timeValidator(index);
+                  return validation.isAvailable && selectedDay > 0
+                    ? {
+                        title: selectedService?.getName() || "Serviço não selecionado",
+                        subtitle: formatArray(validation.professionals.map((prof) => prof.getName())),
+                        select: selectedTime !== null && index + startHour * 6 >= selectedTime && index + startHour * 6 < selectedTime + (selectedService?.getDuration().length || 0),
+                        onClick: () => switchSelectedTime(index, validation.professionals),
+                        leftButton: {
+                          title: days[selectedDay]?.[0],
+                          subtitle: time,
+                        },
+                      }
+                    : null;
+                })
+                .filter((item): item is NonNullable<typeof item> => item !== null)}
+            />
+            <BottomPopup stage={selectedTime ? 1 : 0} title={`${fullDays?.[selectedDay]} - ${days?.[selectedDay]?.[1]}`} subtitle={selectedService?.getName()} buttonTitle={"Escolher Profissional"} onClick={() => setTab(3)} />
+          </div>
+        );
+      case 3: // Professional tab
+        return (
+          <div className='tab'>
+            <GenericHeader title='Escolha o Profissional' onClickReturn={() => setTab(2)} />
+            <IconCarousel items={tabCarousel} />
+            <ItemList
+              items={group
+                .getProfessionals()
+                .sort((a, b) => a.getName().localeCompare(b.getName()))
+                .map((professional) => {
+                  return availableProfessionals.includes(professional) || selectedService === null
+                    ? {
+                        title: professional.getName(),
+                        subtitle: professional.getOccupations().join(", "),
+                        select: professional.getId() === selectedProfessional?.getId(),
+                        onClick: () => idSwitcher(selectedProfessional, professional, setSelectedProfessional),
+                      }
+                    : null;
+                })
+                .filter((item): item is NonNullable<typeof item> => item !== null)}
+            />
+            <BottomPopup
+              stage={selectedProfessional ? (confirm ? 2 : 1) : 0}
+              title={`${fullDays?.[selectedDay]} - ${days?.[selectedDay]?.[1]}`}
+              subtitle={selectedService?.getName()}
+              buttonTitle={"Agendar Serviço"}
+              onClick={() => {
+                if (confirm) handleSchedule();
+                else setConfirm(true);
+              }}
+              topText='Você confirma o agendamento?'
+              bottomText='Você pode desmarcar na sua agenda'
+              items={[
+                {
+                  title: selectedService?.getName() || "Serviço não selecionado",
+                  subtitle: selectedProfessional?.getName() || "Profissional não selecionado",
+                  selected: true,
+                  leftTitle: fullDays[selectedDay],
+                  leftSubtitle: timeArray[selectedTime || 0],
+                },
+              ]}
+            />
+          </div>
+        );
+      case 4:
+        const date = new Date();
+        return (
+          <div className='tab'>
+            <GroupBanner banner={group.getBanner()} profile={group.getProfile()} />
+            <GroupHeader
+              title={group.getTitle()}
+              subtitle={group.getType()}
+              iconButton={{
+                icon: calendar,
+                title: "Agenda",
+                onClick: () => navigate(`/user/schedule/${user.getId()}`),
+              }}
+            />
+            <p className='gp-confirm-title'>Seu agendamento foi confirmado!</p>
+            <DualButton
+              title={selectedService?.getName() || "Isso não deveria acontecer"}
+              subtitle={selectedProfessional?.getName() || "Isso não deveria acontecer"}
+              select={true}
+              leftButton={{
+                title: days[selectedDay][0],
+                subtitle: `${days[selectedDay][1]} - ${timeArray[selectedTime || 0]}`,
+              }}
+            />
+            <div className='gp-confirm-bottom-block'>
+              <p className='gp-bottom-text'>
+                Agendado por {user.getName()} às {date.toLocaleString("pt-BR", { hour: "2-digit", minute: "2-digit" })} - {date.toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", year: "2-digit" })}
+              </p>
+              <Line />
+            </div>
+            <BottomButton
+              title={"Retornar a Página Inicial"}
+              onClick={() => {
+                setSelectedDay(-1);
+                setSelectedService(null);
+                setSelectedTime(null);
+                setSelectedProfessional(null);
+                setConfirm(false);
+
+                setTab(0);
+              }}
+            />
+          </div>
+        );
+      default:
+        return <ErrorPage />;
+    }
+  };
+  return loading ? <LoadingScreen /> : tabHandler();
+}
+
+/*
+export function GroupPasge() {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(new User());
   const [group, setGroup] = useState(new Group());
@@ -209,14 +575,14 @@ export function GroupPage() {
                 const validation = timeValidator(index);
                 const selected = selectedTime !== null && index + startHour * 6 >= selectedTime && index + startHour * 6 < selectedTime + (selectedService?.getDuration().length || 0);
                 return validation.isAvailable && selectedDay > 0 ? (
-                  <DoubleItemButton
-                    leftButtonTitle={{
-                      title1: days[selectedDay]?.[0],
-                      title2: time,
+                  <DualButton
+                    leftButton={{
+                      title: days[selectedDay]?.[0],
+                      subtitle: time,
                     }}
                     title={selectedService?.getName() || "Serviço não selecionado"}
                     subtitle={validation.professionals.map((prof) => prof.getName()).join(", ")}
-                    selected={selected}
+                    select={selected}
                     onClick={() => switchSelectedTime(index, validation.professionals)}
                   />
                 ) : null;
@@ -290,3 +656,4 @@ export function GroupPage() {
 
   return loading ? <LoadingScreen /> : tabHandler();
 }
+*/
