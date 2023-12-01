@@ -103,7 +103,7 @@ export function ClientSchedulePage() {
       await fetchUser();
       await fetchScheduleForDays(scheduleDays);
       await fetchServicesAndProfessionals();
-      Object.entries(user.getSchedule()).map(([date, _]) => {
+      Object.entries(user.getSchedule()).forEach(([date, _]) => {
         const formattedDay = formattedDate(parseDate(date));
         setDisplayList([...displayList, formattedDay]);
       });
@@ -117,7 +117,7 @@ export function ClientSchedulePage() {
     setDayList(scheduleDays);
 
     execute().then(() => setLoading(false));
-  }, []);
+  }, [displayList, professionalCache, serviceCache, user, userId]);
 
   const loadWeek = async () => {
     setLoading(true);

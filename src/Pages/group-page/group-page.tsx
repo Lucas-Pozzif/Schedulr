@@ -7,7 +7,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Group, Professional, Service, User } from "../../Classes/classes-imports";
 import { capitalize, formatArray, formatDuration, idSwitcher } from "../../Function/functions-imports";
 import { BottomButton, BottomPopup, Carousel, GenericHeader, GroupBanner, GroupFormLoading, GroupHeader, IconCarousel, ItemList, Line, LinkList } from "../../Components/component-imports";
-import { calendar, clock, config, fullDays, fullTimeArray, longTimeArray, userIcon } from "../../_global";
+import { calendar, clock, config, fullDays, userIcon } from "../../_global";
 import { DualList } from "../../Components/lists/dual-list/dual-list";
 import { ErrorPage } from "../error-page/error-page";
 import { DualButton } from "../../Components/buttons/dual-button/dual-button";
@@ -15,7 +15,7 @@ import { GroupConfigPage } from "../group-config-page/group-config-page";
 
 export function GroupPage() {
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState(new User());
+  const [user, _] = useState(new User());
   const [group, setGroup] = useState(new Group());
   const [tab, setTab] = useState(0);
 

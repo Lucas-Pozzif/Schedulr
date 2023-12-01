@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { Group, Professional, User } from "../../Classes/classes-imports";
-import { BottomButton, IconList, ItemList, SmallHeader, UserPageLoading } from "../../Components/component-imports";
+import { BottomButton, IconList, ItemList, SmallHeader } from "../../Components/component-imports";
 import { Profile } from "../../Components/profile/profile";
-import { useEffect, useState } from "react";
+import {  useState } from "react";
 import { bin, calendar, editSquare } from "../../_global";
 import { idSwitcher } from "../../Function/functions-imports";
 import { ErrorPage } from "../error-page/error-page";

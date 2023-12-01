@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 
 import { capitalize, findRepetitionBlocks, formattedDate, parseDate } from "../../../Function/functions-imports";
-import { editSquare, fullDays, fullTimeArray, longTimeArray, save, week } from "../../../_global";
+import { editSquare, fullDays, longTimeArray, save, week } from "../../../_global";
 import { Professional, Service, User } from "../../../Classes/classes-imports";
 import { BottomButton, Carousel, DoubleButton, DualList, GenericHeader, Line, SchedulePageLoading, SubHeader } from "../../../Components/component-imports";
 
@@ -124,7 +124,7 @@ export function ProfessionalSchedulePage() {
       await fetchScheduleForDays(scheduleDays);
       await fetchServicesAndClients();
       SetProfessional(new Professional(professional));
-      Object.entries(professional.getSchedule()).map(([date, _]) => {
+      Object.entries(professional.getSchedule()).forEach(([date, _]) => {
         setDisplayList((prevDisplayList) => [...prevDisplayList, date]);
       });
 
@@ -134,7 +134,7 @@ export function ProfessionalSchedulePage() {
       }));
       setLoading(false);
     });
-  }, []);
+  }, [displayList, serviceCache, user, clientCache, professional, professionalId]);
 
   const timeList: string[] = [];
 
@@ -211,7 +211,7 @@ export function ProfessionalSchedulePage() {
   };
 
   const saveSchedule = async () => {
-    if (changedValues.length == 0) return;
+    if (changedValues.length === 0) return;
     setLoading(true);
     const updatePromises = changedValues.map(async ({ day, index }) => {
       return await professional.updateSchedule(day, index.toString(), professional.getSchedule()[day][index]);
@@ -287,14 +287,14 @@ export function ProfessionalSchedulePage() {
       case 1: // Edit schedule tab
         return (
           <div className='tab'>
-            <GenericHeader title={`Agenda de ${professional.getName()}`} icon={changedValues.length == 0 ? "" : save} onClickReturn={() => setTab(0)} onClickIcon={() => saveSchedule()} />
+            <GenericHeader title={`Agenda de ${professional.getName()}`} icon={changedValues.length === 0 ? "" : save} onClickReturn={() => setTab(0)} onClickIcon={() => saveSchedule()} />
             <Carousel
               items={[
                 ...dayList.map((day) => {
                   return {
                     title: fullDays[day.getDay()],
                     subtitle: day.toLocaleString("pt-BR", { day: "2-digit", month: "2-digit" }),
-                    select: selectedDay == day,
+                    select: selectedDay === day,
                     onClick: () => {
                       setSelectedTimeList([]);
                       setSelectedDay(day);
@@ -390,7 +390,7 @@ export function ProfessionalSchedulePage() {
                     const startTime = Math.floor(startHours / 2) * 6;
                     const endTime = Math.floor((dayShift.length - 1) / 2) * 6 + startTime;
 
-                    if (!dayShift[0] || startTime > index || endTime < index) return;
+                    if (!dayShift[0] || startTime > index || endTime < index) return null;
 
                     return {
                       index: index,
@@ -517,7 +517,6 @@ export function ProfessionalSchedulePage() {
         const day = selectedBlock!.day;
 
         const client = selectedBlock!.client;
-        const service = selectedBlock!.service;
 
         const startIndex = selectedBlock!.timeRange[0];
         const endIndex = selectedBlock!.timeRange[1];
@@ -528,7 +527,7 @@ export function ProfessionalSchedulePage() {
           client: client,
           edited: true,
         };
-        const serviceList = Array.from({ length: serviceSpan }, (_, index) => {
+        const serviceList = Array.from({ length: serviceSpan }, (_) => {
           return blockTime;
         });
 
@@ -699,7 +698,7 @@ export function ProfessionalSchedulePage() {
                   setChangedValues([...changedValues, ...filteredNewValues]);
                 },
               ]}
-              hide={[hiddenSaveButton(), selectedTimeList.length == 0]}
+              hide={[hiddenSaveButton(), selectedTimeList.length === 0]}
             />
           </div>
         );

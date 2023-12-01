@@ -33,7 +33,7 @@ export function UserPage() {
       }
       setLoading(false);
     });
-  }, []);
+  }, [user]);
 
   const logIn = async () => {
     setLoading(true);
