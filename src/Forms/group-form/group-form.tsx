@@ -2,7 +2,7 @@ import "./group-form.css";
 
 import { useEffect, useRef, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { auth } from "../../Services/firebase/firebase";
 
 import { add, calendar, clock, closeIcon, fullDays, timeArray, userIcon } from "../../_global";
@@ -34,6 +34,8 @@ export function GroupForm({ group, onClickReturn }: GroupFormType) {
   const bannerRef = useRef<HTMLInputElement>(null);
   const profileRef = useRef<HTMLInputElement>(null);
 
+  const { groupId } = useParams();
+
   useEffect(() => {
     setLoading(true);
     const adminsArray = groupForm.getAdmins();
@@ -41,15 +43,30 @@ export function GroupForm({ group, onClickReturn }: GroupFormType) {
     onAuthStateChanged(auth, async (client) => {
       if (client?.uid) {
         await user.getUser(client.uid);
-        setLoading(false);
       }
+      if (groupId === undefined && !groupForm.getId()) {
+        // New Group
+        groupForm.setOwner(user.getId());
+        if (adminsArray.includes(user.getId())) groupForm.setAdmins([...adminsArray, user.getId()]);
+      } else {
+        const isGroupFromParams = groupId !== undefined;
+        const isGroupFromFunction = group?.getId() !== "";
+
+        if (isGroupFromParams || isGroupFromFunction) {
+          // Group from params or function
+          await groupForm.getGroup(isGroupFromParams ? groupId : group?.getId());
+          await groupForm.updateServices();
+          await groupForm.updateProfessionals();
+          setGroupForm(new Group(groupForm));
+
+          if (!adminsArray.includes(user.getId()) && groupForm.getOwner() !== user.getId()) {
+            setTab(-1);
+          }
+        }
+      }
+
+      setLoading(false);
     });
-    if (group?.getId() === undefined) {
-      groupForm.setOwner(user.getId());
-      if (adminsArray.includes(user.getId())) groupForm.setAdmins([...adminsArray, user.getId()]);
-    } else if (!adminsArray.includes(user.getId())) {
-      setTab(-1);
-    }
   }, []);
 
   const saveGroupForm = async () => {
@@ -199,7 +216,7 @@ export function GroupForm({ group, onClickReturn }: GroupFormType) {
               }}
             />
             <IconCarousel items={tabCarousel} />
-            <SubHeader title={`${groupForm.getProfessionalsIds()} Profissionais criados`} buttonTitle={"Salvar"} onClick={() => setTab(0)} />
+            <SubHeader title={`${groupForm.getProfessionalsIds().length} Profissionais criados`} buttonTitle={"Salvar"} onClick={() => setTab(0)} />
             <ItemList
               items={groupForm
                 .getProfessionals()
