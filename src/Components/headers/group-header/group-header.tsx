@@ -10,9 +10,9 @@ type GroupHeaderType = {
     hide?: boolean;
     onClick: () => void;
   };
-  editMode: boolean;
-  titlePlaceholder: string;
-  subtitlePlaceholder: string;
+  editMode?: boolean;
+  titlePlaceholder?: string;
+  subtitlePlaceholder?: string;
   onChangeTitle?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onChangeSubtitle?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
