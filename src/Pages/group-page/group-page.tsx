@@ -6,11 +6,12 @@ import { auth } from "../../Services/firebase/firebase";
 import { useNavigate, useParams } from "react-router-dom";
 import { Group, Professional, Service, User } from "../../Classes/classes-imports";
 import { capitalize, formatArray, formatDuration, idSwitcher } from "../../Function/functions-imports";
-import { BottomButton, BottomPopup, Carousel, GenericHeader, GroupBanner, GroupHeader, IconCarousel, ItemList, Line, LinkList } from "../../Components/component-imports";
-import { calendar, clock, fullDays, userIcon } from "../../_global";
+import { BottomButton, BottomPopup, Carousel, GenericHeader, GroupBanner, GroupFormLoading, GroupHeader, IconCarousel, ItemList, Line, LinkList } from "../../Components/component-imports";
+import { calendar, clock, config, fullDays, fullTimeArray, longTimeArray, userIcon } from "../../_global";
 import { DualList } from "../../Components/lists/dual-list/dual-list";
-import { DualButton, LoadingScreen } from "../../AComponents/component-imports";
 import { ErrorPage } from "../error-page/error-page";
+import { DualButton } from "../../Components/buttons/dual-button/dual-button";
+import { GroupConfigPage } from "../group-config-page/group-config-page";
 
 export function GroupPage() {
   const [loading, setLoading] = useState(false);
@@ -111,30 +112,50 @@ export function GroupPage() {
     setLoading(false);
   };
 
-  const timeValidator = (index: number) => {
-    var isAvailable = false;
-    const professionals: Professional[] = [];
-    group
+  const timeValidator = (
+    index: number
+  ): {
+    isAvailable: boolean;
+    isAvailableToday: boolean;
+    professionals: Professional[];
+  } => {
+    const isAvailableToday = (index + group.getStartHours()[selectedDay]) * 19 >= getMinutesSinceMidnight();
+
+    const professionals: Professional[] = group
       .getProfessionals()
       .sort((a, b) => a.getName().localeCompare(b.getName()))
-      .map((prof) => {
-        var isProfAvailable = true;
-        selectedService?.getDuration().map((time, i) => {
-          console.log(selectedService, prof);
-          if (!prof.getServices().includes(selectedService.getId()) || (prof.getSchedule()?.[days[selectedDay]?.[2]]?.[index + i + startHour * 6] !== undefined && time)) {
+      .filter((prof) => {
+        let isProfAvailable = true;
+
+        selectedService?.getDuration().forEach((time, i) => {
+          const schedule = prof.getSchedule()?.[days[selectedDay]?.[2]]?.[index + i + startHour * 6];
+          if (!prof.getServices().includes(selectedService.getId()) || (schedule !== undefined && time)) {
             isProfAvailable = false;
           }
         });
-        if (isProfAvailable) {
-          professionals.push(prof);
-          isAvailable = true;
-        }
+
+        return isProfAvailable;
       });
+
+    const isAvailable = professionals.length > 0;
+
     return {
-      isAvailable: isAvailable,
-      professionals: professionals,
+      isAvailable,
+      isAvailableToday,
+      professionals,
     };
   };
+
+  // Utility function to get the minutes since midnight for a given date
+  const getMinutesSinceMidnight = (): number => {
+    const midnight = new Date();
+    const date = new Date();
+    midnight.setHours(0, 0, 0, 0);
+    const diffInMilliseconds = date.getTime() - midnight.getTime();
+    console.log(Math.floor(diffInMilliseconds / (1000 * 60)));
+    return Math.floor(diffInMilliseconds / (1000 * 60));
+  };
+
   const switchSelectedTime = (index: number, professionals: Professional[]) => {
     const newSelectedTime = index + startHour * 6;
     if (selectedTime === null || selectedTime !== newSelectedTime) {
@@ -191,7 +212,6 @@ export function GroupPage() {
       onClick: () => setTab(3),
     },
   ];
-
   const tabHandler = () => {
     switch (tab) {
       case -1:
@@ -203,11 +223,19 @@ export function GroupPage() {
             <GroupHeader
               title={group.getTitle()}
               subtitle={group.getType()}
-              iconButton={{
-                icon: calendar,
-                title: "Agenda",
-                onClick: () => navigate(`/user/schedule/${user.getId()}`),
-              }}
+              iconButton={
+                group.getOwner() === user.getId() || group.getAdmins().includes(user.getId())
+                  ? {
+                      icon: config,
+                      title: "Config",
+                      onClick: () => setTab(5),
+                    }
+                  : {
+                      icon: calendar,
+                      title: "Agenda",
+                      onClick: () => navigate(`/user/schedule/${user.getId()}`),
+                    }
+              }
             />
             <p className='gp-location'>{group.getLocation()}</p>
             <Line />
@@ -239,7 +267,11 @@ export function GroupPage() {
                     title: service.getName(),
                     subtitle: formatDuration(service.getDuration()),
                     select: service.getId() === selectedService?.getId(),
-                    onClick: () => idSwitcher(selectedService, service, setSelectedService),
+                    onClick: () => {
+                      setSelectedProfessional(null);
+                      setSelectedTime(null);
+                      idSwitcher(selectedService, service, setSelectedService);
+                    },
                   };
                 })}
             />
@@ -265,12 +297,16 @@ export function GroupPage() {
               items={timeArray
                 .map((time, index) => {
                   const validation = timeValidator(index);
-                  return validation.isAvailable && selectedDay > 0
+                  if (selectedDay === 0 && !validation.isAvailableToday) return null;
+                  return validation.isAvailable && selectedDay > -1
                     ? {
                         title: selectedService?.getName() || "Serviço não selecionado",
                         subtitle: formatArray(validation.professionals.map((prof) => prof.getName())),
                         select: selectedTime !== null && index + startHour * 6 >= selectedTime && index + startHour * 6 < selectedTime + (selectedService?.getDuration().length || 0),
-                        onClick: () => switchSelectedTime(index, validation.professionals),
+                        onClick: () => {
+                          setSelectedProfessional(null);
+                          switchSelectedTime(index, validation.professionals);
+                        },
                         leftButton: {
                           title: days[selectedDay]?.[0],
                           subtitle: time,
@@ -327,7 +363,7 @@ export function GroupPage() {
             />
           </div>
         );
-      case 4:
+      case 4: // Confirmation tab
         const date = new Date();
         return (
           <div className='tab'>
@@ -371,11 +407,13 @@ export function GroupPage() {
             />
           </div>
         );
+      case 5: // Config tab
+        return <GroupConfigPage user={user} group={group} />;
       default:
         return <ErrorPage />;
     }
   };
-  return loading ? <LoadingScreen /> : tabHandler();
+  return loading ? <GroupFormLoading /> : tabHandler();
 }
 
 /*
