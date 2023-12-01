@@ -14,8 +14,8 @@ export function GroupList({ groupList, onClick }: groupListType) {
 
   return (
     <div className='group-list' onClick={onClick}>
-      {groupList.map((group) => {
-        return <GroupButton group={group} onClick={() => navigate(`/group/${group.getId()}`)} />;
+      {groupList.map((group, index) => {
+        return <GroupButton key={index} group={group} onClick={() => navigate(`/group/${group.getId()}`)} />;
       })}
     </div>
   );

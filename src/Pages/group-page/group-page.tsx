@@ -15,7 +15,7 @@ import { GroupConfigPage } from "../group-config-page/group-config-page";
 
 export function GroupPage() {
   const [loading, setLoading] = useState(false);
-  const [user, _] = useState(new User());
+  const [user, setUser] = useState(new User());
   const [group, setGroup] = useState(new Group());
   const [tab, setTab] = useState(0);
 
@@ -36,6 +36,7 @@ export function GroupPage() {
     onAuthStateChanged(auth, async (client) => {
       if (client?.uid) {
         await user.getUser(client.uid);
+        setUser(new User(user)); //unnecessary but if fixes bottom bug
 
         await group.getGroup(groupId);
         await group.updateServices();
@@ -45,7 +46,7 @@ export function GroupPage() {
         setLoading(false);
       } else setTab(-1);
     });
-  }, []);
+  }, [group, groupId, user]);
 
   const days: any[][] = [];
 
@@ -152,7 +153,6 @@ export function GroupPage() {
     const date = new Date();
     midnight.setHours(0, 0, 0, 0);
     const diffInMilliseconds = date.getTime() - midnight.getTime();
-    console.log(Math.floor(diffInMilliseconds / (1000 * 60)));
     return Math.floor(diffInMilliseconds / (1000 * 60));
   };
 
@@ -341,7 +341,7 @@ export function GroupPage() {
                 .filter((item): item is NonNullable<typeof item> => item !== null)}
             />
             <BottomPopup
-              stage={selectedProfessional ? (confirm ? 2 : 1) : 0}
+              stage={selectedProfessional && selectedTime && selectedService ? (confirm ? 2 : 1) : 0}
               title={`${fullDays?.[selectedDay]} - ${days?.[selectedDay]?.[1]}`}
               subtitle={selectedService?.getName()}
               buttonTitle={"Agendar Serviço"}

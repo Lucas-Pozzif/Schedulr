@@ -13,8 +13,8 @@ type IconCarouselType = {
 export function IconCarousel({ items }: IconCarouselType) {
   return (
     <div className='icon-carousel'>
-      {items.map((item) => {
-        return <SmallIconButton title={item.title} select={item.select} icon={item.icon} onClick={item.onClick} />;
+      {items.map((item,index) => {
+        return <SmallIconButton key={index} title={item.title} select={item.select} icon={item.icon} onClick={item.onClick} />;
       })}
     </div>
   );

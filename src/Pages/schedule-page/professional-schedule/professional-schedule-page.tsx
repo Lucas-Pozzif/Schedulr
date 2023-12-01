@@ -229,14 +229,14 @@ export function ProfessionalSchedulePage() {
         return (
           <div className='tab'>
             <GenericHeader title={`Agenda de ${professional.getName()}`} icon={editSquare} onClickReturn={() => navigate(-1)} onClickIcon={() => setTab(1)} />
-            {Object.entries(professional.getSchedule()).map(([date, schedule]) => {
+            {Object.entries(professional.getSchedule()).map(([date, schedule], index) => {
               // This is a day array
               const formattedDay = formattedDate(parseDate(date));
               const hiddenMessage = displayList.includes(date) ? "Ocultar" : "Exibir";
               const weekIndex = parseDate(date).getDay();
 
               return (
-                <div className='sp-day'>
+                <div key={index} className='sp-day'>
                   <SubHeader
                     title={formattedDay}
                     buttonTitle={hiddenMessage}

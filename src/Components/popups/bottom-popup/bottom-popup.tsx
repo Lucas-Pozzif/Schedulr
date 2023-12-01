@@ -29,9 +29,10 @@ export function BottomPopup({ stage, title, subtitle, buttonTitle, onClick, topT
         {stage === 2 ? (
           <div className='bp-top-block'>
             <p className='bp-top-text'>{topText}</p>
-            {items?.map((item) => {
+            {items?.map((item, index) => {
               return (
                 <DualButton
+                  key={index}
                   leftButton={{
                     title: item.leftTitle,
                     subtitle: item.leftSubtitle,
@@ -47,7 +48,7 @@ export function BottomPopup({ stage, title, subtitle, buttonTitle, onClick, topT
             <Line />
           </div>
         ) : null}
-        <div className={`bp-bottom-block${stage === 1?'-single':''}`}>
+        <div className={`bp-bottom-block${stage === 1 ? "-single" : ""}`}>
           <div className='bp-text-block'>
             <p className='bp-title'>{title}</p>
             <p className='bp-subtitle'>{subtitle}</p>

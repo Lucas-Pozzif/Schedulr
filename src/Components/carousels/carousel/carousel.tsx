@@ -12,9 +12,9 @@ type CarouselType = {
 export function Carousel({ items }: CarouselType) {
   return (
     <div className='carousel'>
-      {items.map((item) => {
+      {items.map((item,index) => {
         return (
-          <div className={"carousel-item" + (item.select ? "-selected" : "")} onClick={item.onClick}>
+          <div key={index} className={"carousel-item" + (item.select ? "-selected" : "")} onClick={item.onClick}>
             <p className={"carousel-title"}>{item.title}</p>
             <p className={"carousel-subtitle"}>{item.subtitle}</p>
           </div>

@@ -13,8 +13,8 @@ type ItemListType = {
 export function ItemList({ items }: ItemListType) {
   return (
     <div className='item-list'>
-      {items?.map((item) => {
-        return <ItemButton title={item.title} subtitle={item.subtitle} select={item.select} onClick={item.onClick} />;
+      {items?.map((item, index) => {
+        return <ItemButton key={index} title={item.title} subtitle={item.subtitle} select={item.select} onClick={item.onClick} />;
       })}
     </div>
   );

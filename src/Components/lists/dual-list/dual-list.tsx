@@ -17,9 +17,10 @@ type DualListType = {
 export function DualList({ items }: DualListType) {
   return (
     <div className='dual-list'>
-      {items?.map((item) => {
+      {items?.map((item, index) => {
         return (
           <DualButton
+            key={index}
             title={item.title}
             subtitle={item.subtitle}
             select={item.select}

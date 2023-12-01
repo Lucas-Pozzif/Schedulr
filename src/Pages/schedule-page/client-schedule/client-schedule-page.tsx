@@ -223,13 +223,13 @@ export function ClientSchedulePage() {
   ) : (
     <div className='schedule-page'>
       <GenericHeader title={"Minha Agenda"} icon={user.getPhoto()} onClickReturn={() => navigate(-1)} onClickIcon={() => navigate("/user")} />
-      {Object.entries(user.getSchedule()).map(([date, schedule]) => {
+      {Object.entries(user.getSchedule()).map(([date, schedule], index) => {
         const formattedDay = formattedDate(parseDate(date));
         const hiddenMessage = displayList.includes(formattedDay) ? "Ocultar" : "Exibir";
         const weekDay = capitalize(parseDate(date).toLocaleDateString("pt-BR", { weekday: "long" }));
 
         return (
-          <div className='sp-day-block'>
+          <div key={index} className='sp-day-block'>
             <SubHeader
               title={formattedDay}
               buttonTitle={hiddenMessage}
@@ -239,7 +239,7 @@ export function ClientSchedulePage() {
               }}
             />
             <div className='sp-list'>
-              {findRepetitionBlocks(schedule).map((block) => {
+              {findRepetitionBlocks(schedule).map((block, index) => {
                 if (!displayList.includes(formattedDay)) return null;
                 const firstIndex = block[0];
                 const lastIndex = block[1];
@@ -257,6 +257,7 @@ export function ClientSchedulePage() {
 
                 return (
                   <DualButton
+                    key={index}
                     leftButton={{
                       title: weekDay,
                       subtitle: `${fullTimeArray[firstIndex]} - ${fullTimeArray[lastIndex]}`,

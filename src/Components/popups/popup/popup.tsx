@@ -13,7 +13,6 @@ type PopupType = {
 };
 
 export function Popup({ title, text, display, onClickExit, buttons }: PopupType) {
-  console.log(display);
   return (
     <>
       <div className={`blur ${!display ? "hidden" : ""}`} onClick={onClickExit} />
@@ -21,15 +20,15 @@ export function Popup({ title, text, display, onClickExit, buttons }: PopupType)
         <p className='p-title'>{title}</p>
         <p className='p-text'>{text}</p>
         <div className='p-button-list'>
-          {buttons.map((button) => {
+          {buttons.map((button, index) => {
             return (
-              <p className='p-button' onClick={button.onClick}>
+              <p key={index} className='p-button' onClick={button.onClick}>
                 {button.title}
               </p>
             );
           })}
         </div>
-        <img className='p-exit' src={redClose} onClick={onClickExit} />
+        <img className='p-exit' alt={title} src={redClose} onClick={onClickExit} />
       </div>
     </>
   );
