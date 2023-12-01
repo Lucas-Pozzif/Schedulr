@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Group } from "../../../Classes/group/group";
-import { GroupButton } from "../../../AComponents/buttons/group-button/group-button";
+import { GroupButton } from "../../buttons/group-button/group-button";
 
 import "./group-list.css";
 
