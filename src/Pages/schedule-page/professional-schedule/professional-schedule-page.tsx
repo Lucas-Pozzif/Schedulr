@@ -2,7 +2,7 @@ import "../schedule-page.css";
 
 import { useEffect, useState } from "react";
 
-import { BottomButton, Carousel, DoubleButton, DoubleItemButton, Header, IconInput, Line, LoadingScreen, SubHeader } from "../../../AComponents/component-imports";
+import { BottomButton, Carousel, DoubleButton, DualButton, Header, IconInput, Line, LoadingScreen, SubHeader } from "../../../AComponents/component-imports";
 import { capitalize, findRepetitionBlocks, formattedDate, parseDate } from "../../../Function/functions-imports";
 import { clock, edit, save, week } from "../../../_global";
 import { Professional, Service, User } from "../../../Classes/classes-imports";
@@ -249,14 +249,14 @@ export function ProfessionalSchedulePage() {
                       };
 
                       return (
-                        <DoubleItemButton
-                          leftButtonTitle={{
-                            title1: week[weekIndex],
-                            title2: `${timeList[firstIndex]} - ${timeList[lastIndex]}`,
+                        <DualButton
+                          leftButton={{
+                            title: week[weekIndex],
+                            subtitle: `${timeList[firstIndex]} - ${timeList[lastIndex]}`,
                           }}
                           title={serviceName}
                           subtitle={clientName}
-                          selected={isEqual(selectedBlock, currentBlock)}
+                          select={isEqual(selectedBlock, currentBlock)}
                           onClick={() => {
                             isEqual(selectedBlock, currentBlock) ? setSelectedBlock(null) : setSelectedBlock(currentBlock);
                           }}
@@ -269,7 +269,7 @@ export function ProfessionalSchedulePage() {
             })}
             <SubHeader title={formattedDate(dayList[dayList.length - 1])} buttonTitle={"Carregar semana"} onClick={async () => loadWeek()} />
             <BottomButton
-              hidden={selectedBlock === null}
+              hide={selectedBlock === null}
               title={"Editar"}
               onClick={() => {
                 setTab(2); //Edit block tab
@@ -465,14 +465,14 @@ export function ProfessionalSchedulePage() {
                 const selected = selectedTimeList.find((time) => currentTime.day === time.day && currentTime.index === time.index) !== undefined;
 
                 return (
-                  <DoubleItemButton
-                    leftButtonTitle={{
-                      title1: weekDay,
-                      title2: time,
+                  <DualButton
+                    leftButton={{
+                      title: weekDay,
+                      subtitle: time,
                     }}
                     title={serviceName}
                     subtitle={clientName}
-                    selected={selected}
+                    select={selected}
                     onClick={() => {
                       if (selectedTimeList.some((time) => time.day === currentTime.day && time.index === currentTime.index)) {
                         setSelectedTimeList(selectedTimeList.filter((time) => time.day !== currentTime.day || time.index !== currentTime.index));
@@ -636,14 +636,14 @@ export function ProfessionalSchedulePage() {
               const clientName = editedTime.service === "" ? clientCache[scheduleItem?.client]?.getName() : user.getName();
 
               return (
-                <DoubleItemButton
-                  leftButtonTitle={{
-                    title1: weekDay,
-                    title2: timeList[index + startIndex],
+                <DualButton
+                  leftButton={{
+                    title: weekDay,
+                    subtitle: timeList[index + startIndex],
                   }}
                   title={serviceName}
                   subtitle={clientName}
-                  selected={selected}
+                  select={selected}
                   onClick={() => {
                     if (selectedTimeList.some((time) => time.day === currentTime.day && time.index === currentTime.index)) {
                       setSelectedTimeList(selectedTimeList.filter((time) => time.day !== currentTime.day || time.index !== currentTime.index));
@@ -832,14 +832,14 @@ export function ProfessionalSchedulePage() {
                 }
 
                 return (
-                  <DoubleItemButton
-                    leftButtonTitle={{
-                      title1: weekDay,
-                      title2: timeList[index],
+                  <DualButton
+                    leftButton={{
+                      title: weekDay,
+                      subtitle: timeList[index],
                     }}
                     title={serviceName}
                     subtitle={clientName}
-                    selected={false}
+                    select={false}
                     onClick={() => {}}
                   />
                 );

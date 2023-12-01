@@ -8,7 +8,7 @@ import { auth } from "../../../Services/firebase/firebase";
 import { fullTimeArray } from "../../../_global";
 import { Professional, Service, User } from "../../../Classes/classes-imports";
 import { capitalize, findRepetitionBlocks, formattedDate, parseDate } from "../../../Function/functions-imports";
-import { BottomButton, DoubleItemButton, Header, LoadingScreen, SubHeader } from "../../../AComponents/component-imports";
+import { BottomButton, DualButton, Header, LoadingScreen, SubHeader } from "../../../AComponents/component-imports";
 
 var isEqual = require("lodash.isequal");
 
@@ -255,14 +255,14 @@ export function ClientSchedulePage() {
                 };
 
                 return (
-                  <DoubleItemButton
-                    leftButtonTitle={{
-                      title1: weekDay,
-                      title2: `${fullTimeArray[firstIndex]} - ${fullTimeArray[lastIndex]}`,
+                  <DualButton
+                    leftButton={{
+                      title: weekDay,
+                      subtitle: `${fullTimeArray[firstIndex]} - ${fullTimeArray[lastIndex]}`,
                     }}
                     title={serviceName}
                     subtitle={profName}
-                    selected={isEqual(selectedBlock, currentBlock)}
+                    select={isEqual(selectedBlock, currentBlock)}
                     onClick={() => (isEqual(selectedBlock, currentBlock) ? setSelectedBlock(null) : setSelectedBlock(currentBlock))}
                   />
                 );
@@ -272,7 +272,7 @@ export function ClientSchedulePage() {
         );
       })}
       <SubHeader title={formattedDate(dayList[dayList.length - 1])} buttonTitle={"Carregar próxima semana"} onClick={loadWeek} />
-      <BottomButton hidden={selectedBlock === null} title={"Desmarcar"} onClick={async () => await unSchedule()} />
+      <BottomButton hide={selectedBlock === null} title={"Desmarcar"} onClick={async () => await unSchedule()} />
     </div>
   );
 }
