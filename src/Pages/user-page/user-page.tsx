@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../Services/firebase/firebase";
 
-import { SmallHeader, IconList, UserPageLoading, UserProfile } from "../../Components/component-imports";
+import { SmallHeader, IconList, UserPageLoading, Profile } from "../../Components/component-imports";
 import { addCalendar, calendar, confirm, edit, google, logOutIcon } from "../../_global";
 import { User } from "../../Classes/classes-imports";
 
@@ -108,7 +108,7 @@ export function UserPage() {
   ) : (
     <div className='tab'>
       <SmallHeader title={hasAccount ? user.getName() : "Página do Usuário"} onClickReturn={() => navigate(-1)} />
-      <UserProfile
+      <Profile
         image={user.getPhoto()}
         name={user.getName()}
         number={user.getNumber()}
