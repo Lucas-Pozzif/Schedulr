@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 
 import { capitalize, findRepetitionBlocks, formattedDate, parseDate } from "../../../Function/functions-imports";
-import { editSquare, fullDays, longTimeArray, save, week } from "../../../_global";
+import { editSquare, fullDays, fullTimeArray, longTimeArray, save, week } from "../../../_global";
 import { Professional, Service, User } from "../../../Classes/classes-imports";
 import { BottomButton, Carousel, DoubleButton, DualList, GenericHeader, Line, SchedulePageLoading, SubHeader } from "../../../Components/component-imports";
 
@@ -134,9 +134,7 @@ export function ProfessionalSchedulePage() {
       }));
       setLoading(false);
     });
-  }, [displayList, serviceCache, user, clientCache, professional, professionalId]);
-
-  const timeList: string[] = [];
+  }, []);
 
   const loadWeek = async () => {
     setLoading(true);
@@ -271,7 +269,7 @@ export function ProfessionalSchedulePage() {
                           onClick: () => (isEqual(selectedBlock, currentBlock) ? setSelectedBlock(null) : setSelectedBlock(currentBlock)),
                           leftButton: {
                             title: week[weekIndex],
-                            subtitle: `${longTimeArray[firstIndex]} - ${longTimeArray[lastIndex]}`,
+                            subtitle: `${fullTimeArray[firstIndex]} - ${fullTimeArray[lastIndex]}`,
                           },
                         };
                       })
@@ -382,7 +380,7 @@ export function ProfessionalSchedulePage() {
               title={formattedDate(selectedDay)}
               buttonTitle={"Selecionar Tudo"}
               onClick={() => {
-                const allTimes = longTimeArray
+                const allTimes = fullTimeArray
                   .map((_, index) => {
                     const dayShift = professional.getShift()[selectedDay.getDay()];
                     const startHours = professional.getStartHours()[selectedDay.getDay()];
@@ -407,7 +405,7 @@ export function ProfessionalSchedulePage() {
               }}
             />
             <DualList
-              items={longTimeArray
+              items={fullTimeArray
                 .map((time, index) => {
                   const dayShift = professional.getShift()[selectedDay.getDay()];
                   const startHours = professional.getStartHours()[selectedDay.getDay()];
@@ -447,7 +445,6 @@ export function ProfessionalSchedulePage() {
                     index: index,
                   };
                   const selected = selectedTimeList.find((time) => currentTime.day === time.day && currentTime.index === time.index) !== undefined;
-
                   return {
                     leftButton: {
                       title: weekDay,
@@ -613,7 +610,7 @@ export function ProfessionalSchedulePage() {
                 return {
                   leftButton: {
                     title: weekDay,
-                    subtitle: timeList[index + startIndex],
+                    subtitle: longTimeArray[index + startIndex],
                   },
                   title: serviceName,
                   subtitle: clientName,
@@ -807,7 +804,7 @@ export function ProfessionalSchedulePage() {
                 return {
                   leftButton: {
                     title: weekDay,
-                    subtitle: timeList[index],
+                    subtitle: fullTimeArray[index],
                   },
                   title: serviceName,
                   subtitle: clientName,
