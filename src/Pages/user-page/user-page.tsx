@@ -5,7 +5,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../Services/firebase/firebase";
 
 import { SmallHeader, IconList, UserPageLoading, Profile } from "../../Components/component-imports";
-import { addCalendar, calendar, confirm, edit, google, logOutIcon } from "../../_global";
+import { addCalendar, calendar, confirm, defaultUser, edit, google, logOutIcon } from "../../_global";
 import { User } from "../../Classes/classes-imports";
 
 type userButtonType = {
@@ -33,7 +33,7 @@ export function UserPage() {
       }
       setLoading(false);
     });
-  }, [user]);
+  }, []);
 
   const logIn = async () => {
     setLoading(true);
@@ -109,7 +109,7 @@ export function UserPage() {
     <div className='tab'>
       <SmallHeader title={hasAccount ? user.getName() : "Página do Usuário"} onClickReturn={() => navigate(-1)} />
       <Profile
-        image={user.getPhoto()}
+        image={user.getPhoto() || defaultUser}
         name={user.getName()}
         number={user.getNumber()}
         mail={user.getEmail()}
