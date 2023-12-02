@@ -1,4 +1,5 @@
 import { User } from "../../../Classes/classes-imports";
+import { defaultUser } from "../../../_global";
 import { HomeHeaderLoading } from "../../loading/home-header-loading/home-header-loading";
 import "./home-header.css";
 import { useState, useEffect } from "react";
@@ -43,7 +44,7 @@ export function HomeHeader({ user, onClickProfile }: HomeHeaderType) {
   } else {
     salutation = "Boa noite";
   }
-  const subtitle = scheduleToday === undefined ? `Você não tem nenhum agendamento hoje,` : `Você tem agendaments hoje,`;
+  const subtitle = scheduleToday === undefined ? `Você não tem nenhum agendamento hoje,` : `Você tem agendamentos hoje,`;
   const subtitle2 = scheduleToday === undefined ? "que tal agendar alguma coisa?" : "verifique sua agenda";
 
   return loading ? (
@@ -55,7 +56,7 @@ export function HomeHeader({ user, onClickProfile }: HomeHeaderType) {
       </p>
       <p className='hh-subtitle'>{subtitle}</p>
       <p className='hh-subtitle'>{subtitle2}</p>
-      <img className='hh-profile' src={user.getPhoto()} onClick={onClickProfile} />
+      <img className='hh-profile' src={user.getPhoto() || defaultUser} onClick={onClickProfile} />
     </div>
   );
 }
