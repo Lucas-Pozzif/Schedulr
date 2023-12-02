@@ -75,7 +75,7 @@
 
 .bp-title {
   color: var(--eerieBlack);
-  font-size: 20px;
+  font-size: 18px;
 }
 
 .bp-subtitle {
@@ -90,7 +90,7 @@
   font-size: 18px;
   color: var(--platinum);
   height: 35px;
-  width: 200px;
+  width: 180px;
   display: flex;
   justify-content: center;
   align-items: center;

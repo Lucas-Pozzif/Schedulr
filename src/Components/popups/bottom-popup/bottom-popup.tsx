@@ -8,6 +8,7 @@ type BottomPopupType = {
   subtitle?: string;
   buttonTitle?: string;
   onClick?: () => void;
+  onClickOut?: () => void;
   topText?: string;
   bottomText?: string;
   hide?: boolean;
@@ -21,10 +22,10 @@ type BottomPopupType = {
   }[];
 };
 
-export function BottomPopup({ stage, title, subtitle, buttonTitle, onClick, topText, bottomText, items }: BottomPopupType) {
+export function BottomPopup({ stage, title, subtitle, buttonTitle, onClick, onClickOut, topText, bottomText, items }: BottomPopupType) {
   return (
     <>
-      <div className={`blur ${stage !== 2 ? "hidden" : ""}`} />
+      <div className={`blur ${stage !== 2 ? "hidden" : ""}`} onClick={onClickOut} />
       <div className={`bottom-popup${stage === 0 ? "-hide" : stage === 1 ? "" : "-expand"}`}>
         {stage === 2 ? (
           <div className='bp-top-block'>
