@@ -117,7 +117,7 @@ export function ClientSchedulePage() {
     setDayList(scheduleDays);
 
     execute().then(() => setLoading(false));
-  }, [displayList, professionalCache, serviceCache, user, userId]);
+  }, []);
 
   const loadWeek = async () => {
     setLoading(true);
