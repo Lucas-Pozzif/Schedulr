@@ -45,7 +45,7 @@ export function GroupPage() {
         setLoading(false);
       } else setTab(-1);
     });
-  }, [group, groupId, user]);
+  }, []);
 
   const days: any[][] = [];
 
@@ -72,12 +72,6 @@ export function GroupPage() {
   const timeArray: any[] = [];
   const startHour = Math.floor(group.getStartHours()[selectedWeekDay] / 2);
   const endHour = Math.floor(group.getHours()[selectedWeekDay]?.length / 2);
-
-  const tempTime: string[] = [];
-
-  for (let i = 0; i < 24; i++) {
-    tempTime.push(`${i}:00`, `${i}:10`, `${i}:20`, `${i}:30`, `${i}:40`, `${i}:50`);
-  }
 
   for (let i = startHour; i - startHour < endHour; i++) {
     if (i >= 0) {
@@ -216,6 +210,10 @@ export function GroupPage() {
       case -1:
         return <div></div>;
       case 0: // Home tab
+        const userProfId = group
+          .getProfessionals()
+          .find((professional) => professional.getEmail().toLowerCase() === user.getEmail().toLowerCase())
+          ?.getId();
         return (
           <div className='tab'>
             <GroupBanner banner={group.getBanner()} profile={group.getProfile()} returnButton onClickReturn={() => navigate(-1)} />
@@ -232,14 +230,17 @@ export function GroupPage() {
                   : {
                       icon: calendar,
                       title: "Agenda",
-                      onClick: () => navigate(`/user/schedule/${user.getId()}`),
+                      onClick: () => {
+                        const route = userProfId ? `/professional/schedule/${userProfId}` : `/user/schedule/${user.getId()}`;
+                        navigate(route);
+                      },
                     }
               }
             />
             <p className='gp-location'>{group.getLocation()}</p>
             <Line />
             <LinkList items={buttonList} />
-            <BottomPopup stage={0} />
+            <BottomPopup stage={1} title={"Clique para iniciar"} subtitle={group.getTitle()} buttonTitle={"Iniciar Agendamento"} onClick={() => setTab(1)} />
           </div>
         );
       case 1: // Service tab
@@ -274,7 +275,7 @@ export function GroupPage() {
                   };
                 })}
             />
-            <BottomPopup stage={selectedService ? 1 : 0} title={`${fullDays?.[selectedDay]} - ${days?.[selectedDay]?.[1]}`} subtitle={selectedService?.getName()} buttonTitle={"Escolher Horário"} onClick={() => setTab(2)} />
+            <BottomPopup stage={selectedService ? 1 : 0} title={`${fullDays?.[selectedDay - 1] || ""} - ${days?.[selectedDay]?.[1] || ""}`} subtitle={selectedService?.getName()} buttonTitle={"Escolher Horário"} onClick={() => setTab(2)} />
           </div>
         );
       case 2: // Time tab
@@ -348,6 +349,7 @@ export function GroupPage() {
                 if (confirm) handleSchedule();
                 else setConfirm(true);
               }}
+              onClickOut={() => setConfirm(false)}
               topText='Você confirma o agendamento?'
               bottomText='Você pode desmarcar na sua agenda'
               items={[
