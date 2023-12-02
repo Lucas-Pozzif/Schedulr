@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Group } from "../../../Classes/group/group";
 import { Line } from "../../line/line";
 

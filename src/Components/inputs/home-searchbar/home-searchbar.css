@@ -1,0 +1,30 @@
+.home-searchbar {
+  width: calc(100% - 20px);
+  margin-inline: 10px;
+  border-radius: 20px;
+  background-color: var(--platinum);
+  height: 26px;
+  display: flex;
+  align-items: center;
+  padding-block: 5px;
+  margin-block: 15px;
+}
+
+.hs-search-icon {
+  height: 25px;
+  width: 25px;
+  padding-left: 10px;
+  padding-bottom: 1px;
+}
+
+.hs-input {
+  width: 100%;
+  font-size: 18px;
+  padding-left: 10px;
+}
+
+.hs-filter-icon {
+  height: 20px;
+  width: 20px;
+  padding-inline: 10px;
+}

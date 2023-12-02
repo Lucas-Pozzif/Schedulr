@@ -1,18 +1,33 @@
 .link-button {
-  display: flex;
+  height: 40px;
+  background-color: var(--platinum);
   padding-left: 10px;
-  padding-right: 5px;
-  margin-block: 10px;
-  height: 20px;
-  background-color: #dee2e6;
-  border-radius: 2px;
-  justify-content: space-between;
-  align-items: center;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.link-button-selected {
 }
 
 .lb-title {
-  padding-top: 2px;
-  font-size: 14px;
-  color: #212529;
+  font-size: 16px;
+  color: var(--eerieBlack);
   opacity: 0.8;
+}
+
+.lb-subtitle {
+  font-size: 14px;
+  color: var(--onyx);
+  opacity: 0.8;
+}
+
+.lb-arrow {
+  height: 30px;
+  width: 30px;
+  position: absolute;
+  right: 0;
+  bottom: 5px;
+  rotate: 180deg;
 }

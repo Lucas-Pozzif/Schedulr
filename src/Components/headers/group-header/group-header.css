@@ -1,0 +1,30 @@
+.group-header {
+  background: var(--platinum);
+  padding: 10px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.gh-input-title {
+  font-size: 22px;
+  color: var(--eerieBlack);
+}
+
+.gh-input-subtitle {
+  font-size: 14px;
+  color: var(--eerieBlack);
+  opacity: 0.8;
+}
+
+.gh-title {
+}
+
+.gh-subtitle {
+}
+
+.gh-small-button {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+}

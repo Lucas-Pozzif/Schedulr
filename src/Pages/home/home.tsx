@@ -5,15 +5,34 @@ import { auth } from "../../Services/firebase/firebase";
 import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 
-import { filter, search, sort, userProfile } from "../../_global";
 import { Group, User } from "../../Classes/classes-imports";
-import { LoadingScreen, VerticalLine, GroupList } from "../../Components/component-imports";
+import { GroupList, HomeBanner, HomeHeader, HomePageLoading, HomeSearchBar, ThickLine } from "../../Components/component-imports";
+import { sort } from "../../_global";
 
 export function Home() {
   const [loading, setLoading] = useState(false);
+
   const [user, setUser] = useState(new User());
   const [groups, setGroups] = useState<any[]>([]);
   const [searchText, setSearch] = useState("");
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      onAuthStateChanged(auth, async (client) => {
+        if (client?.uid) {
+          await user.getUser(client.uid);
+        }
+        setLoading(false);
+      });
+      const groupList = await user.getGroups();
+      setGroups(groupList);
+    };
+
+    fetchData();
+  }, []);
 
   const filteredGroups = groups.filter((group: Group) => {
     if (!searchText) {
@@ -23,67 +42,19 @@ export function Home() {
     return group.getTitle().toLowerCase().includes(searchText.toLowerCase());
   });
 
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      onAuthStateChanged(auth, async (client) => {
-        if (client) {
-          await user.getUser(client.uid);
-          setUser(new User(user));
-        }
-      });
-      const groupList = await user.getGroups();
-      setGroups(groupList);
-      setLoading(false);
-    };
-
-    fetchData();
-  }, []);
-
   return loading ? (
-    <LoadingScreen />
+    <HomePageLoading />
   ) : (
-    <div className='home'>
-      <div className='h-header'>
-        <p className='h-title'>Boa Tarde {user.getName()}</p>
-        <p className='h-subtitle'>Verifique sua agenda para ver seus agendamentos</p>
-        <div className='h-searchbar-block'>
-          <img className='h-search-icon' src={search} />
-          <input className='h-search-input' placeholder='Pesquisar' onChange={(e) => setSearch(e.target.value)} />
-          <VerticalLine />
-          <img className='h-filter-icon' src={filter} />
-        </div>
-        <img className='h-user-icon' src={user.getPhoto() || userProfile} onClick={() => navigate("/user")} />
+    <div className='tab'>
+      <HomeHeader user={user} onClickProfile={() => navigate("/user")} />
+      <HomeSearchBar placeholder={"Pesquisar"} value={searchText} onChange={(e) => setSearch(e.target.value)} />
+      <ThickLine />
+      <HomeBanner user={user} />
+      <div className='hp-group-title-block'>
+        <p className='hp-group-title'>Estabelecimentos Próximos</p>
+        <img className='hp-sort-icon' src={sort} />
       </div>
-      <div className='h-banner-block'>
-        <div className='h-banner'>
-          <div className='development-message'>
-            <p>Obrigado por participar da fase inicial de S-Agenda, Toda opinião é valiosa!</p>
-            <p className='dm-signature'>- O desenvolvedor</p>
-          </div>
-          <p
-            className='h-banner-feedback-button'
-            onClick={() => {
-              const subject = encodeURIComponent("Feedback sobre S-agenda");
-              window.location.href = `mailto:lucaspozzif.feedback@gmail.com?subject=${subject}`;
-            }}
-          >
-            Enviar Feedback
-          </p>
-          <p className='h-banner-schedule-button' onClick={() => navigate(`/user`)}>
-            Fazer Login{" "}
-          </p>
-          <p className={"h-banner-schedule-button" + (user.getId() === "" ? " hidden" : "")} onClick={() => navigate(`/user/schedule/${user.getId()}`)}>
-            Ver Agenda
-          </p>
-        </div>
-        <div className='hb-bottom'>
-          <p className='hb-list-title'>Estabelecimentos Próximos</p>
-          <img className='hb-sort-icon' src={sort} />
-        </div>
-      </div>
+      <ThickLine />
       <GroupList
         onClick={() => {
           if (user.getId() == "") navigate("/user");

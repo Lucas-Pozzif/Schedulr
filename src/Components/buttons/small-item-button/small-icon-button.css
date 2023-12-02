@@ -1,0 +1,33 @@
+.small-icon-button,
+.small-icon-button-hide,
+.small-icon-button-select {
+  background: var(--frenchGray);
+  height: 20px;
+  min-width: 100px;
+  padding-inline: 2px;
+  border-radius: 2px;
+  box-sizing: border-box;
+  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.25);
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+  align-items: center;
+  transition: opacity 0.5s ease;
+}
+.small-icon-button-hide {
+  opacity: 0;
+  pointer-events: none;
+}
+.small-icon-button-select {
+  background: var(--frenchGray2);
+}
+
+.sib-icon {
+  height: 16px;
+  width: 16px;
+}
+.sib-title {
+  color: var(--eerieBlack);
+  opacity: 0.8;
+  font-size: 14px;
+}

@@ -8,7 +8,8 @@ import { auth } from "../../../Services/firebase/firebase";
 import { fullTimeArray } from "../../../_global";
 import { Professional, Service, User } from "../../../Classes/classes-imports";
 import { capitalize, findRepetitionBlocks, formattedDate, parseDate } from "../../../Function/functions-imports";
-import { BottomButton, DoubleItemButton, Header, LoadingScreen, SubHeader } from "../../../Components/component-imports";
+import { BottomButton, GenericHeader, SchedulePageLoading, SubHeader } from "../../../Components/component-imports";
+import { DualButton } from "../../../Components/buttons/dual-button/dual-button";
 
 var isEqual = require("lodash.isequal");
 
@@ -102,7 +103,7 @@ export function ClientSchedulePage() {
       await fetchUser();
       await fetchScheduleForDays(scheduleDays);
       await fetchServicesAndProfessionals();
-      Object.entries(user.getSchedule()).map(([date, _]) => {
+      Object.entries(user.getSchedule()).forEach(([date, _]) => {
         const formattedDay = formattedDate(parseDate(date));
         setDisplayList([...displayList, formattedDay]);
       });
@@ -218,17 +219,17 @@ export function ClientSchedulePage() {
   };
 
   return loading ? (
-    <LoadingScreen />
+    <SchedulePageLoading />
   ) : (
     <div className='schedule-page'>
-      <Header title={"Minha Agenda"} icon={user.getPhoto()} onClickReturn={() => navigate(-1)} onClickIcon={() => navigate("/user")} />
-      {Object.entries(user.getSchedule()).map(([date, schedule]) => {
+      <GenericHeader title={"Minha Agenda"} icon={user.getPhoto()} onClickReturn={() => navigate(-1)} onClickIcon={() => navigate("/user")} />
+      {Object.entries(user.getSchedule()).map(([date, schedule], index) => {
         const formattedDay = formattedDate(parseDate(date));
         const hiddenMessage = displayList.includes(formattedDay) ? "Ocultar" : "Exibir";
         const weekDay = capitalize(parseDate(date).toLocaleDateString("pt-BR", { weekday: "long" }));
 
         return (
-          <div className='sp-day-block'>
+          <div key={index} className='sp-day-block'>
             <SubHeader
               title={formattedDay}
               buttonTitle={hiddenMessage}
@@ -238,7 +239,7 @@ export function ClientSchedulePage() {
               }}
             />
             <div className='sp-list'>
-              {findRepetitionBlocks(schedule).map((block) => {
+              {findRepetitionBlocks(schedule).map((block, index) => {
                 if (!displayList.includes(formattedDay)) return null;
                 const firstIndex = block[0];
                 const lastIndex = block[1];
@@ -255,14 +256,15 @@ export function ClientSchedulePage() {
                 };
 
                 return (
-                  <DoubleItemButton
-                    leftButtonTitle={{
-                      title1: weekDay,
-                      title2: `${fullTimeArray[firstIndex]} - ${fullTimeArray[lastIndex]}`,
+                  <DualButton
+                    key={index}
+                    leftButton={{
+                      title: weekDay,
+                      subtitle: `${fullTimeArray[firstIndex]} - ${fullTimeArray[lastIndex]}`,
                     }}
                     title={serviceName}
                     subtitle={profName}
-                    selected={isEqual(selectedBlock, currentBlock)}
+                    select={isEqual(selectedBlock, currentBlock)}
                     onClick={() => (isEqual(selectedBlock, currentBlock) ? setSelectedBlock(null) : setSelectedBlock(currentBlock))}
                   />
                 );
@@ -272,7 +274,7 @@ export function ClientSchedulePage() {
         );
       })}
       <SubHeader title={formattedDate(dayList[dayList.length - 1])} buttonTitle={"Carregar próxima semana"} onClick={loadWeek} />
-      <BottomButton hidden={selectedBlock === null} title={"Desmarcar"} onClick={async () => await unSchedule()} />
+      <BottomButton hide={selectedBlock === null} title={"Desmarcar"} onClick={async () => await unSchedule()} />
     </div>
   );
 }

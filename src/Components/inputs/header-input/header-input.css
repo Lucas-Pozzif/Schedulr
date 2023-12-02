@@ -12,11 +12,11 @@
   display: flex;
 }
 
-.hi-input-block {
+.hi-text-block {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding-left: 10px;
+  padding-left: 40px;
 }
 
 .hi-input {
