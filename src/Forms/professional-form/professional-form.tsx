@@ -111,6 +111,7 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
       const updatedProfessionals = groupForm.getProfessionals().filter((prof) => prof.getId() !== professionalForm.getId());
       groupForm.setProfessionalsIds(updatedIds);
       groupForm.setProfessionals(updatedProfessionals);
+      await groupForm.setGroup();
     }
     onClickReturn();
     setLoading(false);
@@ -237,11 +238,11 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
               items={timeArray
                 .filter((_, index) => index >= 12)
                 .map((timeValue, index) => {
-                  const selected = professionalForm.getShift()[selectedDay]?.[index - professionalForm.getStartHours()[selectedDay]];
+                  const selected = professionalForm.getShift()[selectedDay]?.[index + 12 - professionalForm.getStartHours()[selectedDay]];
                   return {
                     title: timeValue,
                     select: selected,
-                    onClick: () => professionalForm.updateHourList(selectedDay, index, setProfessionalForm),
+                    onClick: () => professionalForm.updateHourList(selectedDay, index + 12, setProfessionalForm),
                   };
                 })}
             />
