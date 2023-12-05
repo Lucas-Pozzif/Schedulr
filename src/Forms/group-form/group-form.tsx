@@ -38,7 +38,6 @@ export function GroupForm({ group, onClickReturn }: GroupFormType) {
 
   useEffect(() => {
     setLoading(true);
-    const adminsArray = groupForm.getAdmins();
 
     onAuthStateChanged(auth, async (client) => {
       if (client?.uid) {
@@ -47,7 +46,7 @@ export function GroupForm({ group, onClickReturn }: GroupFormType) {
       if (groupId === undefined && !groupForm.getId()) {
         // New Group
         groupForm.setOwner(user.getId());
-        if (adminsArray.includes(user.getId())) groupForm.setAdmins([...adminsArray, user.getId()]);
+        if (groupForm.getAdmins().includes(user.getId())) groupForm.setAdmins([...groupForm.getAdmins(), user.getId()]);
       } else {
         const isGroupFromParams = groupId !== undefined;
         const isGroupFromFunction = group?.getId() !== "";
@@ -58,8 +57,7 @@ export function GroupForm({ group, onClickReturn }: GroupFormType) {
           await groupForm.updateServices();
           await groupForm.updateProfessionals();
           setGroupForm(new Group(groupForm));
-
-          if (!adminsArray.includes(user.getId()) && groupForm.getOwner() !== user.getId()) {
+          if (!groupForm.getAdmins().includes(user.getId()) && groupForm.getOwner() !== user.getId()) {
             setTab(-1);
           }
         }
@@ -162,11 +160,11 @@ export function GroupForm({ group, onClickReturn }: GroupFormType) {
               items={timeArray
                 .filter((_, index) => index >= 12)
                 .map((timeValue, index) => {
-                  const selected = groupForm.getHours()[selectedDay]?.[index - groupForm.getStartHours()[selectedDay]];
+                  const selected = groupForm.getHours()[selectedDay]?.[index + 12 - groupForm.getStartHours()[selectedDay]];
                   return {
                     title: timeValue,
                     select: selected,
-                    onClick: () => groupForm.updateHourList(selectedDay, index, setGroupForm),
+                    onClick: () => groupForm.updateHourList(selectedDay, index + 12, setGroupForm),
                   };
                 })}
             />
@@ -272,9 +270,9 @@ export function GroupFsorm({ group, onClickReturn }: GroupFormType) {
       await user.getUser(client.uid);
       setUser(new User(user));
       groupForm.setOwner(user.getId());
-      const adminsArray = groupForm.getAdmins();
-      if (!adminsArray.includes(user.getId())) {
-        groupForm.setAdmins([...adminsArray, user.getId()]);
+      const groupForm.getAdmins() = groupForm.getAdmins();
+      if (!groupForm.getAdmins().includes(user.getId())) {
+        groupForm.setAdmins([...groupForm.getAdmins(), user.getId()]);
       }
     });
     setLoading(false);

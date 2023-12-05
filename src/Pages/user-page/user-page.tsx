@@ -88,6 +88,11 @@ export function UserPage() {
       icon: google,
       onClick: async () => await logIn(),
     },
+    {
+      title: "Entrar com Telefone",
+      icon: google,
+      onClick: async () => await logIn(),
+    },
   ];
 
   const listButtons: userButtonType[] = [
