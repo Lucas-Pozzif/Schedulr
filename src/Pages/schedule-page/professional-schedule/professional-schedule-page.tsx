@@ -239,7 +239,7 @@ export function ProfessionalSchedulePage() {
                     title={formattedDay}
                     buttonTitle={hiddenMessage}
                     onClick={() => {
-                      const updatedList = displayList.includes(date) ? displayList.filter((day) => day !== date) : [...displayList, formattedDay];
+                      const updatedList = displayList.includes(date) ? displayList.filter((day) => day !== date) : [...displayList, date];
                       setDisplayList(updatedList);
                     }}
                   />
@@ -444,7 +444,7 @@ export function ProfessionalSchedulePage() {
                     }),
                     index: index,
                   };
-                  const selected = selectedTimeList.find((time) => currentTime.day === time.day && currentTime.index === time.index) !== undefined;
+                  const selected = selectedTimeList.find((time) => currentTime?.day === time?.day && currentTime?.index === time?.index) !== undefined;
                   return {
                     leftButton: {
                       title: weekDay,
@@ -454,8 +454,8 @@ export function ProfessionalSchedulePage() {
                     subtitle: clientName,
                     select: selected,
                     onClick: () => {
-                      if (selectedTimeList.some((time) => time.day === currentTime.day && time.index === currentTime.index)) {
-                        setSelectedTimeList(selectedTimeList.filter((time) => time.day !== currentTime.day || time.index !== currentTime.index));
+                      if (selectedTimeList.some((time) => time?.day === currentTime?.day && time?.index === currentTime?.index)) {
+                        setSelectedTimeList(selectedTimeList.filter((time) => time?.day !== currentTime?.day || time?.index !== currentTime?.index));
                       } else {
                         setSelectedTimeList([...selectedTimeList, currentTime]);
                       }
@@ -582,7 +582,7 @@ export function ProfessionalSchedulePage() {
             <DualList
               items={serviceList.map((_, index) => {
                 const currentTime = { day: day, index: index + startIndex };
-                const selected = selectedTimeList.find((time) => currentTime.day === time.day && currentTime.index === time.index) !== undefined;
+                const selected = selectedTimeList.find((time) => currentTime?.day === time?.day && currentTime?.index === time?.index) !== undefined;
 
                 const weekDay = week[parseDate(day).getDay()];
                 const schedule = professional.getSchedule()[day];
@@ -616,8 +616,8 @@ export function ProfessionalSchedulePage() {
                   subtitle: clientName,
                   select: selected,
                   onClick: () => {
-                    if (selectedTimeList.some((time) => time.day === currentTime.day && time.index === currentTime.index)) {
-                      setSelectedTimeList(selectedTimeList.filter((time) => time.day !== currentTime.day || time.index !== currentTime.index));
+                    if (selectedTimeList.some((time) => time?.day === currentTime?.day && time?.index === currentTime?.index)) {
+                      setSelectedTimeList(selectedTimeList.filter((time) => time?.day !== currentTime?.day || time?.index !== currentTime?.index));
                     } else {
                       if (editedTime.service !== "" || !editedTime.edited) {
                         setSelectedTimeList([currentTime]);

@@ -29,4 +29,6 @@
 }
 .sp-input {
   margin-inline: 10px;
+  font-size: 18px;
+  padding-block: 10px;
 }

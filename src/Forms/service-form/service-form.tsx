@@ -76,6 +76,7 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
       const updatedServices = groupForm.getServices().filter((serv) => serv.getId() !== serviceForm.getId());
       groupForm.setServicesIds(updatedIds);
       groupForm.setServices(updatedServices);
+      await groupForm.setGroup();
     }
     onClickReturn();
     setLoading(false);
@@ -199,7 +200,7 @@ export function ServiceForm({ user, groupForm, setGroupForm, service = new Servi
                   return {
                     title: professional.getName(),
                     subtitle: professional.getOccupations().join(", "),
-                    selected: profServices.includes(serviceForm.getId()),
+                    select: profServices.includes(serviceForm.getId()),
                     onClick: () => handleProfessionals(profServices, professional),
                   };
                 })}

@@ -49,7 +49,7 @@ export function GroupPage() {
 
   const days: any[][] = [];
 
-  for (let i = 0; i < 9; i++) {
+  for (let i = 0; i < 90; i++) {
     const day = new Date();
     day.setDate(day.getDate() + i);
     days.push([]);
