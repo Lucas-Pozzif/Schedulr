@@ -57,7 +57,7 @@ export function Home() {
       <ThickLine />
       <GroupList
         onClick={() => {
-          if (user.getId() == "") navigate("/user");
+          if (user.getId() == "" || user.getNumber() == "") navigate("/user");
         }}
         groupList={filteredGroups}
       />
