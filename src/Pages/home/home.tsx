@@ -25,10 +25,10 @@ export function Home() {
         if (client?.uid) {
           await user.getUser(client.uid);
         }
+        const groupList = await user.getGroups();
+        setGroups(groupList);
         setLoading(false);
       });
-      const groupList = await user.getGroups();
-      setGroups(groupList);
     };
 
     fetchData();
