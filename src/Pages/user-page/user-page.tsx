@@ -118,7 +118,7 @@ export function UserPage() {
       case 0:
         return (
           <div className='tab'>
-            <SmallHeader title={hasAccount ? user.getName() : "Página do Usuário"} onClickReturn={() => navigate(-1)} />
+            <SmallHeader title={hasAccount ? user.getName() : "Página do Usuário"} onClickReturn={() => navigate("/")} />
             <Profile
               image={user.getPhoto() || defaultUser}
               name={user.getName()}
@@ -137,7 +137,7 @@ export function UserPage() {
       case 1:
         return (
           <div className='tab'>
-            <SmallHeader title={hasAccount ? user.getName() : "Página do Usuário"} onClickReturn={() => navigate(-1)} />
+            <SmallHeader title={hasAccount ? user.getName() : "Página do Usuário"} onClickReturn={() => navigate("/")} />
             <input className='up-input' type='tel' maxLength={20} onChange={(e) => user.updateState(setUser, "number", e.target.value)} value={user.getNumber()} placeholder='Digite o número' />
             <Line />
             <p className='up-input-bottom-text'>Digite o número corretamente, usaremos isso para entrar em contato!</p>
