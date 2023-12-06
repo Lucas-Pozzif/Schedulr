@@ -1,8 +1,11 @@
 {
   "hosting": {
     "public": "build",
-    "site": "sched-agenda",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
     "rewrites": [
       {
         "source": "**",

@@ -279,7 +279,13 @@ export function ProfessionalSchedulePage() {
               );
             })}
             <SubHeader title={formattedDate(dayList[dayList.length - 1])} buttonTitle={"Próxima semana"} onClick={async () => loadWeek()} />
-            <BottomButton hide={selectedBlock === null} title={"Editar"} onClick={() => setTab(2)} />
+            {selectedBlock !== null ? (
+              <DoubleButton
+                hide={[selectedBlock === null, clientCache?.[selectedBlock!.client]?.getNumber() === ""]}
+                title={["Editar", "Whatsapp"]}
+                onClick={[() => setTab(2), () => window.open(`https://wa.me/${clientCache[selectedBlock!.client].getNumber()}`)]}
+              />
+            ) : null}
           </div>
         );
       case 1: // Edit schedule tab

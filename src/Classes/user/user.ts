@@ -304,7 +304,8 @@ export class User {
         this._email = newValue;
         break;
       case "number":
-        this._number = newValue;
+        const cleanedNumber = newValue.replace(/[^\d]/g, "");
+        this._number = cleanedNumber;
         break;
       case "photo":
         this._photo = newValue;
@@ -316,5 +317,11 @@ export class User {
         break;
     }
     setter(new User(this));
+  }
+
+  public isNumberValid() {
+    const cleanedNumber = this._number.replace(/[^\d]/g, "");
+    console.log(cleanedNumber.length);
+    return cleanedNumber.length >= 10 && !isNaN(parseInt(cleanedNumber));
   }
 }
