@@ -305,7 +305,7 @@ export class User {
         break;
       case "number":
         const cleanedNumber = newValue.replace(/[^\d]/g, "");
-        this._number = cleanedNumber;
+        this._number = cleanedNumber.charAt(0) === "0" ? cleanedNumber.substring(1) : cleanedNumber;
         break;
       case "photo":
         this._photo = newValue;
