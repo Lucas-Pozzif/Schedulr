@@ -133,7 +133,7 @@ export function UserPage() {
         return (
           <div className='tab'>
             <SmallHeader title={hasAccount ? user.getName() : "Página do Usuário"} onClickReturn={() => navigate("/")} />
-            <input className='up-input' type='tel' maxLength={20} onChange={(e) => user.updateState(setUser, "number", e.target.value)} value={user.getNumber()} placeholder='Digite o número' />
+            <input className='up-input' type='tel' maxLength={20} onChange={(e) => user.updateState(setUser, "number", e.target.value)} value={user.getNumber()} placeholder='Digite seu telefone' />
             <Line />
             <p className='up-input-bottom-text'>Digite o número corretamente, usaremos isso para entrar em contato!</p>
             <BottomButton
