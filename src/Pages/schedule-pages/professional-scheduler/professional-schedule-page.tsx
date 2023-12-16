@@ -212,6 +212,7 @@ export function ProfessionalSchedulePage() {
     if (changedValues.length === 0) return;
     setLoading(true);
     const updatePromises = changedValues.map(async ({ day, index }) => {
+      console.log(day);
       return await professional.updateSchedule(day, index.toString(), professional.getSchedule()[day][index]);
     });
 
@@ -481,14 +482,14 @@ export function ProfessionalSchedulePage() {
                   };
 
                   selectedTimeList.forEach((time) => {
-                    if (professional.getSchedule()?.[time.day]?.[time.index] === undefined) {
+                    if (professional.getSchedule()?.[time?.day]?.[time?.index] === undefined) {
                       const blockedSchedule = professional.getSchedule();
 
-                      if (!blockedSchedule[time.day]) {
-                        blockedSchedule[time.day] = {};
+                      if (!blockedSchedule[time?.day]) {
+                        blockedSchedule[time?.day] = {};
                       }
 
-                      blockedSchedule[time.day][time.index] = blockedValue;
+                      blockedSchedule[time?.day][time?.index] = blockedValue;
 
                       professional.setSchedule(blockedSchedule);
                       SetProfessional(new Professional(professional));
@@ -675,7 +676,7 @@ export function ProfessionalSchedulePage() {
                 },
                 () => {
                   selectedTimeList.forEach((time) => {
-                    const schedule = professional.getSchedule()[time.day];
+                    const schedule = professional.getSchedule()[time?.day];
                     const scheduleItem = schedule?.[time.index];
 
                     scheduleItem.service = "";
