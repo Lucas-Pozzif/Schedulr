@@ -1,7 +1,7 @@
-import { DocumentData, DocumentSnapshot, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
-import { Schedule } from "../classes-imports";
+import { DocumentData, DocumentSnapshot, deleteDoc, deleteField, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { db, storage } from "../../Services/firebase/firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { Schedule, ScheduleItem, ScheduleList } from "../schedule/schedule";
 
 export class Profile {
   private _id: string;
@@ -14,7 +14,7 @@ export class Profile {
   private _startHours: number[];
   private _hours: boolean[][];
   private _profile: string;
-  private _schedule: Schedule;
+  private _schedule: ScheduleList;
 
   constructor(
     arg?: string | Profile,
@@ -27,7 +27,7 @@ export class Profile {
     startHours: number[] = [-1, -1, -1, -1, -1, -1, -1],
     hours: boolean[][] = [[], [], [], [], [], [], []],
     profile: string = "",
-    schedule: Schedule = {}
+    schedule: ScheduleList = {}
   ) {
     if (typeof arg === "string") {
       // Case: ID provided
@@ -87,7 +87,15 @@ export class Profile {
       isAdmin: this._isAdmin,
       activities: this._activities,
       startHours: this._startHours,
-      hours: this._hours,
+      hours: {
+        0: this._hours[0] || [],
+        1: this._hours[1] || [],
+        2: this._hours[2] || [],
+        3: this._hours[3] || [],
+        4: this._hours[4] || [],
+        5: this._hours[5] || [],
+        6: this._hours[6] || [],
+      },
     };
   }
 
@@ -108,18 +116,47 @@ export class Profile {
     this._profile = await getDownloadURL(profileRef);
   }
 
+  public async getScheduleDay(date: Date) {
+    if (this._id === "") return console.error("not downloading schedule, no id was found!");
+
+    const month = date.toLocaleDateString("pt-BR", { month: "2-digit", year: "2-digit" }).split("/").join("-");
+    const day = date.toLocaleDateString("pt-BR", { day: "2-digit" });
+
+    const dayRef = doc(db, "schedules", this._id, month, day);
+    const daySnap = await getDoc(dayRef);
+
+    this._schedule[`${day}-${month}`] = daySnap.data() || {};
+  }
+
   // Upload to database
 
   public async addProfile() {
     this._id = await this.updateActivityId();
     const actRef = doc(db, "profiles", this._groupId);
-    const schedRef = doc(db, "schedule", this._id);
+    const schedRef = doc(db, "schedules", this._id);
 
     await updateDoc(actRef, { [this._id]: this.firestoreFormat() });
-    await setDoc (schedRef, {});
+    await setDoc(schedRef, {});
+  }
+
+  public async addToSchedule(date: Date, index: string, value: ScheduleItem, overwrite?: boolean) {
+    if (this._id === "") return console.error("not updating schedule, no id was found!");
+
+    const month = date.toLocaleDateString("pt-BR", { month: "2-digit", year: "2-digit" }).split("/").join("-");
+    const day = date.toLocaleDateString("pt-BR", { day: "2-digit" });
+
+    const dayRef = doc(db, "schedules", this._id, month, day);
+    const daySnap = await getDoc(dayRef);
+
+    if (!daySnap.data()) return await setDoc(dayRef, { [index]: value });
+    if (daySnap.data()?.[index] !== undefined && overwrite !== true) {
+      console.log("there is a value already");
+      return false;
+    } else await updateDoc(dayRef, { [index]: value });
   }
 
   // Update the database
+
   private async updateActivityId() {
     const configRef = doc(db, "config", "ids");
     const configSnap = await getDoc(configRef);
@@ -153,8 +190,28 @@ export class Profile {
 
   // Remove from the database
 
+  public async deleteProfessional() {
+    const schedRef = doc(db, "schedules", this._id);
+    const profRef = doc(db, "profiles", this._groupId);
+
+    await deleteDoc(schedRef);
+    await updateDoc(profRef, { [this._id]: deleteField() });
+  }
+
+  public async deleteScheduleDay(date: Date, index: string) {
+    if (this._id === "") return console.error("not deleting schedule, no id was found!");
+
+    const month = date.toLocaleDateString("pt-BR", { month: "2-digit", year: "2-digit" }).split("/").join("-");
+    const day = date.toLocaleDateString("pt-BR", { day: "2-digit" });
+
+    const dayRef = doc(db, "schedules", this._id, month, day);
+    const daySnap = await getDoc(dayRef);
+
+    if (!daySnap.data()) return;
+    await updateDoc(dayRef, { [index]: deleteField() });
+  }
+
   /**
    * Gets the schedule day of this profile, it will grab the entire day
    */
-  public async getSchedule(day: Date) {}
 }
