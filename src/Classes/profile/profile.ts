@@ -1,7 +1,7 @@
-import { DocumentData, DocumentSnapshot } from "firebase/firestore";
+import { DocumentData, DocumentSnapshot, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { Schedule } from "../classes-imports";
-import { storage } from "../../Services/firebase/firebase";
-import { getDownloadURL, ref } from "firebase/storage";
+import { db, storage } from "../../Services/firebase/firebase";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 export class Profile {
   private _id: string;
@@ -71,23 +71,34 @@ export class Profile {
       this._schedule = schedule;
     }
   }
+  // Getter
+
+  public get(attribute: "id" | "groupId" | "name" | "occupations" | "number" | "isAdmin" | "activities" | "startHours" | "hours" | "profile" | "schedule") {
+    return (this as any)[`_${attribute}`];
+  }
 
   // Database comunication
 
-  public fillProfile(profSnap: DocumentSnapshot<DocumentData, DocumentData>) {
-    if (!profSnap.data()) console.error("no data was found, the id is incorrect or this profile was not created yet");
-    else {
-      const profData = profSnap.data();
+  private firestoreFormat() {
+    return {
+      name: this._name,
+      occupations: this._occupations,
+      number: this._number,
+      isAdmin: this._isAdmin,
+      activities: this._activities,
+      startHours: this._startHours,
+      hours: this._hours,
+    };
+  }
 
-      this._id = profSnap.id;
-      this._name = profData?.name || "";
-      this._occupations = profData?.occupations || [];
-      this._number = profData?.number || "";
-      this._isAdmin = profData?.isAdmin || false;
-      this._activities = profData?.activities || [];
-      this._hours = profData?.hours || [profData?.hours[0] || [], profData?.hours[1] || [], profData?.hours[2] || [], profData?.hours[3] || [], profData?.hours[4] || [], profData?.hours[5] || [], profData?.hours[6] || []];
-      this._startHours = profData?.startHours || [-1, -1, -1, -1, -1, -1, -1];
-    }
+  public fillProfile(value: any) {
+    this._name = value.name;
+    this._occupations = value.occupations;
+    this._number = value.number;
+    this._isAdmin = value.isAdmin;
+    this._activities = value.activities;
+    this._startHours = value.startHours;
+    this._hours = value.hours;
   }
 
   // Download from database
@@ -99,12 +110,48 @@ export class Profile {
 
   // Upload to database
 
-  public async addProfile() {}
+  public async addProfile() {
+    this._id = await this.updateActivityId();
+    const actRef = doc(db, "profiles", this._groupId);
+    const schedRef = doc(db, "schedule", this._id);
+
+    await updateDoc(actRef, { [this._id]: this.firestoreFormat() });
+    await setDoc (schedRef, {});
+  }
 
   // Update the database
+  private async updateActivityId() {
+    const configRef = doc(db, "config", "ids");
+    const configSnap = await getDoc(configRef);
+    if (!configSnap.data()) return console.error("config collection not found");
+
+    var config = configSnap.data();
+    config!.profile++;
+    await updateDoc(configRef, { profile: config!.profile });
+
+    return config!.profile.toString();
+  }
+
+  public async updateDatabase() {
+    if (this._id === "") return console.error("not updating database, no id was found!");
+    const profRef = doc(db, "profiles", this._groupId);
+
+    await updateDoc(profRef, { [this._id]: this.firestoreFormat() });
+  }
+
+  public async updateImage() {
+    const profileRef = ref(storage, `groups/${this._groupId}/profiles/${this._id}/profile`);
+    const bannerResponse = await fetch(this._profile);
+
+    await uploadBytes(profileRef, await bannerResponse.blob());
+  }
+
+  public updateValue(attribute: "name" | "occupations" | "number" | "isAdmin" | "activities" | "startHours" | "hours" | "profile", newValue: any, setter?: React.Dispatch<React.SetStateAction<Profile>>) {
+    (this as any)[`_${attribute}`] = newValue;
+    if (setter) setter(new Profile(this));
+  }
 
   // Remove from the database
-
 
   /**
    * Gets the schedule day of this profile, it will grab the entire day
