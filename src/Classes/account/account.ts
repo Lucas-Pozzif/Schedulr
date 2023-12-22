@@ -8,10 +8,10 @@ export class Account {
   private _email: string;
   private _number: string;
   private _profile: string;
-  private _schedule: Schedule;
+  private _schedule: ScheduleList;
   private _groups: string[]; //Groups where you are the owner or a admin
 
-  constructor(arg?: string | Account, name: string = "", email: string = "", number: string = "", profile: string = "", schedule: Schedule = {}, groups: string[] = []) {
+  constructor(arg?: string | Account, name: string = "", email: string = "", number: string = "", profile: string = "", schedule: ScheduleList = {}, groups: string[] = []) {
     if (arg instanceof Account) {
       const { _id, _name, _email, _number, _profile, _schedule, _groups } = arg;
 
@@ -59,6 +59,7 @@ export class Account {
   }
 
   // Download from database
+
   public async getAccount(id?: string) {
     if (id) this._id = id;
     if (this._id === "") console.error("error on getUser: no id was found");
@@ -67,6 +68,18 @@ export class Account {
       const accSnap = await getDoc(accRef);
       this.fillAccount(accSnap);
     }
+  }
+
+  public async getScheduleDay(date: Date) {
+    if (this._id === "") return console.error("not downloading schedule, no id was found!");
+
+    const month = date.toLocaleDateString("pt-BR", { month: "2-digit", year: "2-digit" }).split("/").join("-");
+    const day = date.toLocaleDateString("pt-BR", { day: "2-digit" });
+
+    const dayRef = doc(db, "schedules", this._id, month, day);
+    const daySnap = await getDoc(dayRef);
+
+    this._schedule[`${day}-${month}`] = daySnap.data() || {};
   }
 
   // Upload to database
@@ -79,6 +92,22 @@ export class Account {
     await setDoc(schedRef, {});
   }
 
+  public async addToSchedule(date: Date, index: string, value: ScheduleItem, overwrite?: boolean) {
+    if (this._id === "") return console.error("not updating schedule, no id was found!");
+
+    const month = date.toLocaleDateString("pt-BR", { month: "2-digit", year: "2-digit" }).split("/").join("-");
+    const day = date.toLocaleDateString("pt-BR", { day: "2-digit" });
+
+    const dayRef = doc(db, "schedules", this._id, month, day);
+    const daySnap = await getDoc(dayRef);
+
+    if (!daySnap.data()) return await setDoc(dayRef, { [index]: value });
+    if (daySnap.data()?.[index] !== undefined && overwrite !== true) {
+      console.log("there is a value already");
+      return false;
+    } else await updateDoc(dayRef, { [index]: value });
+  }
+
   // Update the database
   public async updateDatabase(attribute: "name" | "email" | "number" | "profile" | "groups") {
     if (this._id === "") return console.error("not updating database, no id was found!");
@@ -87,14 +116,27 @@ export class Account {
     await updateDoc(accRef, { [attribute]: (this as any)[`_${attribute}`] });
   }
 
-  public updateValue(attribute: "name" | "email" | "number" | "profile" | "groups", newValue: any, update?: boolean, setter?: React.Dispatch<React.SetStateAction<Account>>) {
+  public async updateValue(attribute: "name" | "email" | "number" | "profile" | "groups", newValue: any, update?: boolean, setter?: React.Dispatch<React.SetStateAction<Account>>) {
     (this as any)[`_${attribute}`] = newValue;
 
-    if (update) this.updateDatabase(attribute);
+    if (update) await this.updateDatabase(attribute);
     if (setter) setter(new Account(this));
   }
 
   // Remove from database
+
+  public async deleteScheduleDay(date: Date, index: string) {
+    if (this._id === "") return console.error("not deleting schedule, no id was found!");
+
+    const month = date.toLocaleDateString("pt-BR", { month: "2-digit", year: "2-digit" }).split("/").join("-");
+    const day = date.toLocaleDateString("pt-BR", { day: "2-digit" });
+
+    const dayRef = doc(db, "schedules", this._id, month, day);
+    const daySnap = await getDoc(dayRef);
+
+    if (!daySnap.data()) return;
+    await updateDoc(dayRef, { [index]: deleteField() });
+  }
 
   // Authentication
 
