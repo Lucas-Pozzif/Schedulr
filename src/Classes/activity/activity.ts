@@ -7,7 +7,7 @@ export class Activity {
   private _name: string;
   private _duration: boolean[];
 
-  constructor(arg?: string | Activity, name: string = "", groupId: string = "", duration: boolean[] = [false]) {
+  constructor(arg?: string | Activity, groupId: string = "", name: string = "", duration: boolean[] = [false]) {
     if (typeof arg === "string") {
       this._id = arg;
       this._groupId = groupId;
@@ -26,6 +26,11 @@ export class Activity {
       this._duration = duration;
     }
   }
+  // Getter
+
+  public get(attribute: "id" | "groupId" | "name" | "duration") {
+    return (this as any)[`_${attribute}`];
+  }
 
   // Database comunication
 
@@ -36,11 +41,9 @@ export class Activity {
     };
   }
 
-  private fillActivities(actSnap: DocumentSnapshot<DocumentData, DocumentData>) {
-    if (!actSnap.data()) {
-      console.error("no data was found, the id is incorrect or this group was not created yet");
-    } else {
-    }
+  public fillActivities(value: any) {
+    this._name = value.name;
+    this._duration = value.duration;
   }
 
   // Download from database
@@ -69,7 +72,18 @@ export class Activity {
 
   // Remove from database
 
-  
+  public async updateDatabase() {
+    if (this._id === "") return console.error("not updating database, no id was found!");
+    const actRef = doc(db, "activities", this._groupId);
+
+    await updateDoc(actRef, { [this._id]: this.firestoreFormat() });
+  }
+
+  public updateValue(attribute: "name" | "duration", newValue: any, setter?: React.Dispatch<React.SetStateAction<Activity>>) {
+    (this as any)[`_${attribute}`] = newValue;
+
+    if (setter) setter(new Activity(this));
+  }
 
   // Unrelated to database
 }
