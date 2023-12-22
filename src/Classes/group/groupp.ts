@@ -90,12 +90,13 @@ export class Group {
     }
   }
 
+  // Getter
+  public get(attribute: "id" | "name" | "type" | "pricing" | "ratings" | "location" | "startHours" | "hours" | "activities" | "profiles" | "owner" | "admins" | "images") {
+    return (this as any)[`_${attribute}`];
+  }
+
   // Database comunication
 
-  /**
-   * Converts the group to the firestore format
-   * it returns the group and lightGroup formats
-   */
   private firestoreFormat() {
     return {
       group: {
@@ -117,9 +118,6 @@ export class Group {
     };
   }
 
-  /**
-   * Given a snapshot from the group or light group storage it will fill the class attributes from that
-   */
   private fillGroup(groupSnap: DocumentSnapshot<DocumentData, DocumentData>) {
     if (!groupSnap.data()) {
       console.error("no data was found, the id is incorrect or this group was not created yet");
@@ -140,11 +138,6 @@ export class Group {
 
   // Download from database
 
-  /**
-   * Grabs the group from the database
-   * @param id if given a id, it will use this id, if not, it will use the id that is already on the group
-   * if there is not a id, it will return a error message
-   */
   public async getGroup(id?: string) {
     if (id) this._id = id;
     if (this._id === "") console.error("error on getGroup: no id was found");
@@ -155,9 +148,6 @@ export class Group {
     }
   }
 
-  /**
-   * Grabs the images of the group from the database
-   */
   public async getImages() {
     const profileRef = ref(storage, `groups/${this._id}/profile`);
     const bannerRef = ref(storage, `groups/${this._id}/banner`);
@@ -165,14 +155,43 @@ export class Group {
     this._images._profile = await getDownloadURL(profileRef);
   }
 
-  /**
-   * Grabs the reviews from that group
-   */
   public async getReviews() {}
 
-  public async getActivities() {}
+  public async getActivities() {
+    if (this._id === "") return console.error("error on getActivities: no id was found");
+    const actRef = doc(db, "activities", this._id);
+    const actSnap = await getDoc(actRef);
+    if (!actSnap.exists()) return;
 
-  public async getProfiles() {}
+    this._activities = Object.entries(actSnap.data()).map(([key, value]) => {
+      const activity = new Activity(key, this._id);
+      activity.fillActivities(value);
+
+      return {
+        _id: key,
+        _activity: activity,
+      };
+    });
+  }
+
+  public async getProfiles() {
+    if (this._id === "") console.error("error on getProfiles: no id was found");
+    else {
+      const profRef = doc(db, "profiles", this._id);
+      const profSnap = await getDoc(profRef);
+      if (!profSnap.exists()) return;
+
+      this._profiles = Object.entries(profSnap.data()).map(([key, value]) => {
+        const profile = new Profile(key, this._id);
+        profile.fillProfile(value);
+
+        return {
+          _id: key,
+          _profile: profile,
+        };
+      });
+    }
+  }
 
   // Upload to database
 
@@ -185,8 +204,22 @@ export class Group {
 
     await setDoc(groupRef, this.firestoreFormat().group);
     await setDoc(lightGroupRef, this.firestoreFormat().lightGroup);
-    await setDoc(profRef, {});
-    await setDoc(actRef, {});
+    await setDoc(
+      profRef,
+      this._profiles.map(async (value) => {
+        const profile = value._profile;
+        await profile.addProfile();
+        return profile.get("id");
+      })
+    );
+    await setDoc(
+      actRef,
+      this._activities.map(async (value) => {
+        const activity = value._activity;
+        await activity.addActivity();
+        return activity.get("id");
+      })
+    );
 
     await this.updateDatabase("banner");
     await this.updateDatabase("profile");
@@ -206,25 +239,9 @@ export class Group {
     return config!.group.toString();
   }
 
-  /**
-   * Update locally the value of a given attribute, to update it on the database, set the parameter update as true
-   */
-  public async updateState(
-    setter: React.Dispatch<React.SetStateAction<Group>>,
-    attribute: "name" | "type" | "pricing" | "location" | "startHours" | "hours" | "activities" | "profiles" | "owner" | "admins" | "banner" | "profile",
-    newValue: any,
-    update?: boolean
-  ) {
-    if (attribute === "banner") this._images._banner = newValue;
-    else if (attribute === "profile") this._images._profile = newValue;
-    else (this as any)[`_${attribute}`] = newValue;
+  private async updateDatabase(attribute: "name" | "type" | "pricing" | "location" | "startHours" | "hours" | "activities" | "profiles" | "owner" | "admins" | "banner" | "profile") {
+    if (this._id === "") return console.error("not updating database, no id was found!");
 
-    if (update) this.updateDatabase(attribute);
-
-    setter(new Group(this));
-  }
-
-  public async updateDatabase(attribute: "name" | "type" | "pricing" | "location" | "startHours" | "hours" | "activities" | "profiles" | "owner" | "admins" | "banner" | "profile") {
     const groupRef = doc(db, "groups", this._id);
     const lightGroupRef = doc(db, "light_groups", this._id);
     const profileRef = ref(storage, `groups/${this._id}/profile`);
@@ -252,6 +269,19 @@ export class Group {
     }
   }
 
+  public async updateValue(
+    attribute: "name" | "type" | "pricing" | "location" | "startHours" | "hours" | "activities" | "profiles" | "owner" | "admins" | "banner" | "profile",
+    newValue: any,
+    update?: boolean,
+    setter?: React.Dispatch<React.SetStateAction<Group>>
+  ) {
+    if (attribute === "banner" || attribute === "profile") this._images[`_${attribute}`] = newValue;
+    else (this as any)[`_${attribute}`] = newValue;
+
+    if (update) this.updateDatabase(attribute);
+    if (setter) setter(new Group(this));
+  }
+
   // Remove from database
 
   public async deleteGroup() {
@@ -268,6 +298,8 @@ export class Group {
     await deleteDoc(profRef);
     await deleteDoc(actRef);
     await deleteDoc(ratRef);
+
+    //schedules not being deleted, needs fix
   }
 
   // Class methods unrelated to the database
