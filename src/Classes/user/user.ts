@@ -1,7 +1,7 @@
 import { GoogleAuthProvider, UserCredential, signInWithPopup, signInWithRedirect, signOut } from "firebase/auth";
 import { DocumentSnapshot, collection, deleteDoc, doc, getDoc, getDocs, query, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
 import { Group } from "../group/group";
-import { Schedule, ScheduleItem } from "../schedule/schedule";
+import { LegacySchedItem, LegacySchedList, Schedule, ScheduleItem } from "../schedule/schedule";
 import { auth, db } from "../../Services/firebase/firebase";
 
 interface UserInterface {
@@ -18,9 +18,9 @@ export class User {
   private _email: string;
   private _number: string;
   private _photo: string;
-  private _schedule: Schedule | any;
+  private _schedule: LegacySchedList | any;
 
-  constructor(arg?: string | User, name: string = "", email: string = "", number: string = "", photo: string = "", schedule: Schedule = {}) {
+  constructor(arg?: string | User, name: string = "", email: string = "", number: string = "", photo: string = "", schedule: LegacySchedList = {}) {
     if (typeof arg === "string") {
       // Case: Id provided, assuming default values for other properties
       this._id = arg;
@@ -70,7 +70,7 @@ export class User {
     return this._photo;
   }
 
-  getSchedule(): Schedule {
+  getSchedule(): LegacySchedList {
     return this._schedule;
   }
 
@@ -95,7 +95,7 @@ export class User {
     this._photo = photo;
   }
 
-  setSchedule(schedule: Schedule) {
+  setSchedule(schedule: LegacySchedList) {
     this._schedule = schedule;
   }
 
@@ -226,7 +226,7 @@ export class User {
 
   // Schedule methods
 
-  public async updateSchedule(day: string, index: string, value: ScheduleItem) {
+  public async updateSchedule(day: string, index: string, value: LegacySchedItem) {
     const [dayPart, monthPart, yearPart] = day.split("/");
     const date = `${monthPart}-${yearPart.slice(-2)}`;
     const formattedDay = dayPart;
