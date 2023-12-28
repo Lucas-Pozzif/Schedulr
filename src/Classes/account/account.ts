@@ -1,6 +1,8 @@
-import { DocumentData, DocumentSnapshot, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { DocumentData, DocumentSnapshot, deleteField, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { Schedule } from "../classes-imports";
-import { db } from "../../Services/firebase/firebase";
+import { auth, db } from "../../Services/firebase/firebase";
+import { ScheduleItem, ScheduleList } from "../schedule/schedule";
+import { GoogleAuthProvider, UserCredential, signInAnonymously, signInWithPopup, signOut } from "firebase/auth";
 
 export class Account {
   private _id: string;
@@ -56,6 +58,14 @@ export class Account {
       this._profile = accData?.profile || "";
       this._groups = accData?.groups || [];
     }
+  }
+
+  private fillFromAuth(result: UserCredential) {
+    this._id = result.user.uid;
+    this._name = result.user.displayName || "";
+    this._email = result.user.email || "";
+    this._number = result.user.phoneNumber || "";
+    this._profile = result.user.photoURL || "";
   }
 
   // Download from database
@@ -140,7 +150,39 @@ export class Account {
 
   // Authentication
 
-  public signInWithPhoneNumber(){
-    
+  public async anonymousSignIn() {
+    await signInAnonymously(auth).then((result) => this.fillFromAuth(result));
+
+    const accRef = doc(db, "accounts", this._id);
+    const accSnap = await getDoc(accRef);
+
+    if (!accSnap.exists()) {
+      await this.addAccount();
+    }
+  }
+
+  public async googleSignIn() {
+    const provider = new GoogleAuthProvider();
+    await signInWithPopup(auth, provider).then((result) => this.fillFromAuth(result));
+
+    const accRef = doc(db, "accounts", this._id);
+    const accSnap = await getDoc(accRef);
+
+    if (!accSnap.exists()) {
+      await this.addAccount();
+    } else {
+      await this.getAccount();
+    }
+  }
+
+  public async logout() {
+    signOut(auth);
+  }
+
+  // Quality of life
+
+  public checkNumber() {
+    const cleanedNumber = this._number.replace(/[^\d]/g, "");
+    return cleanedNumber.length >= 10 && !isNaN(parseInt(cleanedNumber));
   }
 }
