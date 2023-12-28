@@ -6,8 +6,8 @@ import { auth } from "../../Services/firebase/firebase";
 
 import { SmallHeader, IconList, UserPageLoading, Profile, BottomButton, Line } from "../../Components/component-imports";
 import { addCalendar, calendar, confirm, defaultUser, edit, google, logOutIcon } from "../../_global";
-import { User } from "../../Classes/classes-imports";
 import { ErrorPage } from "../error-page/error-page";
+import { Account } from "../../Classes/account/account";
 
 type userButtonType = {
   icon: string;
@@ -18,7 +18,7 @@ type userButtonType = {
 
 export function UserPage() {
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState(new User());
+  const [user, setUser] = useState(new Account());
   const [tab, setTab] = useState(0);
 
   const [editing, setEditing] = useState(false);
@@ -30,8 +30,8 @@ export function UserPage() {
     setLoading(true);
     onAuthStateChanged(auth, async (client) => {
       if (client?.uid) {
-        await user.getUser(client.uid);
-        if (!user.getNumber()) setTab(1);
+        await user.getAccount(client.uid);
+        if (!user.get("number")) setTab(1);
         setHasAccount(true);
       }
       setLoading(false);
@@ -40,22 +40,20 @@ export function UserPage() {
 
   const logIn = async () => {
     setLoading(true);
-    await user.loginWithGoogle();
-    if (await user.checkUser()) {
-      await user.getUser(user.getId());
-      if (!user.getNumber()) setTab(1);
-    } else {
-      await user.setUser();
-    }
-    setUser(new User(user));
+
+    await user.googleSignIn();
+    setUser(new Account(user));
+
     setHasAccount(true);
     setLoading(false);
   };
 
   const logOut = async () => {
     setLoading(true);
+
     await user.logout();
-    setUser(new User());
+    setUser(new Account());
+
     setHasAccount(false);
     setTimeout(() => {
       setLoading(false);
@@ -67,7 +65,7 @@ export function UserPage() {
       title: "Agenda",
       icon: calendar,
       hide: !hasAccount,
-      onClick: () => navigate(`/user/schedule/${user.getId()}`),
+      onClick: () => navigate(`/user/schedule/${user.get("id")}`),
     },
     {
       title: editing ? "Salvar" : "Editar",
@@ -76,18 +74,19 @@ export function UserPage() {
       onClick: async () => {
         if (editing) {
           setLoading(true);
-          setEditing(false);
-          const formattedNumber = user.getNumber().startsWith("55") || user.getNumber() == "" ? user.getNumber() : "55" + user.getNumber();
+          const formattedNumber = user.get("number").startsWith("55") || user.get("number") == "" ? user.get("number") : "55" + user.get("number");
 
-          await user.updateUser({ name: user.getName() });
-          await user.updateUser({ number: formattedNumber });
+          await user.updateDatabase("name");
+          await user.updateValue("number", formattedNumber, true);
+
           setLoading(false);
-        } else setEditing(true);
+        }
+        setEditing(!editing);
       },
     },
   ];
 
-  const listButtonsUnlogged: userButtonType[] = [
+  const listAnonButtons: userButtonType[] = [
     {
       title: "Entrar com Google",
       icon: google,
@@ -113,39 +112,39 @@ export function UserPage() {
       case 0:
         return (
           <div className='tab'>
-            <SmallHeader title={hasAccount ? user.getName() : "Página do Usuário"} onClickReturn={() => navigate("/")} />
+            <SmallHeader title={hasAccount ? user.get("name") : "Página do Usuário"} onClickReturn={() => navigate("/")} />
             <Profile
-              image={user.getPhoto() || defaultUser}
-              name={user.getName()}
-              number={user.getNumber()}
-              mail={user.getEmail()}
+              image={user.get("profile") || defaultUser}
+              name={user.get("name")}
+              number={user.get("number")}
+              mail={user.get("email")}
               iconButtons={profileButtons}
               editMode={editing}
               namePlaceholder='Digite seu Nome'
               numberPlaceholder='Digite seu número'
-              onChangeName={(e) => user.updateState(setUser, "name", e.target.value)}
-              onChangeNumber={(e) => user.updateState(setUser, "number", e.target.value)}
+              onChangeName={(e) => user.updateValue("name", e.target.value, false, setUser)}
+              onChangeNumber={(e) => user.updateValue("number", e.target.value, false, setUser)}
             />
-            <IconList items={hasAccount ? listButtons : listButtonsUnlogged} />
+            <IconList items={hasAccount ? listButtons : listAnonButtons} />
           </div>
         );
       case 1:
         return (
           <div className='tab'>
-            <SmallHeader title={hasAccount ? user.getName() : "Página do Usuário"} onClickReturn={() => navigate("/")} />
-            <input className='up-input' type='tel' maxLength={20} onChange={(e) => user.updateState(setUser, "number", e.target.value)} value={user.getNumber()} placeholder='Digite o número' />
+            <SmallHeader title={hasAccount ? user.get("name") : "Página do Usuário"} onClickReturn={() => navigate("/")} />
+            <input className='up-input' type='tel' maxLength={20} onChange={(e) => user.updateValue("number", e.target.value, false, setUser)} value={user.get("number")} placeholder='Digite seu telefone' />
             <Line />
             <p className='up-input-bottom-text'>Digite o número corretamente, usaremos isso para entrar em contato!</p>
             <BottomButton
               title={"Salvar Perfil"}
               onClick={async () => {
                 setLoading(true);
-                const formattedNumber = user.getNumber().startsWith("55") ? user.getNumber() : "55" + user.getNumber();
-                await user.updateUser({ number: formattedNumber });
+                const formattedNumber = user.get("number").startsWith("55") ? user.get("number") : "55" + user.get("number");
+                await user.updateValue("number", formattedNumber, true, setUser);
                 setTab(0);
                 setLoading(false);
               }}
-              hide={!user.isNumberValid()}
+              hide={!user.checkNumber()}
             />
           </div>
         );
