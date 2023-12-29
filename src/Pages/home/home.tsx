@@ -39,7 +39,7 @@ export function Home() {
       return true;
     }
 
-    return group.getTitle().toLowerCase().includes(searchText.toLowerCase());
+    return group.get("name").toLowerCase().includes(searchText.toLowerCase());
   });
 
   return loading ? (
@@ -55,9 +55,7 @@ export function Home() {
         <img className='hp-sort-icon' src={sort} />
       </div>
       <ThickLine />
-      <GroupList
-        groupList={filteredGroups}
-      />
+      <GroupList groupList={filteredGroups} />
     </div>
   );
 }

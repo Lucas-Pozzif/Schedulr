@@ -303,4 +303,56 @@ export class Group {
   }
 
   // Class methods unrelated to the database
+  public isValid() {
+    if (this._name == "") return "name";
+    else if (this._type._name == "") return "type";
+    else if (this._location == "") return "location";
+    else if (this._activities.length == 0) return "activities";
+    else if (this._profiles.length == 0) return "profiles";
+    else if (this._images._banner == "") return "banner";
+    else if (this._images._profile == "") return "profile";
+    else return true;
+  }
+
+  public cleanDay(selectedDay: number, setter: React.Dispatch<React.SetStateAction<Group>>) {
+    this._startHours[selectedDay] = 0;
+    this._hours[selectedDay] = [];
+    setter(new Group(this));
+  }
+  
+  public fillHours(selectedDay: number, setter: React.Dispatch<React.SetStateAction<Group>>) {
+    this._hours[selectedDay] = this._hours[selectedDay]?.map(() => true);
+    setter(new Group(this));
+  }
+
+  public updateHourList(selectedDay: number, index: number, setter: React.Dispatch<React.SetStateAction<Group>>) {
+    if (!this._startHours[selectedDay] || isNaN(this._startHours[selectedDay])) this._startHours[selectedDay] = 0;
+    if (this._startHours[selectedDay] > 0) {
+      // Fill the hour list with all the values
+      const pseudoIndexes = Array(this._startHours[selectedDay]).fill(false);
+      this._hours[selectedDay] = [...pseudoIndexes, ...this._hours[selectedDay]];
+      this._startHours[selectedDay] = 0;
+    }
+    if (!this._hours[selectedDay]) this._hours[selectedDay] = [];
+    if (index >= this._hours[selectedDay].length) {
+      // Fill any value between the given index and the last hour list value with falses
+      const diff = index - this._hours[selectedDay].length + 1;
+      this._hours[selectedDay].push(...Array(diff).fill(false));
+    }
+
+    this._hours[selectedDay][index] = !this._hours[selectedDay][index];
+
+    for (let i = this._hours[selectedDay].length - 1; i >= 0; i--) {
+      // Remove any value from the end, until the last value is true
+      if (this._hours[selectedDay][i]) break;
+      this._hours[selectedDay].pop();
+    }
+    this._startHours[selectedDay] = this._hours[selectedDay].indexOf(true); // Update the startHours value
+    for (let i = 0; i < this._startHours[selectedDay]; i++) {
+      // Remove any value from the start, until the first value is true
+      this._hours[selectedDay].shift();
+    }
+
+    setter(new Group(this));
+  }
 }
