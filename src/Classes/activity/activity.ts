@@ -70,8 +70,6 @@ export class Activity {
     return config!.activity.toString();
   }
 
-  // Remove from database
-
   public async updateDatabase() {
     if (this._id === "") return console.error("not updating database, no id was found!");
     const actRef = doc(db, "activities", this._groupId);
@@ -85,5 +83,53 @@ export class Activity {
     if (setter) setter(new Activity(this));
   }
 
+  // Remove from database
+  public deleteActivity() {
+    if (this._id !== "" && !isNaN(parseInt(this._id))) {
+      //If it has an id that is a number (valid)
+    }
+  }
+
   // Unrelated to database
+
+  public groupFormat() {
+    return {
+      _id: this._id,
+      _activity: this,
+    };
+  }
+
+  public isValid() {
+    if (this._name == "") return "name";
+    else if (this._duration.length === 0) return "duration";
+    else return true;
+  }
+
+  public formattedDuration() {
+    return `${Math.floor(this._duration.length / 6)}h ${(this._duration.length % 6) * 10}m`;
+  }
+  public fillHours(setter: React.Dispatch<React.SetStateAction<Activity>>) {
+    this._duration = this._duration.map(() => true);
+    setter(new Activity(this));
+  }
+
+  public updateHourList(index: number, setter: React.Dispatch<React.SetStateAction<Activity>>, sServiceId?: string) {
+    if (index >= this._duration.length) {
+      // Fill any value between the given index and the last hour list value with falses
+      const diff = index - this._duration.length + 1;
+      this._duration.push(...Array(diff).fill(false));
+    }
+    this._duration[index] = !this._duration[index];
+    for (let i = this._duration.length - 1; i >= 0; i--) {
+      // Remove any value from the end, until the last value is true
+      if (this._duration[i]) break;
+      this._duration.pop();
+    }
+
+    setter(new Activity(this));
+  }
+
+  public generateLocalId() {
+    this._id = `$${new Date().getTime()}`;
+  }
 }
