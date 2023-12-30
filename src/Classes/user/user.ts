@@ -200,8 +200,8 @@ export class User {
     });
     const promises = snapArray.map(async (snap) => {
       const group = new Group();
-      group.fillFromSnapshot(snap);
-      await group.downloadImages();
+      // group.fillFromSnapshot(snap);
+      // await group.downloadImages();
       return group;
     });
 
