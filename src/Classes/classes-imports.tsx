@@ -1,4 +1,4 @@
-import { Group } from "./group/group";
+import { Group } from "./group/groupLegacy";
 import { Professional } from "./professional/professional";
 import type { Schedule } from "./schedule/schedule";
 import { Service, SubService } from "./service/service";
