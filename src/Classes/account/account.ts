@@ -92,11 +92,15 @@ export class Account {
     this._schedule[`${day}-${month}`] = daySnap.data() || {};
   }
 
+  public async getGroups() {
+    //Need to implement
+  }
+
   // Upload to database
 
   private async addAccount() {
     const accRef = doc(db, "accounts", this._id);
-    const schedRef = doc(db, "schedule", this._id);
+    const schedRef = doc(db, "schedules", this._id);
 
     await setDoc(accRef, this.firestoreFormat());
     await setDoc(schedRef, {});
