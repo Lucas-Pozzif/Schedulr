@@ -5,12 +5,13 @@ import { WhiteButton } from "../../component-imports";
 import { HomeBannerLoading } from "../../loading/home-banner-loading/home-banner-loading";
 import "./home-banner.css";
 import { useState, useEffect } from "react";
+import { Account } from "../../../Classes/account/account";
 
 type HomeBannerType = {
-  user: User;
+  account: Account;
 };
 
-export function HomeBanner({ user }: HomeBannerType) {
+export function HomeBanner({ account }: HomeBannerType) {
   const [loading, setLoading] = useState(false);
   const [scheduleToday, setScheduleToday] = useState<any>();
 
@@ -25,9 +26,9 @@ export function HomeBanner({ user }: HomeBannerType) {
         month: "2-digit",
         year: "2-digit",
       });
-      if (user.getId()) {
-        await user.getScheduleDay(formattedDay);
-        setScheduleToday(user.getSchedule()[formattedDay]);
+      if (account.get("id")) {
+        await account.getScheduleDay(day);
+        setScheduleToday(account.get("schedule")[formattedDay]);
       }
       setLoading(false);
     };
@@ -50,7 +51,7 @@ export function HomeBanner({ user }: HomeBannerType) {
             window.location.href = `mailto:lucaspozzif.feedback@gmail.com?subject=${subject}`;
           }}
         />
-        <WhiteButton title={user.getId() === "" ? "Fazer Login" : "Ver Agenda"} onClick={() => navigate(`/user${user.getId() === "" ? "" : `/schedule/${user.getId()}`}`)} />
+        <WhiteButton title={account.get("id") === "" ? "Fazer Login" : "Ver Agenda"} onClick={() => navigate(`/account${account.get("id") === "" ? "" : `/schedule/${account.get("id")}`}`)} />
       </div>
     </div>
   );

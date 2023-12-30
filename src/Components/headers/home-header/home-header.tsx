@@ -1,3 +1,4 @@
+import { Account } from "../../../Classes/account/account";
 import { User } from "../../../Classes/classes-imports";
 import { defaultUser } from "../../../_global";
 import { HomeHeaderLoading } from "../../loading/home-header-loading/home-header-loading";
@@ -5,11 +6,11 @@ import "./home-header.css";
 import { useState, useEffect } from "react";
 
 type HomeHeaderType = {
-  user: User;
+  account: Account;
   onClickProfile: () => void;
 };
 
-export function HomeHeader({ user, onClickProfile }: HomeHeaderType) {
+export function HomeHeader({ account, onClickProfile }: HomeHeaderType) {
   const [loading, setLoading] = useState(false);
   const [scheduleToday, setScheduleToday] = useState<any>();
 
@@ -22,9 +23,9 @@ export function HomeHeader({ user, onClickProfile }: HomeHeaderType) {
         month: "2-digit",
         year: "2-digit",
       });
-      if (user.getId()) {
-        await user.getScheduleDay(formattedDay);
-        setScheduleToday(user.getSchedule()[formattedDay]);
+      if (account.get(`id`)) {
+        await account.getScheduleDay(day);
+        setScheduleToday(account.get("schedule")[formattedDay]);
       }
       setLoading(false);
     };
@@ -52,11 +53,11 @@ export function HomeHeader({ user, onClickProfile }: HomeHeaderType) {
   ) : (
     <div className='home-header'>
       <p className='hh-salutation'>
-        {salutation} {user.getName()}!
+        {salutation} {account.get("name")}!
       </p>
       <p className='hh-subtitle'>{subtitle}</p>
       <p className='hh-subtitle'>{subtitle2}</p>
-      <img className='hh-profile' src={user.getPhoto() || defaultUser} onClick={onClickProfile} />
+      <img className='hh-profile' src={account.get("profile") || defaultUser} onClick={onClickProfile} />
     </div>
   );
 }

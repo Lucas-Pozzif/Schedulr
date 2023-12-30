@@ -5,14 +5,16 @@ import { auth } from "../../Services/firebase/firebase";
 import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 
-import { Group, User } from "../../Classes/classes-imports";
+import { User } from "../../Classes/classes-imports";
 import { GroupList, HomeBanner, HomeHeader, HomePageLoading, HomeSearchBar, ThickLine } from "../../Components/component-imports";
 import { sort } from "../../_global";
+import { Group } from "../../Classes/group/group";
+import { Account } from "../../Classes/account/account";
 
 export function Home() {
   const [loading, setLoading] = useState(false);
 
-  const [user, setUser] = useState(new User());
+  const [account, setAccount] = useState(new Account());
   const [groups, setGroups] = useState<any[]>([]);
   const [searchText, setSearch] = useState("");
 
@@ -22,10 +24,8 @@ export function Home() {
     const fetchData = async () => {
       setLoading(true);
       onAuthStateChanged(auth, async (client) => {
-        if (client?.uid) {
-          await user.getUser(client.uid);
-        }
-        const groupList = await user.getGroups();
+        if (client?.uid) await account.getAccount(client.uid);
+        const groupList: any = []; //await account.getGroups();
         setGroups(groupList);
         setLoading(false);
       });
@@ -46,10 +46,10 @@ export function Home() {
     <HomePageLoading />
   ) : (
     <div className='tab'>
-      <HomeHeader user={user} onClickProfile={() => navigate("/user")} />
+      <HomeHeader account={account} onClickProfile={() => navigate("/account")} />
       <HomeSearchBar placeholder={"Pesquisar"} value={searchText} onChange={(e) => setSearch(e.target.value)} />
       <ThickLine />
-      <HomeBanner user={user} />
+      <HomeBanner account={account} />
       <div className='hp-group-title-block'>
         <p className='hp-group-title'>Estabelecimentos Próximos</p>
         <img className='hp-sort-icon' src={sort} />

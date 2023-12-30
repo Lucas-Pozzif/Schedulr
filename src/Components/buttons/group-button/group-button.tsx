@@ -22,19 +22,19 @@ export function GroupButton({ group, onClick }: groupButtonType) {
   for (let i = 0; i <= 24; i++) {
     timeArray.push(`${i}:00`, `${i}:30`);
   }
-  if (group.getHours()[selectedDay].indexOf(true) !== -1) {
-    time = `${timeArray[group.getStartHours()[selectedDay]]} - ${timeArray[group.getStartHours()[selectedDay] + group.getHours()[selectedDay].length]}`;
+  if (group.get("hours")[selectedDay].indexOf(true) !== -1) {
+    time = `${timeArray[group.get("startHours")[selectedDay]]} - ${timeArray[group.get("startHours")[selectedDay] + group.get("hours")[selectedDay].length]}`;
   }
   var ratingSum = 0;
-  group.getRatings().map((rating) => {
+  group.get("ratings").map((rating: any) => {
     ratingSum += rating.rate;
   });
-  const averageRating = (ratingSum + 5) / group.getRatings.length;
+  const averageRating = (ratingSum + 5) / group.get("ratings").length;
 
   return (
     <div className='group-button' onClick={onClick}>
-      <img className='gb-banner' src={group.getBanner()} />
-      <p className='gb-title'>{group.getTitle()}</p>
+      <img className='gb-banner' src={group.get("images").banner} />
+      <p className='gb-title'>{group.get("name")}</p>
       <div style={{ paddingInline: "3px" }}>
         <Line />
       </div>
@@ -73,7 +73,7 @@ export function GroupButton({ group, onClick }: groupButtonType) {
           <img className='gb-star' src={Math.floor(averageRating) > 4 ? star : starEmpty} />
         </div>
       </div>
-      <img className='gb-profile' src={group.getProfile()} />
+      <img className='gb-profile' src={group.get("images").profile} />
     </div>
   );
 }
