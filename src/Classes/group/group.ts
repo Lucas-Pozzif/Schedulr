@@ -11,15 +11,10 @@ interface Rating {
   _messageId: string;
 }
 
-interface Type {
-  _id: string;
-  _name: string;
-}
-
 export class Group {
   private _id: string; //The unique id of the group
   private _name: string; //The name of the group
-  private _type: Type;
+  private _type: string;
   private _pricing: number;
   private _ratings: Rating[];
   private _location: any; //I have no idea of how to make it
@@ -43,7 +38,7 @@ export class Group {
   constructor(
     arg?: string | Group,
     name: string = "",
-    type: { _id: string; _name: string } = { _id: "", _name: "" },
+    type: string = "",
     pricing: number = -1,
     ratings: { _userId: string; _message: string; _rate: string; _messageId: string }[] = [],
     location: any = null, // Adjust the default value based on the actual type of location
@@ -101,7 +96,7 @@ export class Group {
     return {
       group: {
         name: this._name,
-        type: this._type._id,
+        type: this._type,
         pricing: this._pricing,
         location: this._location,
         startHours: this._startHours,
@@ -111,7 +106,7 @@ export class Group {
       },
       lightGroup: {
         name: this._name,
-        type: this._type._id,
+        type: this._type,
         pricing: this._pricing,
         location: this._location,
       },
@@ -225,6 +220,13 @@ export class Group {
     await this.updateDatabase("profile");
   }
 
+  public async setGroup() {
+    const groupRef = doc(db, "groups", this._id);
+    const lightGroupRef = doc(db, "light_groups", this._id);
+    const profRef = doc(db, "profiles", this._id);
+    const actRef = doc(db, "activities", this._id);
+  }
+
   // Update to database
 
   private async updateGroupId() {
@@ -305,7 +307,7 @@ export class Group {
   // Class methods unrelated to the database
   public isValid() {
     if (this._name == "") return "name";
-    else if (this._type._name == "") return "type";
+    else if (this._type == "") return "type";
     else if (this._location == "") return "location";
     else if (this._activities.length == 0) return "activities";
     else if (this._profiles.length == 0) return "profiles";
@@ -314,12 +316,16 @@ export class Group {
     else return true;
   }
 
+  public daySpan(weekDay: number) {
+    return "Fechado";
+  }
+
   public cleanDay(selectedDay: number, setter: React.Dispatch<React.SetStateAction<Group>>) {
     this._startHours[selectedDay] = 0;
     this._hours[selectedDay] = [];
     setter(new Group(this));
   }
-  
+
   public fillHours(selectedDay: number, setter: React.Dispatch<React.SetStateAction<Group>>) {
     this._hours[selectedDay] = this._hours[selectedDay]?.map(() => true);
     setter(new Group(this));
@@ -355,4 +361,5 @@ export class Group {
 
     setter(new Group(this));
   }
+
 }
