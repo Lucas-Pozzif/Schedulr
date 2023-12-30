@@ -8,7 +8,7 @@ import { UserPage } from "./Pages/user-page/user-page";
 
 export const routes = [
   { path: "/", element: <Home /> },
-  { path: "/user", element: <UserPage /> },
+  { path: "/account", element: <UserPage /> },
   { path: "/user/schedule/:userId", element: <ClientSchedulePage /> },
   { path: "/group/:groupId", element: <GroupPage /> },
   { path: "/group/add", element: <GroupForm /> },
