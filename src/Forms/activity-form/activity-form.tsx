@@ -8,6 +8,7 @@ import { ErrorPage } from "../../Pages/error-page/error-page";
 import { Group } from "../../Classes/group/group";
 
 import './activity-form.css'
+import { ProfileForm } from "../profile-form/profile-form";
 
 type ActivityFormType = {
   account?: Account;
@@ -209,7 +210,7 @@ export function ActivityForm({ account, groupForm, setGroupForm, activity = new 
           </div>
         );
       case 3: // Profile Form
-      //return <ProfileForm user={user} groupForm={groupForm} setGroupForm={setGroupForm} onClickReturn={() => setTab(0)} />;
+      return <ProfileForm account={account} groupForm={groupForm} setGroupForm={setGroupForm} onClickReturn={() => setTab(0)} />;
       default:
         return <ErrorPage />;
     }

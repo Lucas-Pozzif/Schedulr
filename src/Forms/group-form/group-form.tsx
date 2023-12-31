@@ -11,6 +11,7 @@ import { add, calendar, clock, closeIcon, fullDays, userIcon } from "../../_glob
 import { Group } from "../../Classes/group/group";
 import { ActivityForm } from "../activity-form/activity-form";
 import { ErrorPage } from "../../Pages/error-page/error-page";
+import { ProfileForm } from "../profile-form/profile-form";
 
 type GroupFormType = {
   group?: Group;
@@ -110,7 +111,14 @@ export function GroupForm({ group, onClickReturn }: GroupFormType) {
       case 0: // Group tab
         return (
           <div className='tab'>
-            <GroupBanner banner={groupForm.get("images")._banner} profile={groupForm.get("images")._profile} returnButton={true} onClickBanner={() => onClickRef(bannerRef)} onClickProfile={() => onClickRef(profileRef)} onClickReturn={onClickReturn} />
+            <GroupBanner
+              banner={groupForm.get("images")._banner}
+              profile={groupForm.get("images")._profile}
+              returnButton={true}
+              onClickBanner={() => onClickRef(bannerRef)}
+              onClickProfile={() => onClickRef(profileRef)}
+              onClickReturn={onClickReturn}
+            />
             <GroupHeader
               title={groupForm.get("name")}
               subtitle={groupForm.get("type")}
@@ -253,6 +261,7 @@ export function GroupForm({ group, onClickReturn }: GroupFormType) {
       case 4: // Activity Form
         return <ActivityForm account={account} groupForm={groupForm} setGroupForm={setGroupForm} activity={selectedActivity || undefined} onClickReturn={() => setTab(2)} />;
       case 5: // Profile Form
+        return <ProfileForm account={account} groupForm={groupForm} setGroupForm={setGroupForm} profile={selectedProfile || undefined} onClickReturn={() => setTab(3)} />;
       default:
         return <ErrorPage />;
     }
