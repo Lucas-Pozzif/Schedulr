@@ -7,7 +7,7 @@ export class Profile {
   private _id: string;
   private _groupId: string;
   private _name: string;
-  private _occupations: { name: string; id: string }[];
+  private _occupations: { _name: string; _id: string }[];
   private _number: string;
   private _isAdmin: boolean;
   private _activities: string[];
@@ -20,7 +20,7 @@ export class Profile {
     arg?: string | Profile,
     groupId: string = "",
     name: string = "",
-    occupations: { name: string; id: string }[] = [],
+    occupations: { _name: string; _id: string }[] = [],
     number: string = "",
     isAdmin: boolean = false,
     activities: string[] = [],
@@ -82,7 +82,9 @@ export class Profile {
   private firestoreFormat() {
     return {
       name: this._name,
-      occupations: this._occupations,
+      occupations: this._occupations.map((value: { _name: string; _id: string }) => {
+        return { name: value._name, id: value._id };
+      }),
       number: this._number,
       isAdmin: this._isAdmin,
       activities: this._activities,
@@ -214,4 +216,84 @@ export class Profile {
   /**
    * Gets the schedule day of this profile, it will grab the entire day
    */
+
+  public async findAccount(value: string) {
+    const searchRef = doc(db, "search", "accounts");
+
+    const searchSnap = await getDoc(searchRef);
+    const userList = searchSnap.data();
+
+    console.log(userList);
+  }
+
+  public formattedOccupations() {
+    const length = this._occupations.length;
+    return length === 0 ? "Não há ocupações" : length === 1 ? this._occupations[0]._name : length === 2 ? `${this._occupations[0]._name} & ${this._occupations[1]}` : `${this._occupations[0]._name}, ${this._occupations[1]._name} & ${length - 2} mais`;
+  }
+
+  public daySpan(weekDay: number) {
+    return "Fechado";
+  }
+
+  public cleanDay(selectedDay: number, setter: React.Dispatch<React.SetStateAction<Profile>>) {
+    this._startHours[selectedDay] = 0;
+    this._hours[selectedDay] = [];
+    setter(new Profile(this));
+  }
+
+  public fillHours(selectedDay: number, setter: React.Dispatch<React.SetStateAction<Profile>>) {
+    this._hours[selectedDay] = this._hours[selectedDay]?.map(() => true);
+    setter(new Profile(this));
+  }
+
+  public updateHourList(selectedDay: number, index: number, setter: React.Dispatch<React.SetStateAction<Profile>>) {
+    if (!this._startHours[selectedDay] || isNaN(this._startHours[selectedDay])) this._startHours[selectedDay] = 0;
+    if (this._startHours[selectedDay] > 0) {
+      // Fill the hour list with all the values
+      const pseudoIndexes = Array(this._startHours[selectedDay]).fill(false);
+      this._hours[selectedDay] = [...pseudoIndexes, ...this._hours[selectedDay]];
+      this._startHours[selectedDay] = 0;
+    }
+    if (!this._hours[selectedDay]) this._hours[selectedDay] = [];
+    if (index >= this._hours[selectedDay].length) {
+      // Fill any value between the given index and the last hour list value with falses
+      const diff = index - this._hours[selectedDay].length + 1;
+      this._hours[selectedDay].push(...Array(diff).fill(false));
+    }
+
+    this._hours[selectedDay][index] = !this._hours[selectedDay][index];
+
+    for (let i = this._hours[selectedDay].length - 1; i >= 0; i--) {
+      // Remove any value from the end, until the last value is true
+      if (this._hours[selectedDay][i]) break;
+      this._hours[selectedDay].pop();
+    }
+    this._startHours[selectedDay] = this._hours[selectedDay].indexOf(true); // Update the startHours value
+    for (let i = 0; i < this._startHours[selectedDay]; i++) {
+      // Remove any value from the start, until the first value is true
+      this._hours[selectedDay].shift();
+    }
+
+    setter(new Profile(this));
+  }
+
+  public generateLocalId() {
+    this._id = `$${new Date().getTime()}`;
+  }
+
+  public generateNewOccupation() {
+    const newId = new Date().getTime().toString();
+    this._occupations.push({ _name: "", _id: newId });
+    return newId;
+  }
+
+  public handleActivity(activityId: string, setter: React.Dispatch<React.SetStateAction<Profile>>) {
+    const index = this._activities.indexOf(activityId);
+    if (index !== -1) {
+      this._activities.splice(index, 1);
+    } else {
+      this._activities.push(activityId);
+    }
+    setter(new Profile(this));
+  }
 }
