@@ -1,4 +1,4 @@
-import { DocumentData, DocumentSnapshot, deleteDoc, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { DocumentData, DocumentSnapshot, deleteDoc, deleteField, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { db, storage } from "../../Services/firebase/firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { Profile } from "../profile/profile";
@@ -104,7 +104,7 @@ export class Group {
         owner: this._owner,
         admins: this._admins,
       },
-      lightGroup: {
+      searchGroup: {
         name: this._name,
         type: this._type,
         pricing: this._pricing,
@@ -193,12 +193,12 @@ export class Group {
   public async addGroup() {
     this._id = await this.updateGroupId();
     const groupRef = doc(db, "groups", this._id);
-    const lightGroupRef = doc(db, "light_groups", this._id);
+    const lightGroupRef = doc(db, "search", "groups");
     const profRef = doc(db, "profiles", this._id);
     const actRef = doc(db, "activities", this._id);
 
     await setDoc(groupRef, this.firestoreFormat().group);
-    await setDoc(lightGroupRef, this.firestoreFormat().lightGroup);
+    await updateDoc(lightGroupRef, { [this._id]: this.firestoreFormat().searchGroup });
     await setDoc(
       profRef,
       this._profiles.map(async (value) => {
@@ -222,7 +222,7 @@ export class Group {
 
   public async setGroup() {
     const groupRef = doc(db, "groups", this._id);
-    const lightGroupRef = doc(db, "light_groups", this._id);
+    const lightGroupRef = doc(db, "search", "groups");
     const profRef = doc(db, "profiles", this._id);
     const actRef = doc(db, "activities", this._id);
   }
@@ -245,7 +245,7 @@ export class Group {
     if (this._id === "") return console.error("not updating database, no id was found!");
 
     const groupRef = doc(db, "groups", this._id);
-    const lightGroupRef = doc(db, "light_groups", this._id);
+    const searchRef = doc(db, "search", "groups", this._id, attribute);
     const profileRef = ref(storage, `groups/${this._id}/profile`);
     const bannerRef = ref(storage, `groups/${this._id}/banner`);
 
@@ -263,7 +263,7 @@ export class Group {
       case "pricing":
       case "location":
         await updateDoc(groupRef, { [attribute]: (this as any)[`_${attribute}`] });
-        await updateDoc(lightGroupRef, { [attribute]: (this as any)[`_${attribute}`] });
+        await setDoc(searchRef, (this as any)[`_${attribute}`]);
         break;
       default:
         await updateDoc(groupRef, { [attribute]: (this as any)[`_${attribute}`] });
@@ -295,11 +295,13 @@ export class Group {
     const profRef = doc(db, "profiles", this._id);
     const actRef = doc(db, "activities", this._id);
     const ratRef = doc(db, "ratings", this._id);
+    const searchRef = doc(db, "search", "groups");
 
     await deleteDoc(groupRef);
     await deleteDoc(profRef);
     await deleteDoc(actRef);
     await deleteDoc(ratRef);
+    await updateDoc(searchRef, { [this._id]: deleteField() });
 
     //schedules not being deleted, needs fix
   }
@@ -361,5 +363,4 @@ export class Group {
 
     setter(new Group(this));
   }
-
 }
