@@ -42,7 +42,10 @@ export class Account {
 
   // Database comunication
   private firestoreFormat() {
-    return { name: this._name, email: this._email, number: this._number, profile: this._profile, groups: this._groups };
+    return {
+      account: { name: this._name, email: this._email, number: this._number, profile: this._profile, groups: this._groups },
+      searchAccount: { name: this._name, email: this._email, number: this._number },
+    };
   }
 
   private fillAccount(accSnap: DocumentSnapshot<DocumentData, DocumentData>) {
@@ -101,9 +104,11 @@ export class Account {
   private async addAccount() {
     const accRef = doc(db, "accounts", this._id);
     const schedRef = doc(db, "schedules", this._id);
+    const searchRef = doc(db, "search", "accounts");
 
     await setDoc(accRef, this.firestoreFormat());
     await setDoc(schedRef, {});
+    await updateDoc(searchRef, { [this._id]: this.firestoreFormat() });
   }
 
   public async addToSchedule(date: Date, index: string, value: ScheduleItem, overwrite?: boolean) {
