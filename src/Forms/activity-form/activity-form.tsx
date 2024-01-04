@@ -7,7 +7,7 @@ import { Profile } from "../../Classes/profile/profile";
 import { ErrorPage } from "../../Pages/error-page/error-page";
 import { Group } from "../../Classes/group/group";
 
-import './activity-form.css'
+import "./activity-form.css";
 import { ProfileForm } from "../profile-form/profile-form";
 
 type ActivityFormType = {
@@ -35,6 +35,7 @@ export function ActivityForm({ account, groupForm, setGroupForm, activity = new 
       },
     ],
   });
+  const [idPrecreated, setIdPrecreated] = useState(false);
 
   const saveActivity = async () => {
     setLoading(true);
@@ -42,6 +43,8 @@ export function ActivityForm({ account, groupForm, setGroupForm, activity = new 
 
     if (activityForm.get("id") === "") {
       activityForm.generateLocalId();
+      updatedActivities = [...updatedActivities, activityForm.groupFormat()];
+    } else if (idPrecreated) {
       updatedActivities = [...updatedActivities, activityForm.groupFormat()];
     } else {
       const activityIndex = groupForm.get("activities").findIndex((activity: { _id: string; _activity: Activity }) => activity._id === activityForm.get("id"));
@@ -53,19 +56,26 @@ export function ActivityForm({ account, groupForm, setGroupForm, activity = new 
     onClickReturn();
   };
 
-  const handleProfiles = (profActivities: string[], profile: Profile) => {
-    if (profActivities.includes(activityForm.get("id"))) {
-      profActivities = profActivities.filter((id) => id !== activityForm.get("id"));
+  const handleProfiles = (profile: Profile) => {
+    if (activityForm.get("id") === "") {
+      setIdPrecreated(true);
+      activityForm.generateLocalId();
+    }
+    var updatedActivites = profile.get("activities");
+    if (updatedActivites.includes(activityForm.get("id"))) {
+      updatedActivites = updatedActivites.filter((id: string) => id !== activityForm.get("id"));
     } else {
-      profActivities.push(activityForm.get("id"));
+      updatedActivites.push(activityForm.get("id"));
     }
     const profiles = groupForm.get("profiles");
-    const foundProfile: {
-      _id: string;
-      _profile: Profile;
-    }[] = profiles.find((prof: { _id: string; _profile: Profile }) => prof._profile.get("id") === profile.get("id"));
+    const profileIndex = profiles.findIndex((prof: { _id: string; _profile: Profile }) => prof._profile.get("id") === profile.get("id"));
 
-    if (foundProfile) {
+    if (profileIndex !== -1) {
+      console.log(profileIndex);
+      profile.updateValue("activities", updatedActivites);
+      var updatedProfiles = groupForm.get("profiles");
+      updatedProfiles[profileIndex]._profile = profile;
+      groupForm.updateValue("profiles", updatedProfiles, false, setGroupForm);
     }
   };
 
@@ -102,7 +112,7 @@ export function ActivityForm({ account, groupForm, setGroupForm, activity = new 
       onClick: () => setTab(2),
     },
   ];
-
+  console.log(activityForm);
   const tabHandler = () => {
     switch (tab) {
       case 0: // Home tab
@@ -156,7 +166,9 @@ export function ActivityForm({ account, groupForm, setGroupForm, activity = new 
           </div>
         );
       case 1: // Duration tab
-        const longTimeArray = Array.from({ length: 144 }, (_, i) => `${String((i + 6) % 24).padStart(2, "0")}:${String((i % 6) * 10).padStart(2, "0")}`);
+        const longTimeArray = [];
+        longTimeArray.push(`0:10`, `0:20`, `0:30`, `0:40`, `0:50`);
+        for (let i = 1; i <= 11; i++) longTimeArray.push(`${i}:00`, `${i}:10`, `${i}:20`, `${i}:30`, `${i}:40`, `${i}:50`);
 
         return (
           <div className='tab'>
@@ -196,13 +208,12 @@ export function ActivityForm({ account, groupForm, setGroupForm, activity = new 
                     }
                   ) => a._profile.get("name").localeCompare(b._profile.get("name"))
                 )
-                .map((profile: Profile) => {
-                  var profActivities = profile.get(`activities`);
+                .map((profile: { _id: string; _profile: Profile }) => {
                   return {
-                    title: profile.get("name"),
-                    subtitle: profile.get("occupations").join(", "),
-                    select: profActivities.includes(activityForm.get("id")),
-                    onClick: () => handleProfiles(profActivities, profile),
+                    title: profile._profile.get("name"),
+                    subtitle: profile._profile.get("occupations").join(", "),
+                    select: profile._profile.get("activities").includes(activityForm.get("id")),
+                    onClick: () => handleProfiles(profile._profile),
                   };
                 })}
             />
@@ -210,7 +221,7 @@ export function ActivityForm({ account, groupForm, setGroupForm, activity = new 
           </div>
         );
       case 3: // Profile Form
-      return <ProfileForm account={account} groupForm={groupForm} setGroupForm={setGroupForm} onClickReturn={() => setTab(0)} />;
+        return <ProfileForm account={account} groupForm={groupForm} setGroupForm={setGroupForm} onClickReturn={() => setTab(0)} />;
       default:
         return <ErrorPage />;
     }
