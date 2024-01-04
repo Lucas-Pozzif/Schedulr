@@ -440,7 +440,6 @@ export function GroupPage() {
 
                 await user.loginAnonymous();
                 await user.addUser();
-                debugger;
                 profSchedValue.client = user.getId();
                 await handleSchedule();
 
