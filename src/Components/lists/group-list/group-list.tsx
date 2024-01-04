@@ -6,7 +6,7 @@ import "./group-list.css";
 
 type groupListType = {
   groupList: Group[];
-  onClick: () => void;
+  onClick?: () => void;
 };
 
 export function GroupList({ groupList, onClick }: groupListType) {
