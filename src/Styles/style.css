@@ -23,6 +23,7 @@ textarea {
   src: local("Roboto-Regular"), url(../Fonts/Roboto-Regular.ttf) format("truetype");
 }
 
+label,
 p {
   font-family: "Regular";
   transition: 200ms;

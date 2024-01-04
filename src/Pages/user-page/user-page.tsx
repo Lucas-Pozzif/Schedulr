@@ -8,6 +8,7 @@ import { SmallHeader, IconList, UserPageLoading, Profile, BottomButton, Line } f
 import { addCalendar, calendar, confirm, defaultUser, edit, google, logOutIcon } from "../../_global";
 import { User } from "../../Classes/classes-imports";
 import { ErrorPage } from "../error-page/error-page";
+import { BlockInput } from "../../Components/inputs/block-input/block-input";
 
 type userButtonType = {
   icon: string;
@@ -97,11 +98,6 @@ export function UserPage() {
 
   const listButtons: userButtonType[] = [
     {
-      title: "Criar um Estabelecimento",
-      icon: addCalendar,
-      onClick: () => navigate(`/group/add`),
-    },
-    {
       title: "Sair da Minha Conta",
       icon: logOutIcon,
       onClick: async () => await logOut(),
@@ -127,14 +123,14 @@ export function UserPage() {
               onChangeNumber={(e) => user.updateState(setUser, "number", e.target.value)}
             />
             <IconList items={hasAccount ? listButtons : listButtonsUnlogged} />
+            <p className='version-seeker'>v0.1.2</p>
           </div>
         );
       case 1:
         return (
           <div className='tab'>
             <SmallHeader title={hasAccount ? user.getName() : "Página do Usuário"} onClickReturn={() => navigate("/")} />
-            <input className='up-input' type='tel' maxLength={20} onChange={(e) => user.updateState(setUser, "number", e.target.value)} value={user.getNumber()} placeholder='Digite o número' />
-            <Line />
+            <BlockInput type='tel' maxLength={20} onChange={(e) => user.updateState(setUser, "number", e.target.value)} value={user.getNumber()} placeholder='(00)00000-0000' label='Digite o número' />
             <p className='up-input-bottom-text'>Digite o número corretamente, usaremos isso para entrar em contato!</p>
             <BottomButton
               title={"Salvar Perfil"}

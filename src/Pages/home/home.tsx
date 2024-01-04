@@ -55,12 +55,7 @@ export function Home() {
         <img className='hp-sort-icon' src={sort} />
       </div>
       <ThickLine />
-      <GroupList
-        onClick={() => {
-          if (user.getId() == "" || user.getNumber() == "") navigate("/user");
-        }}
-        groupList={filteredGroups}
-      />
+      <GroupList groupList={filteredGroups} />
     </div>
   );
 }

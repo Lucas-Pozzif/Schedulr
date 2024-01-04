@@ -15,3 +15,11 @@
   left: 20px;
   right: 20px;
 }
+.version-seeker{
+  font-size: 12px;
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  color: var(--eerieBlack);
+  opacity: .8;
+}

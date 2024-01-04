@@ -1,4 +1,4 @@
-import { GoogleAuthProvider, UserCredential, signInWithPopup, signInWithRedirect, signOut } from "firebase/auth";
+import { GoogleAuthProvider, UserCredential, signInAnonymously, signInWithPopup, signInWithRedirect, signOut } from "firebase/auth";
 import { DocumentSnapshot, collection, deleteDoc, doc, getDoc, getDocs, query, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
 import { Group } from "../group/group";
 import { Schedule, ScheduleItem } from "../schedule/schedule";
@@ -105,6 +105,10 @@ export class User {
     const provider = new GoogleAuthProvider();
     const userCredential = await signInWithPopup(auth, provider);
     this.fillFromGoogle(userCredential);
+  }
+  public async loginAnonymous() {
+    const userCredential = await signInAnonymously(auth);
+    this._id = userCredential.user.uid
   }
 
   public async logout() {
