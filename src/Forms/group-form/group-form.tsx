@@ -131,6 +131,8 @@ export function GroupForm({ group, onClickReturn }: GroupFormType) {
               editMode={true}
               titlePlaceholder={"Nome do estabelecimento"}
               subtitlePlaceholder={"Tipo de estabelecimento"}
+              onChangeSubtitle={(e) => groupForm.updateGroupState(setGroupForm, "type", e.target.value)}
+              onChangeTitle={(e) => groupForm.updateGroupState(setGroupForm, "title", e.target.value)}
             />
             <input className='gf-location' placeholder='Endereço do estabelecimento' value={groupForm.getLocation()} onChange={(e) => groupForm.updateGroupState(setGroupForm, "location", e.target.value)} />
             <Line />
