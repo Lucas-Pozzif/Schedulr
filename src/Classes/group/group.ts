@@ -197,24 +197,22 @@ export class Group {
     const profRef = doc(db, "profiles", this._id);
     const actRef = doc(db, "activities", this._id);
 
+    await setDoc(profRef, {});
+    await setDoc(actRef, {});
+
+    this._activities.forEach(async (value: { _id: string; _activity: Activity }, index) => {
+      if (value._id.startsWith("$")) await value._activity.addActivity();
+      else await value._activity.updateDatabase();
+      this._activities[index]._id = value._activity.get("id");
+    });
+    this._profiles.forEach(async (value: { _id: string; _profile: Profile }, index) => {
+      if (value._id.startsWith("$")) await value._profile.addProfile();
+      else await value._profile.updateDatabase();
+      this._activities[index]._id = value._profile.get("id");
+    });
+
     await setDoc(groupRef, this.firestoreFormat().group);
     await updateDoc(lightGroupRef, { [this._id]: this.firestoreFormat().searchGroup });
-    await setDoc(
-      profRef,
-      this._profiles.map(async (value) => {
-        const profile = value._profile;
-        await profile.addProfile();
-        return profile.get("id");
-      })
-    );
-    await setDoc(
-      actRef,
-      this._activities.map(async (value) => {
-        const activity = value._activity;
-        await activity.addActivity();
-        return activity.get("id");
-      })
-    );
 
     await this.updateDatabase("banner");
     await this.updateDatabase("profile");
