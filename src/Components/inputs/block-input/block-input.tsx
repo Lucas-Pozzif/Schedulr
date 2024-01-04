@@ -11,7 +11,7 @@ type BlockInputType = {
 
 export function BlockInput({ placeholder, value, label, type, maxLength = 126, onChange }: BlockInputType) {
   return (
-    <form className='block-input'>
+    <form className='block-input' onSubmit={(e) => e.preventDefault()}>
       <label className='bi-label'>{label}</label>
       <input className='bi-input' type={type} maxLength={maxLength} placeholder={placeholder} value={value} onChange={onChange}></input>
     </form>
