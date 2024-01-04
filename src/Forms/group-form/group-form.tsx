@@ -20,7 +20,7 @@ type GroupFormType = {
   onClickReturn?: () => void;
 };
 
-export function GroupForm({ group, onClickReturn }: GroupFormType) {
+export function GroupForm({ group, onClickReturn = () => {} }: GroupFormType) {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(new User());
   const [groupForm, setGroupForm] = useState(new Group(group));
@@ -71,6 +71,7 @@ export function GroupForm({ group, onClickReturn }: GroupFormType) {
     setLoading(true);
     if (groupForm.getId()) await groupForm.setGroup();
     else await groupForm.addGroup();
+    onClickReturn();
     setLoading(false);
   };
 
