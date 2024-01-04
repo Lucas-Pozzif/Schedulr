@@ -12,6 +12,7 @@ import { DualList } from "../../Components/lists/dual-list/dual-list";
 import { ErrorPage } from "../error-page/error-page";
 import { DualButton } from "../../Components/buttons/dual-button/dual-button";
 import { GroupConfigPage } from "../group-config-page/group-config-page";
+import { BlockInput } from "../../Components/inputs/block-input/block-input";
 
 export function GroupPage() {
   const [loading, setLoading] = useState(false);
@@ -33,18 +34,20 @@ export function GroupPage() {
 
   useEffect(() => {
     setLoading(true);
-    onAuthStateChanged(auth, async (client) => {
-      if (client?.uid) {
-        await user.getUser(client.uid);
-
+    const fetchData = async () => {
+      onAuthStateChanged(auth, async (client) => {
+        if (client?.uid) {
+          await user.getUser(client.uid);
+        }
         await group.getGroup(groupId);
         await group.updateServices();
         await group.updateProfessionals();
         setGroup(new Group(group));
 
         setLoading(false);
-      } else setTab(-1);
-    });
+      });
+    };
+    fetchData();
   }, []);
 
   const days: any[][] = [];
@@ -80,7 +83,7 @@ export function GroupPage() {
   }
 
   const profSchedValue = {
-    client: user.getId(),
+    client: user.getId() || "error",
     service: selectedService?.getId() || "error",
   };
   const clientSchedValue = {
@@ -160,14 +163,18 @@ export function GroupPage() {
   const handleSchedule = async () => {
     if (selectedService && selectedProfessional && selectedTime) {
       setLoading(true);
-      for (let i = 0; i < selectedService.getDuration().length; i++) {
-        if (selectedService.getDuration()[i] === true) {
-          await selectedProfessional?.updateSchedule(days[selectedDay][2], (selectedTime + i).toString(), profSchedValue);
-          await user?.updateSchedule(days[selectedDay][2], (selectedTime + i).toString(), clientSchedValue);
+      if (user.getId() == "") {
+        setTab(6);
+      } else {
+        for (let i = 0; i < selectedService.getDuration().length; i++) {
+          if (selectedService.getDuration()[i] === true) {
+            await selectedProfessional?.updateSchedule(days[selectedDay][2], (selectedTime + i).toString(), profSchedValue);
+            await user?.updateSchedule(days[selectedDay][2], (selectedTime + i).toString(), clientSchedValue);
+          }
         }
-      }
 
-      setTab(4);
+        setTab(4);
+      }
       setLoading(false);
     }
   };
@@ -212,7 +219,11 @@ export function GroupPage() {
       case 0: // Home tab
         const userProfId = group
           .getProfessionals()
-          .find((professional) => professional.getEmail().toLowerCase() === user.getEmail().toLowerCase())
+          .find((professional) => {
+            const professionalEmail = professional.getEmail().toLowerCase();
+            const userEmail = user.getEmail().toLowerCase();
+            return professionalEmail !== "" && professionalEmail === userEmail;
+          })
           ?.getId();
         return (
           <div className='tab'>
@@ -221,20 +232,22 @@ export function GroupPage() {
               title={group.getTitle()}
               subtitle={group.getType()}
               iconButton={
-                group.getOwner() === user.getId() || group.getAdmins().includes(user.getId())
-                  ? {
-                      icon: config,
-                      title: "Config",
-                      onClick: () => setTab(5),
-                    }
-                  : {
-                      icon: calendar,
-                      title: "Agenda",
-                      onClick: () => {
-                        const route = userProfId ? `/professional/schedule/${userProfId}` : `/user/schedule/${user.getId()}`;
-                        navigate(route);
-                      },
-                    }
+                user.getId() !== ""
+                  ? group.getOwner() === user.getId() || group.getAdmins().includes(user.getId())
+                    ? {
+                        icon: config,
+                        title: "Config",
+                        onClick: () => setTab(5),
+                      }
+                    : {
+                        icon: calendar,
+                        title: "Agenda",
+                        onClick: () => {
+                          const route = userProfId ? `/professional/schedule/${userProfId}` : `/user/schedule/${user.getId()}`;
+                          navigate(route);
+                        },
+                      }
+                  : undefined
               }
             />
             <p className='gp-location'>{group.getLocation()}</p>
@@ -410,6 +423,33 @@ export function GroupPage() {
         );
       case 5: // Config tab
         return <GroupConfigPage user={user} group={group} />;
+      case 6: // Login tab
+        return (
+          <div className='tab'>
+            <GroupBanner banner={group.getBanner()} profile={group.getProfile()} />
+            <GroupHeader title={group.getTitle()} subtitle={group.getType()} />
+            <BlockInput label={"Por favor digite seu nome"} placeholder={"Nome"} value={user.getName()} onChange={(e) => user.updateState(setUser, "name", e.target.value)} />
+            <BlockInput label={"Por favor digite seu número"} type='tel' value={user.getNumber()} maxLength={20} placeholder={"(00)00000-0000"} onChange={(e) => user.updateState(setUser, "number", e.target.value)} />
+            <BottomButton
+              title={"Salvar Perfil"}
+              hide={!user.isNumberValid() || user.getName() === ""}
+              onClick={async () => {
+                setLoading(true);
+                const formattedNumber = user.getNumber().startsWith("55") ? user.getNumber() : "55" + user.getNumber();
+                user.setNumber(formattedNumber);
+
+                await user.loginAnonymous();
+                await user.addUser();
+                debugger;
+                profSchedValue.client = user.getId();
+                await handleSchedule();
+
+                setTab(4);
+                setLoading(false);
+              }}
+            />
+          </div>
+        );
       default:
         return <ErrorPage />;
     }
