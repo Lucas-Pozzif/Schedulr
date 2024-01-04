@@ -13,7 +13,7 @@ export function GroupButton({ group, onClick }: groupButtonType) {
   const [selectedDay, setSelectedDay] = useState(0);
   const days = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"];
   const timeArray = [];
-  var time = "Fechado";
+  var time = "";
 
   const star = require("../../../Assets/star.png");
   const starEmpty = require("../../../Assets/star-empty.png");

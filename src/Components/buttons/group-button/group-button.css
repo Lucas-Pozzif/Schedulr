@@ -72,3 +72,6 @@
   margin-inline: 3px;
   opacity: 0.8;
 }
+.right {
+  rotate: 180deg;
+}
