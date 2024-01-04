@@ -7,7 +7,7 @@ export class Activity {
   private _name: string;
   private _duration: boolean[];
 
-  constructor(arg?: string | Activity, groupId: string = "", name: string = "", duration: boolean[] = [false]) {
+  constructor(arg?: string | Activity, groupId: string = "", name: string = "", duration: boolean[] = [true]) {
     if (typeof arg === "string") {
       this._id = arg;
       this._groupId = groupId;
@@ -71,7 +71,7 @@ export class Activity {
   }
 
   public async updateDatabase() {
-    if (this._id === "") return console.error("not updating database, no id was found!");
+    if (this._id === "" || this._id.startsWith("$")) return console.error("not updating database, no id was found!");
     const actRef = doc(db, "activities", this._groupId);
 
     await updateDoc(actRef, { [this._id]: this.firestoreFormat() });
