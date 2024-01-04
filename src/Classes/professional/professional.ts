@@ -35,7 +35,7 @@ export class Professional {
         isAdmin: boolean = false,
         services: string[] = [],
         shift: boolean[][] = [],
-        startHours: number[] = [],
+        startHours: number[] = [-1, -1, -1, -1, -1, -1, -1],
         images: string[] = [],
         schedule: Schedule = {}
     ) {
