@@ -119,7 +119,7 @@ export class Profile {
   }
 
   public async getScheduleDay(date: Date) {
-    if (this._id === "") return console.error("not downloading schedule, no id was found!");
+    if (this._id === "" || this._id.startsWith("$")) return console.error("not downloading schedule, no id was found!");
 
     const month = date.toLocaleDateString("pt-BR", { month: "2-digit", year: "2-digit" }).split("/").join("-");
     const day = date.toLocaleDateString("pt-BR", { day: "2-digit" });
@@ -142,7 +142,7 @@ export class Profile {
   }
 
   public async addToSchedule(date: Date, index: string, value: ScheduleItem, overwrite?: boolean) {
-    if (this._id === "") return console.error("not updating schedule, no id was found!");
+    if (this._id === "" || this._id.startsWith("$")) return console.error("not updating schedule, no id was found!");
 
     const month = date.toLocaleDateString("pt-BR", { month: "2-digit", year: "2-digit" }).split("/").join("-");
     const day = date.toLocaleDateString("pt-BR", { day: "2-digit" });
@@ -172,7 +172,7 @@ export class Profile {
   }
 
   public async updateDatabase() {
-    if (this._id === "") return console.error("not updating database, no id was found!");
+    if (this._id === ""|| this._id.startsWith('$')) return console.error("not updating database, no id was found!");
     const profRef = doc(db, "profiles", this._groupId);
 
     await updateDoc(profRef, { [this._id]: this.firestoreFormat() });
@@ -201,7 +201,7 @@ export class Profile {
   }
 
   public async deleteScheduleDay(date: Date, index: string) {
-    if (this._id === "") return console.error("not deleting schedule, no id was found!");
+    if (this._id === ""|| this._id.startsWith('$')) return console.error("not deleting schedule, no id was found!");
 
     const month = date.toLocaleDateString("pt-BR", { month: "2-digit", year: "2-digit" }).split("/").join("-");
     const day = date.toLocaleDateString("pt-BR", { day: "2-digit" });
@@ -233,6 +233,20 @@ export class Profile {
 
   public daySpan(weekDay: number) {
     return "Fechado";
+  }
+
+  // Unrelated to database
+
+  public isValid() {
+    if (this._name == "") return "name";
+    else return true;
+  }
+
+  public groupFormat() {
+    return {
+      _id: this._id,
+      _profile: this,
+    };
   }
 
   public cleanDay(selectedDay: number, setter: React.Dispatch<React.SetStateAction<Profile>>) {
