@@ -4,7 +4,7 @@ import "./group-header.css";
 type GroupHeaderType = {
   title: string;
   subtitle: string;
-  iconButton: {
+  iconButton?: {
     icon: string;
     title: string;
     hide?: boolean;
@@ -31,9 +31,7 @@ export function GroupHeader({ title, subtitle, iconButton, editMode, titlePlaceh
           <p className='gh-subtitle'>{subtitle}</p>
         </>
       )}
-      <div className='gh-small-button'>
-        <SmallIconButton title={iconButton.title} icon={iconButton.icon} hide={iconButton.hide} onClick={iconButton.onClick} />{" "}
-      </div>
+      <div className='gh-small-button'>{iconButton ? <SmallIconButton title={iconButton?.title} icon={iconButton?.icon} hide={iconButton?.hide} onClick={iconButton?.onClick} /> : null}</div>
     </div>
   );
 }
