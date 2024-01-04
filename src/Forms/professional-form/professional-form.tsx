@@ -217,6 +217,8 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
             <IconCarousel items={professionalButtons} />
             <p className={`pf-message ${message ? "" : "hidden"}`}>{message}</p>
             <LinkList items={buttonList} />
+
+            <BottomPopup stage={professionalForm.isValid() ? 1 : 0} title={"Editando..."} subtitle={"Possui alterações"} buttonTitle={"Salvar alterações"} onClick={async () => await saveProfessional()} />
             <Popup title={popupData.title} text={popupData.text} display={popupData.display} onClickExit={popupData.onClickExit} buttons={popupData.buttons} />
           </div>
         );
