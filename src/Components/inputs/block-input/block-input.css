@@ -1,0 +1,16 @@
+.block-input {
+  display: flex;
+  flex-direction: column;
+  padding-inline: 10px;
+  padding-top: 10px;
+}
+.bi-label {
+  font-size: 16px;
+  padding-left: 5px;
+}
+.bi-input {
+  background-color: var(--platinum);
+  font-size: 18px;
+  padding: 10px;
+  border-radius: 5px;
+}
