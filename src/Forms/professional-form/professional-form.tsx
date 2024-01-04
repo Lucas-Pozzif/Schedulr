@@ -71,7 +71,7 @@ export function ProfessionalForm({ user, groupForm, setGroupForm, professional =
 
   const saveProfessional = async () => {
     setLoading(true);
-    if (professionalForm.getId()) {
+    if (professionalForm.getId() !== "") {
       await professionalForm.setProfessional();
       const idIndex = groupForm.getProfessionalsIds().indexOf(professionalForm.getId());
       const professional = groupForm.getProfessionals();

@@ -116,7 +116,7 @@ export function GroupPage() {
     isAvailableToday: boolean;
     professionals: Professional[];
   } => {
-    const isAvailableToday = (index + group.getStartHours()[selectedDay]) * 19 >= getMinutesSinceMidnight();
+    const isAvailableToday = (index + group.getStartHours()[selectedDay] + 10) * 19 >= getMinutesSinceMidnight();
 
     const professionals: Professional[] = group
       .getProfessionals()
