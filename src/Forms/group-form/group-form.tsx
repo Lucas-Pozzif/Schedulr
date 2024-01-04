@@ -246,12 +246,17 @@ export function GroupForm({ group, onClickReturn }: GroupFormType) {
                     }
                   ) => a._profile.get("name").localeCompare(b._profile.get("name"))
                 ) // Alphabetical order
-                .map((profile: Profile) => {
+                .map((profile: { _id: string; _profile: Profile }) => {
                   return {
-                    title: profile.get("name"),
-                    subtitle: profile.get("occupations").join(", "),
-                    select: selectedProfile?.get("id") === profile.get("id"),
-                    onClick: () => idSwitcher(selectedProfile, profile, setSelectedProfile),
+                    title: profile._profile.get("name"),
+                    subtitle: profile._profile
+                      .get("occupations")
+                      .map((occupation: { _name: string; _id: string }) => {
+                        return occupation._name;
+                      })
+                      .join(", "),
+                    select: selectedProfile?.get("id") === profile._id,
+                    onClick: () => idSwitcher(selectedProfile, profile._profile, setSelectedProfile),
                   };
                 })}
             />
