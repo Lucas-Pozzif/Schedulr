@@ -9,6 +9,8 @@ import { stateSwitcher } from "../../Function/functions-imports";
 import { ActivityForm } from "../activity-form/activity-form";
 import { ErrorPage } from "../../Pages/error-page/error-page";
 
+import "./profile-form.css";
+
 type ProfileFormType = {
   account?: Account;
   groupForm: Group;
@@ -71,19 +73,19 @@ export function ProfileForm({ account, groupForm, setGroupForm, profile = new Pr
     */
   };
 
-  const saveProfessional = async () => {
+  const saveProfile = async () => {
     setLoading(true);
-    // if (profileForm.get("id")) {
-    //   await profileForm.setProfessional();
-    //   const idIndex = groupForm.getProfessionalsIds().indexOf(profileForm.get("id"));
-    //   const professional = groupForm.getProfessionals();
-    //   professional[idIndex] = profileForm;
-    // } else {
-    //   await profileForm.addProfessional();
-    //   groupForm.setProfessionalsIds([...groupForm.getProfessionalsIds(), profileForm.get("id")]);
-    //   groupForm.setProfessionals([...groupForm.getProfessionals(), profileForm]);
-    // }
-    setGroupForm(new Group(groupForm));
+    var updatedProfiles = [...groupForm.get("profiles")];
+
+    if (profileForm.get("id") === "") {
+      profileForm.generateLocalId();
+      updatedProfiles.push(profileForm.groupFormat());
+    } else {
+      const profileIndex = groupForm.get("profiles").findIndex((profile: { _id: string; _profile: Profile }) => profile._id == profileForm.get("id"));
+      updatedProfiles[profileIndex] = profileForm.groupFormat();
+    }
+
+    groupForm.updateValue("profiles", updatedProfiles, false, setGroupForm);
     setLoading(false);
     onClickReturn();
   };
@@ -96,13 +98,13 @@ export function ProfileForm({ account, groupForm, setGroupForm, profile = new Pr
     setSelectedOccupation(null);
   };
 
-  const handleOccupationInput = (occupations: { _name: string; _id: string }[], input: string) => {
-    if (selectedOccupation === null) {
-      setSelectedOccupation(profileForm.generateNewOccupation());
-    }
-    const occupationIndex = occupations.findIndex((occupation) => occupation._id === selectedOccupation);
-    occupations[occupationIndex]._name = input;
-    profileForm.updateValue("occupations", occupations, setProfileForm);
+  const handleOccupationInput = (input: string) => {
+    var id = selectedOccupation === null ? profileForm.generateNewOccupation() : selectedOccupation;
+    if (id !== selectedOccupation) setSelectedOccupation(id);
+    const occupationIndex = profileForm.get("occupations").findIndex((occupation: { _name: string; _id: string }) => occupation._id === id);
+    const updatedOccupations = profileForm.get("occupations");
+    updatedOccupations[occupationIndex]._name = input;
+    profileForm.updateValue("occupations", updatedOccupations, setProfileForm);
   };
 
   const handleDelete = async () => {
@@ -125,7 +127,7 @@ export function ProfileForm({ account, groupForm, setGroupForm, profile = new Pr
       onClick: () => setTab(2),
     },
     {
-      title: "Alterar Profissionais",
+      title: "Alterar Ocupações",
       subtitle: `${profileForm.get("occupations").length} Ocupações criadas`,
       onClick: () => setTab(3),
     },
@@ -218,6 +220,7 @@ export function ProfileForm({ account, groupForm, setGroupForm, profile = new Pr
             <IconCarousel items={professionalButtons} />
             <p className={`pf-message ${message ? "" : "hidden"}`}>{message}</p>
             <LinkList items={buttonList} />
+            <BottomPopup stage={profileForm.isValid() === true ? 1 : 0} title={"Editando..."} subtitle={"Possui alterações"} buttonTitle={"Salvar alterações"} onClick={async () => await saveProfile()} />
             <Popup title={popupData.title} text={popupData.text} display={popupData.display} onClickExit={popupData.onClickExit} buttons={popupData.buttons} />
           </div>
         );
@@ -278,7 +281,7 @@ export function ProfileForm({ account, groupForm, setGroupForm, profile = new Pr
                   return {
                     title: activity._activity.get("name"),
                     subtitle: activity._activity.formattedDuration(),
-                    select: profileForm.get("activities").filter((item: { _id: string; _activity: Activity }) => item._activity.get("id") === activity._activity.get("id")),
+                    select: profileForm.get("activities").includes(activity._id),
                     onClick: () => profileForm.handleActivity(activity._id, setProfileForm),
                   };
                 })}
@@ -294,17 +297,17 @@ export function ProfileForm({ account, groupForm, setGroupForm, profile = new Pr
               subtitle='Ocupações do profissional'
               icon={bin}
               maxLength={30}
-              onChange={(e) => handleOccupationInput(profileForm.get("occupations"), e.target.value)}
+              onChange={(e) => handleOccupationInput(e.target.value)}
               onClickReturn={() => setTab(0)}
               onClickIcon={() => handleDeleteOccupation()}
             />
             <IconCarousel items={tabCarousel} />
-            <SubHeader title={`${profileForm.get("occupations").length} Ocupações criadas`} buttonTitle={"Salvar"} onClick={() => setTab(2)} />
+            <SubHeader title={`${profileForm.get("occupations").length} Ocupações criadas`} buttonTitle={"Salvar"} onClick={() => setTab(0)} />
             <ItemList
               items={profileForm.get("occupations").map((occupation: { _name: string; _id: string }) => {
                 return {
-                  title: occupation,
-                  select: occupation._id == selectedOccupation,
+                  title: occupation._name,
+                  select: occupation._id === selectedOccupation,
                   onClick: () => stateSwitcher(selectedOccupation, occupation._id, setSelectedOccupation),
                 };
               })}
