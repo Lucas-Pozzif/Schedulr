@@ -211,7 +211,10 @@ export function ProfessionalSchedulePage() {
   const saveSchedule = async () => {
     if (changedValues.length === 0) return;
     setLoading(true);
-    const updatePromises = changedValues.map(async ({ day, index }) => {
+    const updatePromises = changedValues.map(async (value) => {
+      if (!value) return;
+      const day = value.day;
+      const index = value.index;
       return await professional.updateSchedule(day, index.toString(), professional.getSchedule()[day][index]);
     });
 
@@ -405,8 +408,9 @@ export function ProfessionalSchedulePage() {
                       }),
                     };
                   })
-                  .filter((value): value is { day: string; index: number } => value !== undefined);
+                  .filter((value): value is { day: string; index: number } => value !== undefined && value !== null);
 
+                console.log(allTimes);
                 setSelectedTimeList([...allTimes]);
               }}
             />
@@ -481,6 +485,7 @@ export function ProfessionalSchedulePage() {
                   };
 
                   selectedTimeList.forEach((time) => {
+                    if (!time) return; // If checking an unconsidered index, return
                     if (professional.getSchedule()?.[time.day]?.[time.index] === undefined) {
                       const blockedSchedule = professional.getSchedule();
 
@@ -575,13 +580,15 @@ export function ProfessionalSchedulePage() {
               title={formattedDate(selectedDay)}
               buttonTitle={"Selecionar Tudo"}
               onClick={() => {
-                const allTimes = serviceList.map((_, index) => {
-                  const realIndex = index + startIndex;
-                  return {
-                    index: realIndex,
-                    day: day,
-                  };
-                });
+                const allTimes = serviceList
+                  .map((_, index) => {
+                    const realIndex = index + startIndex;
+                    return {
+                      index: realIndex,
+                      day: day,
+                    };
+                  })
+                  .filter((value): value is { day: string; index: number } => value !== undefined || value !== null);
                 setSelectedTimeList([...allTimes]);
               }}
             />
