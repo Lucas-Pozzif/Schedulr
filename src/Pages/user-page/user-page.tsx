@@ -123,7 +123,7 @@ export function UserPage() {
               onChangeNumber={(e) => user.updateState(setUser, "number", e.target.value)}
             />
             <IconList items={hasAccount ? listButtons : listButtonsUnlogged} />
-            <p className='version-seeker'>v0.1.3</p>
+            <p className='version-seeker'>v0.1.4</p>
           </div>
         );
       case 1:
