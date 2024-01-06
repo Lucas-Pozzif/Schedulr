@@ -4,11 +4,12 @@ import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../Services/firebase/firebase";
 
-import { SmallHeader, IconList, UserPageLoading, Profile, BottomButton, Line } from "../../Components/component-imports";
-import { addCalendar, calendar, confirm, defaultUser, edit, google, logOutIcon, version } from "../../_global";
+import { SmallHeader, IconList, UserPageLoading, Profile, BottomButton } from "../../Components/component-imports";
+import { calendar, confirm, defaultUser, edit, google, logOutIcon } from "../../_global";
 import { User } from "../../Classes/classes-imports";
 import { ErrorPage } from "../error-page/error-page";
 import { BlockInput } from "../../Components/inputs/block-input/block-input";
+import { version } from "../../_version";
 
 type userButtonType = {
   icon: string;
@@ -78,7 +79,7 @@ export function UserPage() {
         if (editing) {
           setLoading(true);
           setEditing(false);
-          const formattedNumber = user.getNumber().startsWith("55") || user.getNumber() == "" ? user.getNumber() : "55" + user.getNumber();
+          const formattedNumber = user.getNumber().startsWith("55") || user.getNumber() === "" ? user.getNumber() : "55" + user.getNumber();
 
           await user.updateUser({ name: user.getName() });
           await user.updateUser({ number: formattedNumber });

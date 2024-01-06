@@ -7,7 +7,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { capitalize, findRepetitionBlocks, formattedDate, parseDate } from "../../../Function/functions-imports";
 import { editSquare, fullDays, fullTimeArray, longTimeArray, save, week } from "../../../_global";
 import { Professional, Service, User } from "../../../Classes/classes-imports";
-import { BottomButton, Carousel, DoubleButton, DualList, GenericHeader, Line, SchedulePageLoading, SubHeader } from "../../../Components/component-imports";
+import { Carousel, DoubleButton, DualList, GenericHeader, Line, SchedulePageLoading, SubHeader } from "../../../Components/component-imports";
 
 import { auth } from "../../../Services/firebase/firebase";
 import { ErrorPage } from "../../error-page/error-page";
