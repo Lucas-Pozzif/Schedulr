@@ -1,3 +1,4 @@
+import { emptySquare } from "../../../_global";
 import { ReturnButton } from "../../buttons/return-button/return-button";
 import "./generic-header.css";
 
@@ -13,7 +14,7 @@ export function GenericHeader({ title, icon, onClickReturn, onClickIcon }: Gener
     <div className='generic-header'>
       <ReturnButton onClick={onClickReturn} />
       <p className='gh-title'>{title}</p>
-      <img className='gh-icon' src={icon} onClick={onClickIcon} />
+      <img className='gh-icon' src={icon == "" ? emptySquare : icon} onClick={onClickIcon} />
     </div>
   );
 }

@@ -224,6 +224,7 @@ export function ProfessionalSchedulePage() {
     setLoading(false);
   };
 
+  console.log(professional.getSchedule());
   const tabHandler = () => {
     switch (tab) {
       case 0: // Schedule tab
@@ -475,9 +476,9 @@ export function ProfessionalSchedulePage() {
                 .filter((item): item is NonNullable<typeof item> => item !== null)}
             />
             <DoubleButton
-              title={["Bloquear", "Editar"]}
+              title={["Bloquear", "Desbloquear"]}
               onClick={[
-                () => {
+                async () => {
                   const blockedValue = {
                     service: "Bloqueado",
                     client: user.getId(),
@@ -512,9 +513,104 @@ export function ProfessionalSchedulePage() {
                     }
                   });
                   setSelectedTimeList([]);
+
+                  //The save method is from here below
+                  setLoading(true);
+                  var updatePromises: any[] = [];
+                  const scheduleValue = professional.getSchedule();
+
+                  if (!editedTime.edited) {
+                    updatePromises = selectedTimeList.map(async ({ day, index }) => {
+                      if (scheduleValue[day][index]) {
+                        return await professional.deleteScheduleIndex(day, index.toString());
+                      }
+                    });
+                  } else {
+                    updatePromises = selectedTimeList.map(async ({ day, index }) => {
+                      return await professional.updateSchedule(day, index.toString(), editedTime);
+                    });
+                  }
+                  await Promise.all(updatePromises);
+                  const filteredArray = changedValues.filter((item) => {
+                    return !selectedTimeList.some((selectedItem) => {
+                      return item.day === selectedItem.day && item.index === selectedItem.index;
+                    });
+                  });
+                  setChangedValues(filteredArray);
+                  setSelectedTimeList([]);
+                  setEditedTime((time) => ({
+                    ...time,
+                    edited: true,
+                    service: "",
+                  }));
+                  setTab(1);
+                  setLoading(false);
                 },
-                () => {
-                  setTab(3); //Edit time tab
+                async () => {
+                  const newValues = selectedTimeList.map((time) => {
+                    if (!time) return; // If checking an unconsidered index, return
+                    if (professional.getSchedule()?.[time.day]?.[time.index] === undefined) {
+                      const updatedSchedule = professional.getSchedule();
+
+                      professional.setSchedule(updatedSchedule);
+                      SetProfessional(new Professional(professional));
+
+                      const newValues = selectedTimeList.map((time) => {
+                        const updatedChangedValues = changedValues.find((value) => isEqual(time, value));
+                        if (!updatedChangedValues) {
+                          return time;
+                        }
+                        return undefined;
+                      });
+
+                      const filteredNewValues = newValues.filter((value): value is { day: string; index: number } => value !== undefined);
+
+                      setChangedValues([...changedValues, ...filteredNewValues]);
+                    }
+
+                    const updatedChangedValues = changedValues.find((value) => isEqual(time, value));
+                    if (!updatedChangedValues) {
+                      return time;
+                    }
+                    return undefined;
+                  });
+
+                  const filteredNewValues = newValues.filter((value): value is { day: string; index: number } => value !== undefined);
+
+                  setChangedValues([...changedValues, ...filteredNewValues]);
+                  setEditedTime((time) => ({
+                    ...time,
+                    edited: false,
+                    service: "",
+                  }));
+
+                  //The save method is from here below
+                  setLoading(true);
+                  var updatePromises: any[] = [];
+                  const scheduleValue = professional.getSchedule();
+                  updatePromises = selectedTimeList.map(async ({ day, index }) => {
+                    if (scheduleValue[day][index]) {
+                      return await professional.deleteScheduleIndex(day, index.toString());
+                    }
+                  });
+
+                  await Promise.all(updatePromises);
+                  const filteredArray = changedValues.filter((item) => {
+                    return !selectedTimeList.some((selectedItem) => {
+                      return item.day === selectedItem.day && item.index === selectedItem.index;
+                    });
+                  });
+                  setChangedValues(filteredArray);
+                  setSelectedTimeList([]);
+                  setEditedTime((time) => ({
+                    ...time,
+                    edited: true,
+                    service: "",
+                  }));
+                  setTab(1);
+                  setLoading(false);
+                  console.log();
+                  //setTab(3); //Edit time tab
                 },
               ]}
               hide={[selectedTimeList.length <= 0, selectedTimeList.length <= 0]}

@@ -51,3 +51,4 @@ export const dollar = require("./Assets/dollar.png");
 export const redClose = require("./Assets/red-close.png");
 export const config = require("./Assets/config.png");
 export const defaultUser = require("./Assets/default-user.png");
+export const emptySquare = require("./Assets/rectangle.png");
