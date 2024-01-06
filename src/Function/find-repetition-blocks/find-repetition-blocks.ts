@@ -1,33 +1,33 @@
-
 export function findRepetitionBlocks(schedule: any) {
-    const blocks = [];
-    let currentScheduleItem = null;
-    let firstIndex = null;
+  const blocks = [];
+  let currentScheduleItem = null;
+  let firstIndex = null;
 
-    const scheduleKeys = Object.keys(schedule).sort((a, b) => parseInt(a) - parseInt(b));
+  const scheduleKeys = Object.keys(schedule).sort((a, b) => parseInt(a) - parseInt(b));
 
-    for (let i = 0; i < scheduleKeys.length; i++) {
-        const currentKey = scheduleKeys[i];
-        const { service, client } = schedule[currentKey];
+  for (let i = 0; i < scheduleKeys.length; i++) {
+    const currentKey = parseInt(scheduleKeys[i]);
+    const previousKey = parseInt(scheduleKeys[i - 1]);
+    const { service, client } = schedule[currentKey];
 
-        if (firstIndex === null || (service === currentScheduleItem?.service && client === currentScheduleItem?.client)) {
-            // Start or continue the current block
-            if (firstIndex === null) {
-                firstIndex = parseInt(currentKey, 10);
-            }
-            currentScheduleItem = { service, client };
-        } else {
-            // End of the current block, store first and last indexes
-            blocks.push([firstIndex, parseInt(scheduleKeys[i - 1], 10)]);
-            firstIndex = parseInt(currentKey, 10);
-            currentScheduleItem = { service, client };
-        }
+    if (firstIndex === null || (service === currentScheduleItem?.service && client === currentScheduleItem?.client && currentKey === previousKey + 1)) {
+      // Start or continue the current block
+      if (firstIndex === null) {
+        firstIndex = currentKey;
+      }
+      currentScheduleItem = { service, client };
+    } else {
+      // End of the current block, store first and last indexes
+      blocks.push([firstIndex, previousKey]);
+      firstIndex = currentKey;
+      currentScheduleItem = { service, client };
     }
+  }
 
-    if (firstIndex !== null) {
-        // Store the last block if there is one
-        blocks.push([firstIndex, parseInt(scheduleKeys[scheduleKeys.length - 1], 10)]);
-    }
+  if (firstIndex !== null) {
+    // Store the last block if there is one
+    blocks.push([firstIndex, parseInt(scheduleKeys[scheduleKeys.length - 1])]);
+  }
 
-    return blocks;
+  return blocks;
 }

@@ -5,7 +5,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../Services/firebase/firebase";
 
 import { SmallHeader, IconList, UserPageLoading, Profile, BottomButton, Line } from "../../Components/component-imports";
-import { addCalendar, calendar, confirm, defaultUser, edit, google, logOutIcon } from "../../_global";
+import { addCalendar, calendar, confirm, defaultUser, edit, google, logOutIcon, version } from "../../_global";
 import { User } from "../../Classes/classes-imports";
 import { ErrorPage } from "../error-page/error-page";
 import { BlockInput } from "../../Components/inputs/block-input/block-input";
@@ -123,7 +123,7 @@ export function UserPage() {
               onChangeNumber={(e) => user.updateState(setUser, "number", e.target.value)}
             />
             <IconList items={hasAccount ? listButtons : listButtonsUnlogged} />
-            <p className='version-seeker'>v0.1.4</p>
+            <p className='version-seeker'>{version}</p>
           </div>
         );
       case 1:
