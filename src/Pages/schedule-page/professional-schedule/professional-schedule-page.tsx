@@ -517,19 +517,11 @@ export function ProfessionalSchedulePage() {
                   //The save method is from here below
                   setLoading(true);
                   var updatePromises: any[] = [];
-                  const scheduleValue = professional.getSchedule();
 
-                  if (!editedTime.edited) {
-                    updatePromises = selectedTimeList.map(async ({ day, index }) => {
-                      if (scheduleValue[day][index]) {
-                        return await professional.deleteScheduleIndex(day, index.toString());
-                      }
-                    });
-                  } else {
-                    updatePromises = selectedTimeList.map(async ({ day, index }) => {
-                      return await professional.updateSchedule(day, index.toString(), editedTime);
-                    });
-                  }
+                  updatePromises = selectedTimeList.map(async ({ day, index }) => {
+                    return await professional.updateSchedule(day, index.toString(), blockedValue);
+                  });
+
                   await Promise.all(updatePromises);
                   const filteredArray = changedValues.filter((item) => {
                     return !selectedTimeList.some((selectedItem) => {
@@ -541,7 +533,7 @@ export function ProfessionalSchedulePage() {
                   setEditedTime((time) => ({
                     ...time,
                     edited: true,
-                    service: "",
+                    service: "Bloqueado",
                   }));
                   setTab(1);
                   setLoading(false);
@@ -609,7 +601,6 @@ export function ProfessionalSchedulePage() {
                   }));
                   setTab(1);
                   setLoading(false);
-                  console.log();
                   //setTab(3); //Edit time tab
                 },
               ]}
