@@ -256,8 +256,8 @@ export function ProfessionalSchedulePage() {
                         const lastIndex = block[1];
                         const scheduleItem = schedule[firstIndex];
 
-                        const serviceName = scheduleItem.edited ? scheduleItem.service : serviceCache[scheduleItem.service].getName();
-                        const clientName = clientCache[scheduleItem.client]?.getName();
+                        const serviceName = scheduleItem.edited ? scheduleItem.service : serviceCache[scheduleItem.service]?.getName() || 'Erro';
+                        const clientName = clientCache[scheduleItem.client]?.getName() || 'Erro';
 
                         const currentBlock = {
                           client: scheduleItem.client,
