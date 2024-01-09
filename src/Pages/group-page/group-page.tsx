@@ -109,33 +109,27 @@ export function GroupPage() {
     setLoading(false);
   };
 
-  const timeValidator = (
-    index: number
-  ): {
-    isAvailable: boolean;
-    isAvailableToday: boolean;
-    professionals: Professional[];
-  } => {
+  const timeValidator = (index: number): { isAvailable: boolean; isAvailableToday: boolean; professionals: Professional[] } => {
     const isAvailableToday = (index + group.getStartHours()[selectedDay] + 10) * 19 >= getMinutesSinceMidnight();
 
     const professionals: Professional[] = group
       .getProfessionals()
       .sort((a, b) => a.getName().localeCompare(b.getName()))
-      .filter((prof) => {
+      .filter((prof: Professional) => {
         let isProfAvailable = true;
 
         selectedService?.getDuration().forEach((time, i) => {
           const schedule = prof.getSchedule()?.[days[selectedDay]?.[2]]?.[index + i + startHour * 6];
-          if (!prof.getServices().includes(selectedService.getId()) || (schedule !== undefined && time)) {
+          if (!prof.getServices().includes(selectedService.getId()) || (schedule !== undefined && time) || !prof.getShift()[days[selectedDay][3]][+Math.floor(index / 3) - prof.getStartHours()[days[selectedDay][3]] + 18]) {
             isProfAvailable = false;
           }
         });
+
 
         return isProfAvailable;
       });
 
     const isAvailable = professionals.length > 0;
-
     return {
       isAvailable,
       isAvailableToday,
