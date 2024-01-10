@@ -13,6 +13,8 @@ import { ErrorPage } from "../error-page/error-page";
 import { DualButton } from "../../Components/buttons/dual-button/dual-button";
 import { GroupConfigPage } from "../group-config-page/group-config-page";
 import { BlockInput } from "../../Components/inputs/block-input/block-input";
+import { ImageButton } from "../../Components/buttons/image-button/image-button";
+import { ImageList } from "../../Components/lists/image-list/image-list";
 
 export function GroupPage() {
   const [loading, setLoading] = useState(false);
@@ -124,7 +126,6 @@ export function GroupPage() {
             isProfAvailable = false;
           }
         });
-
 
         return isProfAvailable;
       });
@@ -331,7 +332,7 @@ export function GroupPage() {
           <div className='tab'>
             <GenericHeader title='Escolha o Profissional' onClickReturn={() => setTab(2)} />
             <IconCarousel items={tabCarousel} />
-            <ItemList
+            <ImageList
               items={group
                 .getProfessionals()
                 .sort((a, b) => a.getName().localeCompare(b.getName()))
@@ -341,6 +342,7 @@ export function GroupPage() {
                         title: professional.getName(),
                         subtitle: professional.getOccupations().join(", "),
                         select: professional.getId() === selectedProfessional?.getId(),
+                        image: professional.getImage(),
                         onClick: () => idSwitcher(selectedProfessional, professional, setSelectedProfessional),
                       }
                     : null;
