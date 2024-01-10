@@ -7,7 +7,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { capitalize, findRepetitionBlocks, formattedDate, parseDate } from "../../../Function/functions-imports";
 import { editSquare, fullDays, fullTimeArray, longTimeArray, save, week } from "../../../_global";
 import { Professional, Service, User } from "../../../Classes/classes-imports";
-import { Carousel, DoubleButton, DualList, GenericHeader, Line, SchedulePageLoading, SubHeader } from "../../../Components/component-imports";
+import { BottomButton, Carousel, DoubleButton, DualList, GenericHeader, Line, SchedulePageLoading, SubHeader } from "../../../Components/component-imports";
 
 import { auth } from "../../../Services/firebase/firebase";
 import { ErrorPage } from "../../error-page/error-page";
@@ -256,8 +256,8 @@ export function ProfessionalSchedulePage() {
                         const lastIndex = block[1];
                         const scheduleItem = schedule[firstIndex];
 
-                        const serviceName = scheduleItem.edited ? scheduleItem.service : serviceCache[scheduleItem.service]?.getName() || 'Erro';
-                        const clientName = clientCache[scheduleItem.client]?.getName() || 'Erro';
+                        const serviceName = scheduleItem.edited ? scheduleItem.service : serviceCache[scheduleItem.service]?.getName() || "Erro";
+                        const clientName = clientCache[scheduleItem.client]?.getName() || "Erro";
 
                         const currentBlock = {
                           client: scheduleItem.client,
@@ -283,13 +283,7 @@ export function ProfessionalSchedulePage() {
               );
             })}
             <SubHeader title={formattedDate(dayList[dayList.length - 1])} buttonTitle={"Próxima semana"} onClick={async () => loadWeek()} />
-            {selectedBlock !== null ? (
-              <DoubleButton
-                hide={[selectedBlock === null, clientCache?.[selectedBlock!.client]?.getNumber() === ""]}
-                title={["Editar", "Whatsapp"]}
-                onClick={[() => setTab(2), () => window.open(`https://wa.me/${clientCache[selectedBlock!.client].getNumber()}`)]}
-              />
-            ) : null}
+            {selectedBlock !== null ? <BottomButton hide={clientCache?.[selectedBlock!.client]?.getNumber() === ""} title={"Whatsapp"} onClick={() => window.open(`https://wa.me/${clientCache[selectedBlock!.client].getNumber()}`)} /> : null}
           </div>
         );
       case 1: // Edit schedule tab
