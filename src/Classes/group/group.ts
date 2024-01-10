@@ -290,7 +290,7 @@ export class Group {
   }
 
   public async getGroup(id?: string) {
-    if (!id) return
+    if (!id) return;
     const docRef = doc(db, "groups", id);
     const docSnap = await getDoc(docRef);
     if (!docSnap.data()) return;
@@ -371,9 +371,8 @@ export class Group {
 
       await uploadBytes(bannerRef, await bannerResponse.blob());
       await uploadBytes(profileRef, await profileResponse.blob());
-
     } catch (error) {
-      console.error('failed to fetch images')
+      console.error("failed to fetch images", error);
     }
   }
 
