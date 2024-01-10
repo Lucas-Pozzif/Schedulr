@@ -1,8 +1,9 @@
 import { DocumentSnapshot, collection, deleteDoc, deleteField, doc, getDoc, getDocs, query, serverTimestamp, setDoc, updateDoc, where } from "firebase/firestore";
-import { db } from "../../Services/firebase/firebase";
+import { db, storage } from "../../Services/firebase/firebase";
 import { Schedule, ScheduleItem } from "../schedule/schedule";
 import { User } from "../user/user";
 import { Service } from "../service/service";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 interface ProfessionalInterface {
   name: string;
@@ -12,7 +13,7 @@ interface ProfessionalInterface {
   services: string[];
   shift: boolean[][];
   startHours: number[];
-  images: string[];
+  image: string;
 }
 
 export class Professional {
@@ -24,7 +25,7 @@ export class Professional {
   private _services: string[];
   private _shift: boolean[][];
   private _startHours: number[];
-  private _images: string[];
+  private _image: string;
   private _schedule: Schedule | any;
 
   constructor(
@@ -36,7 +37,7 @@ export class Professional {
     services: string[] = [],
     shift: boolean[][] = [],
     startHours: number[] = [-1, -1, -1, -1, -1, -1, -1],
-    images: string[] = [],
+    image: string = "",
     schedule: Schedule = {}
   ) {
     if (typeof arg === "string") {
@@ -49,11 +50,11 @@ export class Professional {
       this._services = services;
       this._shift = shift;
       this._startHours = startHours;
-      this._images = images;
+      this._image = image;
       this._schedule = schedule;
     } else if (arg instanceof Professional) {
       // Case: Another Professional object provided
-      const { _id, _name, _occupations, _email, _isAdmin, _services, _shift, _startHours, _images, _schedule } = arg;
+      const { _id, _name, _occupations, _email, _isAdmin, _services, _shift, _startHours, _image, _schedule } = arg;
       this._id = _id;
       this._name = _name;
       this._occupations = _occupations;
@@ -62,7 +63,7 @@ export class Professional {
       this._services = _services;
       this._shift = _shift;
       this._startHours = _startHours;
-      this._images = _images;
+      this._image = _image;
       this._schedule = _schedule;
     } else {
       // Case: No arguments or invalid argument type
@@ -74,7 +75,7 @@ export class Professional {
       this._services = services;
       this._shift = shift;
       this._startHours = startHours;
-      this._images = images;
+      this._image = image;
       this._schedule = schedule;
     }
   }
@@ -111,8 +112,8 @@ export class Professional {
     return this._startHours;
   }
 
-  getImages(): string[] {
-    return this._images;
+  getImage(): string {
+    return this._image;
   }
 
   getSchedule(): Schedule {
@@ -152,8 +153,8 @@ export class Professional {
     this._startHours = startHours;
   }
 
-  setImages(images: string[]) {
-    this._images = images;
+  setImage(image: string) {
+    this._image = image;
   }
 
   setSchedule(schedule: Schedule) {
@@ -172,7 +173,6 @@ export class Professional {
     this._services = profData!.services;
     this._shift = [profData!.shift[0], profData!.shift[1], profData!.shift[2], profData!.shift[3], profData!.shift[4], profData!.shift[5], profData!.shift[6]];
     this._startHours = profData!.startHours;
-    this._images = profData!.images;
   }
 
   //Firestore methods
@@ -190,6 +190,7 @@ export class Professional {
 
     const docRef = doc(db, "professionals_dev", this._id);
 
+    await this.uploadImages();
     await setDoc(docRef, this.getFirestoreFormat());
     await this.updateTimeStamp();
   }
@@ -200,7 +201,7 @@ export class Professional {
     }
 
     const docRef = doc(db, "professionals_dev", this._id);
-    const propertiesToUpdate: (keyof ProfessionalInterface)[] = ["name", "occupations", "email", "isAdmin", "services", "shift", "images"];
+    const propertiesToUpdate: (keyof ProfessionalInterface)[] = ["name", "occupations", "email", "isAdmin", "services", "shift", "image"];
 
     propertiesToUpdate.forEach((prop) => {
       if (updates[prop] !== undefined) {
@@ -218,6 +219,26 @@ export class Professional {
     if (!docSnap.data()) return;
 
     this.fillFromSnapshot(docSnap);
+    await this.downloadImage();
+  }
+
+  public async downloadImage() {
+    const imageRef = ref(storage, `professionals/${this._id}/profile`);
+    try {
+      this._image = await getDownloadURL(imageRef);
+    } catch (error) {
+      this._image = "";
+    }
+  }
+  private async uploadImages() {
+    try {
+      const imageRef = ref(storage, `professionals/${this._id}/profile`);
+      const imageResponse = await fetch(this._image);
+
+      await uploadBytes(imageRef, await imageResponse.blob());
+    } catch (error) {
+      console.error("failed to fetch images", error);
+    }
   }
 
   public async deleteProfessional() {
@@ -248,7 +269,6 @@ export class Professional {
         6: this._shift[6] || [],
       },
       startHours: this._startHours,
-      images: this._images,
     };
   }
 
@@ -359,7 +379,7 @@ export class Professional {
     return hasName;
   }
 
-  public updateProfessionalState(setter: React.Dispatch<React.SetStateAction<Professional>>, attribute: "id" | "name" | "occupations" | "email" | "isAdmin" | "services" | "shift" | "startHours" | "images" | "schedule", newValue: any) {
+  public updateProfessionalState(setter: React.Dispatch<React.SetStateAction<Professional>>, attribute: "id" | "name" | "occupations" | "email" | "isAdmin" | "services" | "shift" | "startHours" | "image" | "schedule", newValue: any) {
     switch (attribute) {
       case "id":
         this._id = newValue;
@@ -385,8 +405,8 @@ export class Professional {
       case "startHours":
         this._startHours = newValue;
         break;
-      case "images":
-        this._images = newValue;
+      case "image":
+        this._image = newValue;
         break;
       case "schedule":
         this._schedule = newValue;
