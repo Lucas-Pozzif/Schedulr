@@ -320,7 +320,8 @@ export class Professional {
         console.log("Document updated successfully!");
       } else {
         // Document doesn't exist, create it with the field
-        await setDoc(docRef, { [index]: value });
+        await setDoc(docRef, {});
+        await updateDoc(docRef, { [index]: value });
         console.log("Document created successfully!");
       }
     } catch (e) {
