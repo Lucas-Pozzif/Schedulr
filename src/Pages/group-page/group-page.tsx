@@ -6,8 +6,8 @@ import { auth } from "../../Services/firebase/firebase";
 import { useNavigate, useParams } from "react-router-dom";
 import { Group, Professional, Service, User } from "../../Classes/classes-imports";
 import { capitalize, formatArray, formatDuration, idSwitcher } from "../../Function/functions-imports";
-import { BottomButton, BottomPopup, Carousel, GenericHeader, GroupBanner, GroupFormLoading, GroupHeader, IconCarousel, ItemList, Line, LinkList } from "../../Components/component-imports";
-import { calendar, clock, config, fullDays, userIcon } from "../../_global";
+import { BottomButton, BottomPopup, Carousel, GenericHeader, GroupBanner, GroupFormLoading, GroupHeader, IconCarousel, ItemList, Line, LinkList, SmallHeader } from "../../Components/component-imports";
+import { calendar, clock, config, fullDays, fullTimeArray, userIcon } from "../../_global";
 import { DualList } from "../../Components/lists/dual-list/dual-list";
 import { ErrorPage } from "../error-page/error-page";
 import { DualButton } from "../../Components/buttons/dual-button/dual-button";
@@ -158,7 +158,7 @@ export function GroupPage() {
   const handleSchedule = async () => {
     if (selectedService && selectedProfessional && selectedTime) {
       setLoading(true);
-      if (user.getId() == "") {
+      if (user.getId() === "") {
         setTab(6);
       } else {
         for (let i = 0; i < selectedService.getDuration().length; i++) {
@@ -238,8 +238,11 @@ export function GroupPage() {
                         icon: calendar,
                         title: "Agenda",
                         onClick: () => {
-                          const route = userProfId ? `/professional/schedule/${userProfId}` : `/user/schedule/${user.getId()}`;
-                          navigate(route);
+                          if (userProfId) {
+                            setTab(7);
+                          } else {
+                            navigate(`/user/schedule/${user.getId()}`);
+                          }
                         },
                       }
                   : undefined
@@ -309,7 +312,7 @@ export function GroupPage() {
                   return validation.isAvailable && selectedDay > -1
                     ? {
                         title: selectedService?.getName() || "Serviço não selecionado",
-                        subtitle: formatArray(validation.professionals.map((prof) => prof.getName())),
+                        //subtitle: validation.professionals.map((prof) => prof.getName()).join(', '),
                         select: selectedTime !== null && index + startHour * 6 >= selectedTime && index + startHour * 6 < selectedTime + (selectedService?.getDuration().length || 0),
                         onClick: () => {
                           setSelectedProfessional(null);
@@ -394,7 +397,7 @@ export function GroupPage() {
               select={true}
               leftButton={{
                 title: days[selectedDay][0],
-                subtitle: `${days[selectedDay][1]} - ${timeArray[selectedTime || 0]}`,
+                subtitle: `${days[selectedDay][1]} - ${fullTimeArray[selectedTime || 0]}`,
               }}
             />
             <div className='gp-confirm-bottom-block'>
@@ -406,7 +409,7 @@ export function GroupPage() {
             <BottomButton
               title={"Retornar a Página Inicial"}
               onClick={() => {
-                setSelectedDay(-1);
+                setSelectedDay(0);
                 setSelectedService(null);
                 setSelectedTime(null);
                 setSelectedProfessional(null);
@@ -433,7 +436,6 @@ export function GroupPage() {
                 setLoading(true);
                 const formattedNumber = user.getNumber().startsWith("55") ? user.getNumber() : "55" + user.getNumber();
                 user.setNumber(formattedNumber);
-
                 await user.loginAnonymous();
                 await user.addUser();
                 profSchedValue.client = user.getId();
@@ -443,6 +445,26 @@ export function GroupPage() {
                 setLoading(false);
               }}
             />
+          </div>
+        );
+      case 7: // Professional list tab
+        return (
+          <div className='tab'>
+            <SmallHeader title={group.getTitle()} onClickReturn={() => setTab(0)} />
+            <ItemList
+              items={group
+                .getProfessionals()
+                .sort((a, b) => a.getName().localeCompare(b.getName())) // Alphabetical order
+                .map((professional: Professional) => {
+                  return {
+                    title: professional.getName(),
+                    subtitle: professional.getOccupations().join(", "),
+                    select: selectedProfessional?.getId() === professional.getId(),
+                    onClick: () => idSwitcher(selectedProfessional, professional, setSelectedProfessional),
+                  };
+                })}
+            />
+            <BottomButton title={`Ver ${selectedProfessional?.getName()}`} hide={selectedProfessional === null} onClick={() => navigate(`/professional/schedule/${selectedProfessional?.getId()}`)} />
           </div>
         );
       default:
