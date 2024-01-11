@@ -286,7 +286,7 @@ export function GroupPage() {
                   };
                 })}
             />
-            <BottomPopup stage={selectedService ? 1 : 0} title={`${fullDays?.[selectedDay - 1] || ""} - ${days?.[selectedDay]?.[1] || ""}`} subtitle={selectedService?.getName()} buttonTitle={"Escolher Horário"} onClick={() => setTab(2)} />
+            <BottomPopup stage={selectedService ? 1 : 0} title={`${fullDays?.[selectedWeekDay] || ""} - ${days?.[selectedDay]?.[1] || ""}`} subtitle={selectedService?.getName()} buttonTitle={"Escolher Horário"} onClick={() => setTab(2)} />
           </div>
         );
       case 2: // Time tab
@@ -327,7 +327,7 @@ export function GroupPage() {
                 })
                 .filter((item): item is NonNullable<typeof item> => item !== null)}
             />
-            <BottomPopup stage={selectedTime ? 1 : 0} title={`${fullDays?.[selectedDay]} - ${days?.[selectedDay]?.[1]}`} subtitle={selectedService?.getName()} buttonTitle={"Escolher Profissional"} onClick={() => setTab(3)} />
+            <BottomPopup stage={selectedTime ? 1 : 0} title={`${fullDays?.[selectedWeekDay]} - ${days?.[selectedDay]?.[1]}`} subtitle={selectedService?.getName()} buttonTitle={"Escolher Profissional"} onClick={() => setTab(3)} />
           </div>
         );
       case 3: // Professional tab
@@ -354,9 +354,9 @@ export function GroupPage() {
             />
             <BottomPopup
               stage={selectedProfessional && selectedTime && selectedService ? (confirm ? 2 : 1) : 0}
-              title={`${fullDays?.[selectedDay]} - ${days?.[selectedDay]?.[1]}`}
+              title={`${fullDays?.[selectedWeekDay]} - ${days?.[selectedDay]?.[1]}`}
               subtitle={selectedService?.getName()}
-              buttonTitle={"Agendar Serviço"}
+              buttonTitle={confirm ? "Confirmar" : "Agendar Serviço"}
               onClick={() => {
                 if (confirm) handleSchedule();
                 else setConfirm(true);
@@ -369,7 +369,7 @@ export function GroupPage() {
                   title: selectedService?.getName() || "Serviço não selecionado",
                   subtitle: selectedProfessional?.getName() || "Profissional não selecionado",
                   selected: true,
-                  leftTitle: fullDays[selectedDay],
+                  leftTitle: fullDays[selectedWeekDay],
                   leftSubtitle: timeArray[selectedTime || 0],
                 },
               ]}
