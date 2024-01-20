@@ -257,7 +257,7 @@ export function ProfessionalSchedulePage() {
                         const scheduleItem = schedule[firstIndex];
 
                         const serviceName = scheduleItem.edited ? scheduleItem.service : serviceCache[scheduleItem.service]?.getName() || "Erro";
-                        const clientName = clientCache[scheduleItem.client]?.getName() || "Erro";
+                        const clientName = scheduleItem.service === "Bloqueado" ? "" : scheduleItem.edited ? scheduleItem.client : clientCache[scheduleItem.client]?.getName() || "Erro";
 
                         const currentBlock = {
                           client: scheduleItem.client,
@@ -439,7 +439,7 @@ export function ProfessionalSchedulePage() {
                   const available = scheduleItem === undefined;
 
                   const serviceName = available ? "Disponível" : scheduleItem?.edited ? scheduleItem?.service : serviceCache[scheduleItem?.service]?.getName();
-                  const clientName = clientCache[scheduleItem?.client]?.getName();
+                  const clientName = available || scheduleItem.service === "Bloqueado" ? "" : scheduleItem.edited ? scheduleItem.client : clientCache[scheduleItem?.client]?.getName();
 
                   const currentTime = {
                     day: selectedDay.toLocaleString("pt-BR", {

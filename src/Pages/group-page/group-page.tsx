@@ -18,6 +18,8 @@ import { ImageList } from "../../Components/lists/image-list/image-list";
 
 export function GroupPage() {
   const [loading, setLoading] = useState(false);
+  const [serviceLoading, setSLoading] = useState(false);
+  const [professionalLoading, setPLoading] = useState(false);
   const [user, setUser] = useState(new User());
   const [group, setGroup] = useState(new Group());
   const [tab, setTab] = useState(0);
@@ -36,17 +38,20 @@ export function GroupPage() {
 
   useEffect(() => {
     setLoading(true);
+    setSLoading(true);
+    setPLoading(true);
     const fetchData = async () => {
       onAuthStateChanged(auth, async (client) => {
         if (client?.uid) {
           await user.getUser(client.uid);
         }
         await group.getGroup(groupId);
-        await group.updateServices();
-        await group.updateProfessionals();
-        setGroup(new Group(group));
-
         setLoading(false);
+        await group.updateServices();
+        setSLoading(false);
+        await group.updateProfessionals();
+        setPLoading(false);
+        setGroup(new Group(group));
       });
     };
     fetchData();
@@ -85,6 +90,7 @@ export function GroupPage() {
   }
 
   const profSchedValue = {
+    edited: false,
     client: user.getId() || "error",
     service: selectedService?.getId() || "error",
   };
@@ -158,7 +164,7 @@ export function GroupPage() {
   const handleSchedule = async () => {
     if (selectedService && selectedProfessional && selectedTime) {
       setLoading(true);
-      if (user.getId() === "") {
+      if (user.getId() === "" || (userProfId && !profSchedValue.edited)) {
         setTab(6);
       } else {
         for (let i = 0; i < selectedService.getDuration().length; i++) {
@@ -207,19 +213,22 @@ export function GroupPage() {
       onClick: () => setTab(3),
     },
   ];
+
+  const userProfId = group
+    .getProfessionals()
+    .find((professional) => {
+      const professionalEmail = professional.getEmail().toLowerCase().replace(/\s/g, "");
+      const userEmail = user.getEmail().toLowerCase().replace(/\s/g, "");
+      return professionalEmail !== "" && professionalEmail === userEmail;
+    })
+    ?.getId();
+  console.log(userProfId);
+
   const tabHandler = () => {
     switch (tab) {
       case -1:
         return <div></div>;
       case 0: // Home tab
-        const userProfId = group
-          .getProfessionals()
-          .find((professional) => {
-            const professionalEmail = professional.getEmail().toLowerCase();
-            const userEmail = user.getEmail().toLowerCase();
-            return professionalEmail !== "" && professionalEmail === userEmail;
-          })
-          ?.getId();
         return (
           <div className='tab'>
             <GroupBanner banner={group.getBanner()} profile={group.getProfile()} returnButton onClickReturn={() => navigate(-1)} />
@@ -255,7 +264,9 @@ export function GroupPage() {
           </div>
         );
       case 1: // Service tab
-        return (
+        return serviceLoading ? (
+          <GroupFormLoading />
+        ) : (
           <div className='tab'>
             <GenericHeader title={"Escolha o serviço"} onClickReturn={() => setTab(0)} />
             <IconCarousel items={tabCarousel} />
@@ -282,6 +293,7 @@ export function GroupPage() {
                       setSelectedProfessional(null);
                       setSelectedTime(null);
                       idSwitcher(selectedService, service, setSelectedService);
+                      if (selectedService === null) setTab(2);
                     },
                   };
                 })}
@@ -312,11 +324,12 @@ export function GroupPage() {
                   return validation.isAvailable && selectedDay > -1
                     ? {
                         title: selectedService?.getName() || "Serviço não selecionado",
-                        //subtitle: validation.professionals.map((prof) => prof.getName()).join(', '),
+                        subtitle: validation.professionals.map((prof) => prof.getName().split(" ")[0]).join(", "),
                         select: selectedTime !== null && index + startHour * 6 >= selectedTime && index + startHour * 6 < selectedTime + (selectedService?.getDuration().length || 0),
                         onClick: () => {
                           setSelectedProfessional(null);
                           switchSelectedTime(index, validation.professionals);
+                          if (selectedTime === null) setTab(3);
                         },
                         leftButton: {
                           title: days[selectedDay]?.[0],
@@ -331,7 +344,9 @@ export function GroupPage() {
           </div>
         );
       case 3: // Professional tab
-        return (
+        return professionalLoading ? (
+          <GroupFormLoading />
+        ) : (
           <div className='tab'>
             <GenericHeader title='Escolha o Profissional' onClickReturn={() => setTab(2)} />
             <IconCarousel items={tabCarousel} />
@@ -436,9 +451,15 @@ export function GroupPage() {
                 setLoading(true);
                 const formattedNumber = user.getNumber().startsWith("55") ? user.getNumber() : "55" + user.getNumber();
                 user.setNumber(formattedNumber);
-                await user.loginAnonymous();
-                await user.addUser();
-                profSchedValue.client = user.getId();
+                if (user.getId() === "") {
+                  await user.loginAnonymous();
+                  await user.addUser();
+                  profSchedValue.client = user.getId();
+                } else {
+                  profSchedValue.edited = true;
+                  profSchedValue.client = user.getName();
+                  profSchedValue.service = selectedService?.getName() || "Erro";
+                }
                 await handleSchedule();
 
                 setTab(4);
