@@ -47,10 +47,10 @@ export function GroupPage() {
         }
         await group.getGroup(groupId);
         setLoading(false);
-        await group.updateServices();
-        setSLoading(false);
         await group.updateProfessionals();
         setPLoading(false);
+        await group.updateServices();
+        setSLoading(false);
         setGroup(new Group(group));
       });
     };
@@ -239,14 +239,17 @@ export function GroupPage() {
                 user.getId() !== ""
                   ? group.getOwner() === user.getId() || group.getAdmins().includes(user.getId())
                     ? {
+                        isLoading: professionalLoading,
                         icon: config,
                         title: "Config",
                         onClick: () => setTab(5),
                       }
                     : {
+                        isLoading: professionalLoading,
                         icon: calendar,
                         title: "Agenda",
                         onClick: () => {
+                          if (professionalLoading) return;
                           if (userProfId) {
                             setTab(7);
                           } else {
