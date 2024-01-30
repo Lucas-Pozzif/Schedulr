@@ -204,7 +204,13 @@ export function GroupPage() {
       title: "Horário",
       select: tab === 2,
       icon: clock,
-      onClick: () => setTab(2),
+      inactive: selectedService === null,
+      onClick: () => {
+        if (selectedService !== null) setTab(2);
+        else {
+          setTab(1);
+        }
+      },
     },
     {
       title: "Profissional",
@@ -347,6 +353,7 @@ export function GroupPage() {
           </div>
         );
       case 3: // Professional tab
+      console.log(timeArray,selectedTime,fullTimeArray)
         return professionalLoading ? (
           <GroupFormLoading />
         ) : (
@@ -388,7 +395,7 @@ export function GroupPage() {
                   subtitle: selectedProfessional?.getName() || "Profissional não selecionado",
                   selected: true,
                   leftTitle: fullDays[selectedWeekDay],
-                  leftSubtitle: timeArray[selectedTime || 0],
+                  leftSubtitle: fullTimeArray[selectedTime || 0],
                 },
               ]}
             />
