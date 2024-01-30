@@ -7,14 +7,15 @@ type IconCarouselType = {
     icon: string;
     onClick: () => void;
     select?: boolean;
+    inactive?: boolean;
   }[];
 };
 
 export function IconCarousel({ items }: IconCarouselType) {
   return (
     <div className='icon-carousel'>
-      {items.map((item,index) => {
-        return <SmallIconButton key={index} title={item.title} select={item.select} icon={item.icon} onClick={item.onClick} />;
+      {items.map((item, index) => {
+        return item.inactive ? null : <SmallIconButton key={index} title={item.title} select={item.select} icon={item.icon} onClick={item.onClick} />;
       })}
     </div>
   );
