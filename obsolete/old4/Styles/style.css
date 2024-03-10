@@ -1,0 +1,30 @@
+input {
+  all: unset;
+  font-family: "Regular";
+}
+div {
+  transition: 200ms;
+}
+
+textarea {
+  all: unset;
+}
+
+.hidden {
+  display: none !important;
+}
+
+::placeholder {
+  color: #212529;
+}
+
+@font-face {
+  font-family: "Regular";
+  src: local("Roboto-Regular"), url(../Fonts/Roboto-Regular.ttf) format("truetype");
+}
+
+label,
+p {
+  font-family: "Regular";
+  transition: 200ms;
+}

@@ -1,0 +1,26 @@
+.error-page {
+  text-align: center;
+  margin: 50px;
+}
+
+.error-title {
+  font-size: 20px;
+  color: #212529;
+}
+
+.error-subtitle {
+  font-size: 15px;
+  color: #616161;
+}
+
+.home-link {
+  background-color: #212529;
+  padding-inline: 10px;
+  padding-block: 10px;
+  border-radius: 10px;
+  color: #ced4da;
+  cursor: pointer;
+  margin-top: 10px;
+  display: inline-block;
+  margin-inline: 10px;
+}

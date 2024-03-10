@@ -1,0 +1,11 @@
+.small-header {
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--platinum);
+}
+.sh-title {
+  font-size: 22px;
+  color: var(--eerieBlack);
+}

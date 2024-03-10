@@ -1,0 +1,10 @@
+.sf-input-block {
+  display: flex;
+  justify-content: space-between;
+  padding:  10px;
+}
+.sf-input {
+  font-size: 14px;
+  color: var(--eerieBlack);
+  opacity: 0.8;
+}
