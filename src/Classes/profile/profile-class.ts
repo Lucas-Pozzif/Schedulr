@@ -1,9 +1,9 @@
 import { DocumentData, DocumentSnapshot, deleteDoc, deleteField, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { db, storage } from "../../Services/firebase/firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { Schedule, ScheduleItem, ScheduleList } from "../schedule/schedule";
+import { ScheduleItem, ScheduleList } from "../schedule/schedule-class";
 
-type ProfileAttributes = {
+type Attributes = {
   attribute: "id" | "groupId" | "name" | "occupations" | "number" | "isAdmin" | "activities" | "hours" | "profile" | "schedule";
 };
 export class Profile {
@@ -27,7 +27,7 @@ export class Profile {
   /**
    * Creates a new profile, it can be empty or be filled with both the values or the class
    * @param arg it can be the id of the profile, or a profile class itself
-   * @param groupIdthe id of the group that this profile belongs
+   * @param groupId the id of the group that this profile belongs
    * @param name name of the profile
    * @param occupations List of occupations of that profile, it holds the name and the id to make it database friendly, the occupations will be stored in an attribute of the group
    * @param number Profile's phone number
@@ -114,7 +114,7 @@ export class Profile {
   /**
    * Returns the value of a specific attribute
    */
-  public get(attribute: ProfileAttributes) {
+  public get(attribute: Attributes) {
     return (this as any)[`_${attribute}`];
   }
 
@@ -124,7 +124,7 @@ export class Profile {
    * @param newValue the new value that will replace the one on the given attribute
    * @param setter if using the method "UseState" from react, you can update both the class and the setter at the same time
    */
-  public update(attribute: ProfileAttributes, newValue: any, setter?: React.Dispatch<React.SetStateAction<Profile>>) {
+  public update(attribute: Attributes, newValue: any, setter?: React.Dispatch<React.SetStateAction<Profile>>) {
     (this as any)[`_${attribute}`] = newValue;
     if (setter) setter(new Profile(this));
   }
@@ -154,6 +154,9 @@ export class Profile {
 
     await updateDoc(profRef, { [this._id]: this.firestoreFormat() });
   }
+
+
+
 
   // Download from database
 
@@ -190,20 +193,6 @@ export class Profile {
       console.log("there is a value already");
       return false;
     } else await updateDoc(dayRef, { [index]: value });
-  }
-
-  // Update the database
-
-  private async updateActivityId() {
-    const configRef = doc(db, "config", "ids");
-    const configSnap = await getDoc(configRef);
-    if (!configSnap.data()) return console.error("config collection not found");
-
-    var config = configSnap.data();
-    config!.profile++;
-    await updateDoc(configRef, { profile: config!.profile });
-
-    return config!.profile.toString();
   }
 
   public async updateImage() {
