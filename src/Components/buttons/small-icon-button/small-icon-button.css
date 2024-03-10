@@ -1,0 +1,14 @@
+.small-icon-button {
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  padding-inline: 5px;
+  background-color: var(--frenchGray);
+}
+
+.sib-icon {
+  height: 18px;
+  width: 18px;
+}
