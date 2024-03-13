@@ -1,7 +1,8 @@
 .return-button {
-  height: 50px;
-  width: 50px;
+  height: 30px;
+  width: 30px;
   position: absolute;
-  top: 0;
-  left: -6px;
+  top: 10px;
+  left: 10px;
+  rotate: 180deg;
 }
