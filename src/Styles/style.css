@@ -15,7 +15,7 @@ textarea {
 }
 
 ::placeholder {
-  color: #212529;
+  color: var(--eerieBlack);
 }
 
 @font-face {
