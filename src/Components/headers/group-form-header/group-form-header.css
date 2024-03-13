@@ -1,11 +1,25 @@
 .group-form-header {
   display: flex;
+  padding: 10px;
+  gap: 10px;
 }
 .gh-profile {
   height: 100px;
   width: 100px;
   border-radius: 5px;
-  background-color: blue;
+  background-color: var(--eerieBlack);
+}
+
+.gh-title {
+  font-size: 16px;
+  color: var(--onyx);
+  opacity: 0.8;
+}
+.gh-subtitle,
+.gh-id {
+  font-size: 16px;
+  color: var(--onyx);
+  opacity: 0.8;
 }
 
 .gh-button-block {
