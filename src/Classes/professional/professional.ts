@@ -1,6 +1,6 @@
 import { DocumentSnapshot, collection, deleteDoc, deleteField, doc, getDoc, getDocs, query, serverTimestamp, setDoc, updateDoc, where } from "firebase/firestore";
 import { db, storage } from "../../Services/firebase/firebase";
-import { Schedule, ScheduleItem } from "../schedule/schedule";
+import { Schedule, ScheduleItem, ScheduleItemW } from "../schedule/schedule";
 import { User } from "../user/user";
 import { Service } from "../service/service";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
@@ -28,18 +28,7 @@ export class Professional {
   private _image: string;
   private _schedule: Schedule | any;
 
-  constructor(
-    arg?: string | Professional,
-    name: string = "",
-    occupations: string[] = [],
-    email: string = "",
-    isAdmin: boolean = false,
-    services: string[] = [],
-    shift: boolean[][] = [],
-    startHours: number[] = [-1, -1, -1, -1, -1, -1, -1],
-    image: string = "",
-    schedule: Schedule = {}
-  ) {
+  constructor(arg?: string | Professional, name: string = "", occupations: string[] = [], email: string = "", isAdmin: boolean = false, services: string[] = [], shift: boolean[][] = [], startHours: number[] = [-1, -1, -1, -1, -1, -1, -1], image: string = "", schedule: Schedule = {}) {
     if (typeof arg === "string") {
       // Case: ID provided
       this._id = arg;
@@ -305,24 +294,35 @@ export class Professional {
 
   // Schedule methods
 
-  public async updateSchedule(day: string, index: string, value: ScheduleItem) {
+  public async updateSchedule(day: string, index: string, value: ScheduleItem, wppValue?: ScheduleItemW) {
     const [dayPart, monthPart, yearPart] = day.split("/");
     const date = `${monthPart}-${yearPart.slice(-2)}`;
     const formattedDay = dayPart;
 
+    const fulldate = `${formattedDay}-${date}`;
+
     const docRef = doc(db, "schedules", this._id, date, formattedDay);
+    const wppRef = doc(db, "message-system", fulldate);
     try {
       // Check if the document exists
       const docSnap = await getDoc(docRef);
+      const wppSnap = await getDoc(wppRef);
 
       if (docSnap.exists()) {
         await updateDoc(docRef, { [index]: value });
-        console.log("Document updated successfully!");
       } else {
         // Document doesn't exist, create it with the field
         await setDoc(docRef, {});
         await updateDoc(docRef, { [index]: value });
-        console.log("Document created successfully!");
+      }
+      if (!wppValue) return;
+      
+      if (wppSnap.exists()) {
+        await updateDoc(wppRef, { [wppValue.contact]: wppValue });
+      } else {
+        // Document doesn't exist, create it with the field
+        await setDoc(wppRef, {});
+        await updateDoc(wppRef, { [wppValue.contact]: wppValue });
       }
     } catch (e) {
       console.error("Error updating document:", e);
