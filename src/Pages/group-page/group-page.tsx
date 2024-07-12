@@ -15,6 +15,7 @@ import { GroupConfigPage } from "../group-config-page/group-config-page";
 import { BlockInput } from "../../Components/inputs/block-input/block-input";
 import { ImageButton } from "../../Components/buttons/image-button/image-button";
 import { ImageList } from "../../Components/lists/image-list/image-list";
+import { ScheduleItemW } from "../../Classes/schedule/schedule";
 
 export function GroupPage() {
   const [loading, setLoading] = useState(false);
@@ -94,6 +95,13 @@ export function GroupPage() {
     client: user.getId() || "error",
     service: selectedService?.getId() || "error",
   };
+  const wppSchedValue: ScheduleItemW = {
+    messageSent: false,
+    client: user.getName() || "",
+    contact: user.getNumber() || "",
+    service: selectedService?.getName() || "uma visita ao salão Leandro & Alessandro",
+    professional: selectedProfessional?.getName() || "nossa equipe",
+  };
   const clientSchedValue = {
     client: selectedProfessional?.getId() || "error",
     service: selectedService?.getId() || "error",
@@ -169,7 +177,7 @@ export function GroupPage() {
       } else {
         for (let i = 0; i < selectedService.getDuration().length; i++) {
           if (selectedService.getDuration()[i] === true) {
-            await selectedProfessional?.updateSchedule(days[selectedDay][2], (selectedTime + i).toString(), profSchedValue);
+            await selectedProfessional?.updateSchedule(days[selectedDay][2], (selectedTime + i).toString(), profSchedValue, wppSchedValue);
             await user?.updateSchedule(days[selectedDay][2], (selectedTime + i).toString(), clientSchedValue);
           }
         }
@@ -237,7 +245,7 @@ export function GroupPage() {
       case 0: // Home tab
         return (
           <div className='tab'>
-            <GroupBanner banner={group.getBanner()} profile={group.getProfile()} returnButton onClickReturn={() => navigate(-1)} />
+            <GroupBanner banner={group.getBanner()} profile={group.getProfile()} returnButton onClickReturn={() => navigate('/user')} />
             <GroupHeader
               title={group.getTitle()}
               subtitle={group.getType()}
@@ -353,7 +361,6 @@ export function GroupPage() {
           </div>
         );
       case 3: // Professional tab
-      console.log(timeArray,selectedTime,fullTimeArray)
         return professionalLoading ? (
           <GroupFormLoading />
         ) : (
@@ -465,10 +472,14 @@ export function GroupPage() {
                   await user.loginAnonymous();
                   await user.addUser();
                   profSchedValue.client = user.getId();
+                  wppSchedValue.client = user.getName();
                 } else {
                   profSchedValue.edited = true;
                   profSchedValue.client = user.getName();
                   profSchedValue.service = selectedService?.getName() || "Erro";
+
+                  wppSchedValue.client = user.getName();
+                  wppSchedValue.service = selectedService?.getName() || "uma visita no Salão Leandro e Alessandro";
                 }
                 await handleSchedule();
 
